@@ -1,0 +1,33 @@
+{
+  "name": "d3-timeline",
+  "description": "D3 Timeline",
+  "version": "0.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "d3": "^4.7.4"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-env": "^1.2.2",
+    "webpack": "^2.3.1"
+  },
+  "scripts": {
+    "dev": "webpack",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octree-gva/d3-timeline.git"
+  },
+  "author": "Octree",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octree-gva/d3-timeline/issues"
+  },
+  "homepage": "https://github.com/octree-gva/d3-timeline#readme"
+}
