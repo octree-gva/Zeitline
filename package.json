@@ -13,6 +13,8 @@
     "babel-core": "^6.24.0",
     "babel-loader": "^6.4.1",
     "babel-preset-env": "^1.2.2",
+    "eslint": "^3.18.0",
+    "eslint-config-google": "^0.7.1",
     "webpack": "^2.3.1"
   },
   "scripts": {
@@ -29,5 +31,9 @@
   "bugs": {
     "url": "https://github.com/octree-gva/d3-timeline/issues"
   },
-  "homepage": "https://github.com/octree-gva/d3-timeline#readme"
+  "homepage": "https://github.com/octree-gva/d3-timeline#readme",
+  "keywords": [
+    "d3",
+    "timeline"
+  ]
 }

@@ -1,0 +1,10 @@
+{
+  "extends": ["eslint:recommended", "google"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "d3": true
+  }
+}
