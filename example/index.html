@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+
+.dot {
+  fill: #beb;
+}
+
+.dot2 {
+  fill: #ebb;
+}
+
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+.cells path {
+  fill: none;
+  pointer-events: all;
+}
+
+.cells :hover circle {
+  fill: red;
+}
+
+button {
+  padding: 8px 16px;
+  font-weight: bold;
+  border: 2px solid #333;
+  background: #fff;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+</style>
+<body>
+<svg width="660" height="200"></svg>
+<br>
+<br>
+<button class="zoom-in">+</button>
+<button class="zoom-out">-</button><br>
+<br>
+
+<button class="interval" data-interval="Day">Day</button>
+<button class="interval" data-interval="Week">Week</button>
+<button class="interval" data-interval="Month">Month</button>
+<button class="interval" data-interval="Year">Year</button>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<!--<script type="text/javascript" src="../../node_modules/d3/build/d3.js"></script>-->
+<script type="text/javascript" src="../dist/d3-timeline.bundle.js"></script>
+</body>
