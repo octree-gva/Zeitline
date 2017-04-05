@@ -27,7 +27,7 @@ x.domain(d3.extent(conf.dateRange));
 // timeDay, timeWeek, timeMonth, timeYear
 let xAxis = d3.axisBottom(x)
   .ticks(d3[`time${conf.intervals}`]);
-  // .tickFormat((d) => d3.timeFormat('%a %d')(d));
+  // .tickFormat(d3.time.format('%Y'))
 
 // let zoom = d3.zoom()
 //     .scaleExtent([1, Infinity])
@@ -86,7 +86,7 @@ let circles = focus.selectAll('circle')
 
 
 let t = d3.transition()
-    .duration(1000)
+    .duration(750)
     .ease(d3.easeLinear);
 
 function updateData(newConf) {
@@ -120,8 +120,15 @@ function updateData(newConf) {
       d3.event.stopPropagation();
     });
 
+  if (newConf.timeFormat && newConf.timeFormat !== '') {
+    xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
+  } else {
+    // Reset default format
+    xAxis.tickFormat(null);
+  }
+
   // if (newConf.intervals || newConf.dateRange) {
-  svg.select('.axis--x') // change the x axis
+  svg.select('.axis--x')
     .transition(t)
     .call(xAxis);
   // }
@@ -193,6 +200,7 @@ let conf2 = {
     new Date('Jan 2016'),
     new Date('Dec 2017'),
   ],
+  // timeFormat: '',
   intervals: 'Month', // Day, Week, Month, Year
   data: [
     {date: new Date('Feb 2017'), label: 'test1'},
@@ -209,6 +217,8 @@ let conf2 = {
 document.querySelectorAll('.interval').forEach((e) => {
   e.addEventListener('click', (e) => {
     let typeInt = e.target.getAttribute('data-interval');
+    let timeFormat = e.target.getAttribute('data-time-format');
+    conf2.timeFormat = timeFormat;
     conf2.intervals = typeInt;
     updateData(conf2);
   }, false);

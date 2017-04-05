@@ -89,7 +89,7 @@ x.domain(d3.extent(conf.dateRange));
 
 // timeDay, timeWeek, timeMonth, timeYear
 var xAxis = d3.axisBottom(x).ticks(d3['time' + conf.intervals]);
-// .tickFormat((d) => d3.timeFormat('%a %d')(d));
+// .tickFormat(d3.time.format('%Y'))
 
 // let zoom = d3.zoom()
 //     .scaleExtent([1, Infinity])
@@ -133,7 +133,7 @@ var circles = focus.selectAll('circle').data(conf.data).enter().append('circle')
 //   .text((d) => d.label);
 
 
-var t = d3.transition().duration(1000).ease(d3.easeLinear);
+var t = d3.transition().duration(750).ease(d3.easeLinear);
 
 function updateData(newConf) {
   // console.log(newConf);
@@ -159,9 +159,17 @@ function updateData(newConf) {
     d3.event.stopPropagation();
   });
 
+  if (newConf.timeFormat && newConf.timeFormat !== '') {
+    xAxis.tickFormat(function (d) {
+      return d3.timeFormat(newConf.timeFormat)(d);
+    });
+  } else {
+    // Reset default format
+    xAxis.tickFormat(null);
+  }
+
   // if (newConf.intervals || newConf.dateRange) {
-  svg.select('.axis--x') // change the x axis
-  .transition(t).call(xAxis);
+  svg.select('.axis--x').transition(t).call(xAxis);
   // }
 
   // circles
@@ -228,6 +236,7 @@ function updateData(newConf) {
 
 var conf2 = {
   dateRange: [new Date('Jan 2016'), new Date('Dec 2017')],
+  // timeFormat: '',
   intervals: 'Month', // Day, Week, Month, Year
   data: [{ date: new Date('Feb 2017'), label: 'test1' }, { date: new Date('Mar 2017'), label: 'test2' }, { date: new Date('Jun 2017'), label: 'test3' }, { date: new Date('Jul 2017'), label: 'test4' }, { date: new Date('Jul 2018'), label: 'test5' }],
   callback: function callback() {
@@ -238,6 +247,8 @@ var conf2 = {
 document.querySelectorAll('.interval').forEach(function (e) {
   e.addEventListener('click', function (e) {
     var typeInt = e.target.getAttribute('data-interval');
+    var timeFormat = e.target.getAttribute('data-time-format');
+    conf2.timeFormat = timeFormat;
     conf2.intervals = typeInt;
     updateData(conf2);
   }, false);
