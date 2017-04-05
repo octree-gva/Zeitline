@@ -136,7 +136,7 @@ var circles = focus.selectAll('circle').data(conf.data).enter().append('circle')
 var t = d3.transition().duration(1000).ease(d3.easeLinear);
 
 function updateData(newConf) {
-  console.log(newConf);
+  // console.log(newConf);
 
   // Range
   if (newConf.dateRange) {
@@ -152,7 +152,12 @@ function updateData(newConf) {
 
   circles = focus.selectAll('circle').data(newConf.data).enter().append('circle').attr('class', 'dot2').attr('r', 5).attr('cx', function (d) {
     return x(d.date);
-  }).attr('cy', 50);
+  }).attr('cy', 50).on('click', function (circle) {
+    if (newConf.callback) {
+      newConf.callback.apply(circle);
+    }
+    d3.event.stopPropagation();
+  });
 
   // if (newConf.intervals || newConf.dateRange) {
   svg.select('.axis--x') // change the x axis
@@ -224,7 +229,10 @@ function updateData(newConf) {
 var conf2 = {
   dateRange: [new Date('Jan 2016'), new Date('Dec 2017')],
   intervals: 'Month', // Day, Week, Month, Year
-  data: [{ date: new Date('Feb 2017'), label: 'test1' }, { date: new Date('Mar 2017'), label: 'test2' }, { date: new Date('Jun 2017'), label: 'test3' }, { date: new Date('Jul 2017'), label: 'test4' }, { date: new Date('Jul 2018'), label: 'test5' }]
+  data: [{ date: new Date('Feb 2017'), label: 'test1' }, { date: new Date('Mar 2017'), label: 'test2' }, { date: new Date('Jun 2017'), label: 'test3' }, { date: new Date('Jul 2017'), label: 'test4' }, { date: new Date('Jul 2018'), label: 'test5' }],
+  callback: function callback() {
+    alert(this.label);
+  }
 };
 
 document.querySelectorAll('.interval').forEach(function (e) {

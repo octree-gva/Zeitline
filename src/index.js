@@ -90,7 +90,7 @@ let t = d3.transition()
     .ease(d3.easeLinear);
 
 function updateData(newConf) {
-  console.log(newConf);
+  // console.log(newConf);
 
   // Range
   if (newConf.dateRange) {
@@ -102,7 +102,6 @@ function updateData(newConf) {
     xAxis.ticks(d3[`time${newConf.intervals}`]);
   }
 
-
   circles
     .remove();
 
@@ -113,7 +112,13 @@ function updateData(newConf) {
     .attr('class', 'dot2')
     .attr('r', 5)
     .attr('cx', (d) => x(d.date))
-    .attr('cy', 50);
+    .attr('cy', 50)
+    .on('click', (circle) => {
+      if (newConf.callback) {
+        newConf.callback.apply(circle);
+      }
+      d3.event.stopPropagation();
+    });
 
   // if (newConf.intervals || newConf.dateRange) {
   svg.select('.axis--x') // change the x axis
@@ -196,6 +201,9 @@ let conf2 = {
     {date: new Date('Jul 2017'), label: 'test4'},
     {date: new Date('Jul 2018'), label: 'test5'},
   ],
+  callback: function() {
+    alert(this.label);
+  },
 };
 
 document.querySelectorAll('.interval').forEach((e) => {
