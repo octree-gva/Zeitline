@@ -7,7 +7,8 @@
     "test": "test"
   },
   "dependencies": {
-    "d3": "^4.7.4"
+    "d3": "^4.7.4",
+    "moment": "^2.18.1"
   },
   "devDependencies": {
     "babel-core": "^6.24.0",

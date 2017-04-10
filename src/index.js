@@ -1,3 +1,6 @@
+import * as d3 from 'd3';
+import moment from 'moment';
+
 let conf = {
   dateRange: [
     new Date('Jan 2015'),
