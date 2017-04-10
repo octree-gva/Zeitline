@@ -56,10 +56,10 @@ button {
   <button class="zoom-out">-</button>
   <br>
 
-  <button class="interval" data-interval="Day" data-time-format="%d">Day</button>
-  <button class="interval" data-interval="Week">Week</button>
-  <button class="interval" data-interval="Month" data-time-format="%B">Month</button>
-  <button class="interval" data-interval="Year" data-time-format="%Y">Year</button>
+  <button class="interval" data-interval="Day" data-ticks-interval="Hour" data-time-format="%H">Day</button>
+  <button class="interval" data-interval="Week" data-ticks-interval="Day" data-time-format="%d">Week</button>
+  <button class="interval" data-interval="Month" data-ticks-interval="Day" data-time-format="%d">Month</button>
+  <button class="interval" data-interval="Year" data-ticks-interval="Month" data-time-format="%B">Year</button>
 </div>
 
 <script type="text/javascript" src="../dist/d3-timeline.bundle.js"></script>

@@ -200,17 +200,19 @@ function updateData(newConf) {
 
 let conf2 = {
   dateRange: [
-    new Date('Jan 2016'),
-    new Date('Dec 2017'),
+    moment(),
+    moment().add(1, 'month'),
   ],
   // timeFormat: '',
   intervals: 'Month', // Day, Week, Month, Year
   data: [
-    {date: new Date('Feb 2017'), label: 'test1'},
-    {date: new Date('Mar 2017'), label: 'test2'},
-    {date: new Date('Jun 2017'), label: 'test3'},
-    {date: new Date('Jul 2017'), label: 'test4'},
-    {date: new Date('Jul 2018'), label: 'test5'},
+    {date: moment().add(5, 'hours'), label: 'test1'},
+    {date: moment().add(2, 'days'), label: 'test2'},
+    {date: new Date('May 2017'), label: 'test3'},
+    {date: new Date('15 May 2017'), label: 'test4'},
+    {date: new Date('Aug 2017'), label: 'test5'},
+    {date: new Date('Sep 2017'), label: 'test6'},
+    {date: new Date('Jan 2018'), label: 'test7'},
   ],
   callback: function() {
     alert(this.label);
@@ -220,9 +222,18 @@ let conf2 = {
 document.querySelectorAll('.interval').forEach((e) => {
   e.addEventListener('click', (e) => {
     let typeInt = e.target.getAttribute('data-interval');
+    let ticksInterval = e.target.getAttribute('data-ticks-interval');
     let timeFormat = e.target.getAttribute('data-time-format');
     conf2.timeFormat = timeFormat;
-    conf2.intervals = typeInt;
+    conf2.intervals = ticksInterval;
+
+    let d0 = moment();
+    let d1 = moment().add(1, typeInt);
+
+    conf2.dateRange = [
+      d0,
+      d1,
+    ];
     updateData(conf2);
   }, false);
 });
