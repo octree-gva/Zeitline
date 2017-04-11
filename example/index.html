@@ -2,11 +2,13 @@
 <meta charset="utf-8">
 <style>
 .dot {
-  fill: #9e9;
+  fill: #6be;
+  transition: all .2s ease-out;
 }
 
 .dot:hover {
-  fill: #e99;
+  fill: #6e9;
+  r: 15;
 }
 
 .dot2 {
@@ -55,11 +57,8 @@ button {
     <svg width="700" height="180"></svg>
 
     <div class="controlbar">
-      <button class="move-left" data-interval="Month" data-move-interval="1"><</button>
+      <button class="move-left"><</button>
       <button class="move-right">></button>
-      <!--<button class="zoom-in">+</button>-->
-      <!--<button class="zoom-out">-</button>-->
-      <!--<br>-->
 
       <button class="interval" data-interval="Day" data-ticks-interval="Hour" data-time-format="%H">Day</button>
       <button class="interval" data-interval="Week" data-ticks-interval="Day" data-time-format="%d">Week</button>

@@ -23,7 +23,7 @@ let conf = {
     {date: new Date('25 May 2018'), label: 'test13'},
     {date: new Date('Aug 2018'), label: 'test12'},
   ],
-  callback: function() {
+  onClick: function() {
     alert(this.label);
   },
 };
@@ -109,15 +109,26 @@ function updateData(newConf) {
     .attr('cx', (d) => x(d.date))
     .attr('cy', 50)
     .on('click', (circle) => {
-      if (newConf.callback) {
-        newConf.callback.apply(circle);
+      if (newConf.onClick) {
+        newConf.onClick.apply(circle);
       }
       d3.event.stopPropagation();
     })
     .attr('r', 0)
     .transition()
-    .duration(500)
-    .attr('r', 5);
+    // .ease(d3.easeCubicOut)
+    // .duration(500)
+    .attr('r', 8);
+
+  // focus.selectAll('circle')
+  //   .on('click', function(circle) {
+  //     d3.select(this)
+  //       .transition()
+  //       .ease(d3.easeElastic)
+  //       .duration(500)
+  //       .attr('r', 20)
+  //     d3.event.stopPropagation();
+  // });
 
   if (newConf.timeFormat && newConf.timeFormat !== '') {
     xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
@@ -132,40 +143,6 @@ function updateData(newConf) {
     .duration(500)
     .call(xAxis);
   // }
-
-// circles
-//   .data(newConf.data)
-//   .attr('class', 'dot2')
-//   .enter()
-//   .append('circle')
-//   .attr('r', 5)
-//   .attr('cx', (d) => x(d.date))
-//   .attr('cy', 50);
-
-// circles
-//   .attr('class', 'dot2')
-//   .data(newConf.data)
-//   // .enter()
-//   // .append('circle')
-//   // .attr('r', 5)
-//   // .attr('cx', (d) => x(d.date))
-//   // // .attr('x', (d) => x(d.date))
-//   // .attr('cy', 50);
-
-//   circles
-//     .enter()
-//     .append('circle')
-
-//   circles
-//     .transition(t)
-//     .attr('r', 5)
-//     .attr('cy', 20)
-//     .attr('cx', (d) => d.date);
-
-//   circles
-//     .exit()
-//     .remove();
-
 
   // let zoom = d3.zoom().on('zoom', zoomed);
 
@@ -199,7 +176,7 @@ document.querySelectorAll('.interval').forEach((e) => {
 });
 
 document.querySelector('.move-left').addEventListener('click', (e) => {
-  let diff = conf.dateRange[1] - conf.dateRange[0];
+  const diff = conf.dateRange[1] - conf.dateRange[0];
 
   conf.dateRange[0].subtract(diff);
   conf.dateRange[1].subtract(diff);
@@ -207,7 +184,7 @@ document.querySelector('.move-left').addEventListener('click', (e) => {
 }, false);
 
 document.querySelector('.move-right').addEventListener('click', (e) => {
-  let diff = conf.dateRange[1] - conf.dateRange[0];
+  const diff = conf.dateRange[1] - conf.dateRange[0];
 
   conf.dateRange[0].add(diff);
   conf.dateRange[1].add(diff);
