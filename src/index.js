@@ -15,7 +15,13 @@ let conf = {
     {date: new Date('15 May 2017'), label: 'test4'},
     {date: new Date('Aug 2017'), label: 'test5'},
     {date: new Date('Sep 2017'), label: 'test6'},
-    {date: new Date('Jan 2018'), label: 'test7'},
+    {date: new Date('24 Dec 2017'), label: 'test7'},
+    {date: new Date('31 Dec 2017'), label: 'test8'},
+    {date: new Date('Jan 2018'), label: 'test9'},
+    {date: new Date('10 May 2018'), label: 'test10'},
+    {date: new Date('10 May 2018'), label: 'test11'},
+    {date: new Date('25 May 2018'), label: 'test13'},
+    {date: new Date('Aug 2018'), label: 'test12'},
   ],
   callback: function() {
     alert(this.label);
@@ -161,21 +167,6 @@ function updateData(newConf) {
 //     .remove();
 
 
-  // // Edit dots
-  // circles
-  //   // .enter()
-
-  // .append('circle')
-  // .attr('r', 5)
-  // .attr('cy', 50)
-
-  //   // .data(conf.data)
-  //   .transition(t)
-  //   // .duration(750)
-  //   // .attr('d', (newConf.data))
-  //   .attr('cx', (d) => x(d.date))
-  //   ;
-
   // let zoom = d3.zoom().on('zoom', zoomed);
 
   // let transform = d3.event.transform;
@@ -208,13 +199,17 @@ document.querySelectorAll('.interval').forEach((e) => {
 });
 
 document.querySelector('.move-left').addEventListener('click', (e) => {
-  conf.dateRange[0].add(1, conf.intervals);
-  conf.dateRange[1].add(1, conf.intervals);
+  let diff = conf.dateRange[1] - conf.dateRange[0];
+
+  conf.dateRange[0].subtract(diff);
+  conf.dateRange[1].subtract(diff);
   updateData(conf);
 }, false);
 
 document.querySelector('.move-right').addEventListener('click', (e) => {
-  conf.dateRange[0].subtract(1, conf.intervals);
-  conf.dateRange[1].subtract(1, conf.intervals);
+  let diff = conf.dateRange[1] - conf.dateRange[0];
+
+  conf.dateRange[0].add(diff);
+  conf.dateRange[1].add(diff);
   updateData(conf);
 }, false);
