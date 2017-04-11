@@ -56,22 +56,7 @@ focus.append('g')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xAxis);
 
-// focus.selectAll('dot')
-//   .attr('class', 'dot')
-//   .data(conf.data)
-//   .enter()
-//   .append('circle')
-//   .attr('r', 5)
-//   .attr('cx', (d) => x(d.date))
-//   .attr('cy', 120);
-  // .attr('transform', (d) => {
-  //   // console.log(d)
-  //   return 'translate(' + x(d.date) + ', 0)'
-  // })
-  // .append('text')
-  // .text((d) => d.label);
-
-let circles = focus.selectAll('circle');
+// let circles = focus.selectAll('circle');
 //   .data(conf.data)
 //   .enter()
 //   .append('circle')
@@ -91,13 +76,11 @@ let circles = focus.selectAll('circle');
 //   .text((d) => d.label);
 
 
-let t = d3.transition()
-    .duration(750)
-    .ease(d3.easeLinear);
+// let t = d3.transition()
+//     .duration(500)
+//     .ease(d3.easeLinear);
 
 function updateData(newConf) {
-  // console.log(newConf);
-
   // Range
   if (newConf.dateRange) {
     x.domain(d3.extent(newConf.dateRange));
@@ -108,15 +91,15 @@ function updateData(newConf) {
     xAxis.ticks(d3[`time${newConf.intervals}`]);
   }
 
-  circles
+  focus.selectAll('circle')
+    // .exit()
     .remove();
 
-  circles
+  focus.selectAll('circle')
     .data(newConf.data)
     .enter()
     .append('circle')
-    .attr('class', 'dot2')
-    .attr('r', 5)
+    .attr('class', 'dot')
     .attr('cx', (d) => x(d.date))
     .attr('cy', 50)
     .on('click', (circle) => {
@@ -124,10 +107,13 @@ function updateData(newConf) {
         newConf.callback.apply(circle);
       }
       d3.event.stopPropagation();
-    });
+    })
+    .attr('r', 0)
+    .transition()
+    .duration(500)
+    .attr('r', 5);
 
   if (newConf.timeFormat && newConf.timeFormat !== '') {
-    console.log('aaa');
     xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
   } else {
     // Reset default format
@@ -136,7 +122,8 @@ function updateData(newConf) {
 
   // if (newConf.intervals || newConf.dateRange) {
   svg.select('.axis--x')
-    .transition(t)
+    .transition()
+    .duration(500)
     .call(xAxis);
   // }
 
@@ -221,13 +208,13 @@ document.querySelectorAll('.interval').forEach((e) => {
 });
 
 document.querySelector('.move-left').addEventListener('click', (e) => {
-  conf.dateRange[0].add(1, conf.intervals)
-  conf.dateRange[1].add(1, conf.intervals)
+  conf.dateRange[0].add(1, conf.intervals);
+  conf.dateRange[1].add(1, conf.intervals);
   updateData(conf);
 }, false);
 
 document.querySelector('.move-right').addEventListener('click', (e) => {
-  conf.dateRange[0].subtract(1, conf.intervals)
-  conf.dateRange[1].subtract(1, conf.intervals)
+  conf.dateRange[0].subtract(1, conf.intervals);
+  conf.dateRange[1].subtract(1, conf.intervals);
   updateData(conf);
 }, false);
