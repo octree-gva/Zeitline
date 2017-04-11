@@ -3,21 +3,24 @@ import moment from 'moment';
 
 let conf = {
   dateRange: [
-    new Date('Jan 2015'),
-    new Date('Dec 2018'),
+    moment(),
+    moment().add(1, 'Year'),
   ],
-  intervals: 'Year', // Day, Week, Month, Year
+  timeFormat: '%B',
+  intervals: 'Month', // Day, Week, Month, Year
   data: [
-    {date: new Date('Jan 2015'), label: 'test1'},
-    {date: new Date('Feb 2016'), label: 'test2'},
-    {date: new Date('Mar 2016'), label: 'test3'},
-    {date: new Date('Apr 2017'), label: 'test4'},
-    {date: new Date('May 2017'), label: 'test5'},
-    {date: new Date('Jun 2017'), label: 'test6'},
-    {date: new Date('Jul 2017'), label: 'test7'},
+    {date: moment().add(5, 'hours'), label: 'test1'},
+    {date: moment().add(2, 'days'), label: 'test2'},
+    {date: new Date('May 2017'), label: 'test3'},
+    {date: new Date('15 May 2017'), label: 'test4'},
+    {date: new Date('Aug 2017'), label: 'test5'},
+    {date: new Date('Sep 2017'), label: 'test6'},
+    {date: new Date('Jan 2018'), label: 'test7'},
   ],
+  callback: function() {
+    alert(this.label);
+  },
 };
-
 
 let svg = d3.select('svg');
 let margin = {top: 20, right: 20, bottom: 20, left: 30};
@@ -68,14 +71,14 @@ focus.append('g')
   // .append('text')
   // .text((d) => d.label);
 
-let circles = focus.selectAll('circle')
-  .data(conf.data)
-  .enter()
-  .append('circle')
-  .attr('class', 'dot')
-  .attr('r', 5)
-  .attr('cx', (d) => x(d.date))
-  .attr('cy', 50);
+let circles = focus.selectAll('circle');
+//   .data(conf.data)
+//   .enter()
+//   .append('circle')
+//   .attr('class', 'dot')
+//   .attr('r', 5)
+//   .attr('cx', (d) => x(d.date))
+//   .attr('cy', 50);
 
 // focus
 //   .selectAll('text')
@@ -108,7 +111,7 @@ function updateData(newConf) {
   circles
     .remove();
 
-  circles = focus.selectAll('circle')
+  circles
     .data(newConf.data)
     .enter()
     .append('circle')
@@ -124,6 +127,7 @@ function updateData(newConf) {
     });
 
   if (newConf.timeFormat && newConf.timeFormat !== '') {
+    console.log('aaa');
     xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
   } else {
     // Reset default format
@@ -178,7 +182,7 @@ function updateData(newConf) {
   // .attr('r', 5)
   // .attr('cy', 50)
 
-  //   // .data(conf2.data)
+  //   // .data(conf.data)
   //   .transition(t)
   //   // .duration(750)
   //   // .attr('d', (newConf.data))
@@ -198,72 +202,32 @@ function updateData(newConf) {
   // circles.attr('cx', function(d) { return transform.applyX(x(d)); });
 }
 
-let conf2 = {
-  dateRange: [
-    moment(),
-    moment().add(1, 'month'),
-  ],
-  // timeFormat: '',
-  intervals: 'Month', // Day, Week, Month, Year
-  data: [
-    {date: moment().add(5, 'hours'), label: 'test1'},
-    {date: moment().add(2, 'days'), label: 'test2'},
-    {date: new Date('May 2017'), label: 'test3'},
-    {date: new Date('15 May 2017'), label: 'test4'},
-    {date: new Date('Aug 2017'), label: 'test5'},
-    {date: new Date('Sep 2017'), label: 'test6'},
-    {date: new Date('Jan 2018'), label: 'test7'},
-  ],
-  callback: function() {
-    alert(this.label);
-  },
-};
+updateData(conf);
 
 document.querySelectorAll('.interval').forEach((e) => {
   e.addEventListener('click', (e) => {
     let typeInt = e.target.getAttribute('data-interval');
     let ticksInterval = e.target.getAttribute('data-ticks-interval');
     let timeFormat = e.target.getAttribute('data-time-format');
-    conf2.timeFormat = timeFormat;
-    conf2.intervals = ticksInterval;
+    conf.timeFormat = timeFormat;
+    conf.intervals = ticksInterval;
 
-    let d0 = moment();
-    let d1 = moment().add(1, typeInt);
-
-    conf2.dateRange = [
-      d0,
-      d1,
+    conf.dateRange = [
+      moment(),
+      moment().add(1, typeInt),
     ];
-    updateData(conf2);
+    updateData(conf);
   }, false);
 });
 
-let days = 365;
-
-document.querySelector('.zoom-in').addEventListener('click', (e) => {
-  days -= 50;
-
-  let d0 = new Date();
-  let d1 = new Date();
-  d1.setDate(d1.getDate() + days);
-
-  conf2.dateRange = [
-    d0,
-    d1,
-  ];
-  updateData(conf2);
+document.querySelector('.move-left').addEventListener('click', (e) => {
+  conf.dateRange[0].add(1, conf.intervals)
+  conf.dateRange[1].add(1, conf.intervals)
+  updateData(conf);
 }, false);
 
-document.querySelector('.zoom-out').addEventListener('click', (e) => {
-  days += 50;
-
-  let d0 = new Date();
-  let d1 = new Date();
-  d1.setDate(d1.getDate() + days);
-
-  conf2.dateRange = [
-    d0,
-    d1,
-  ];
-  updateData(conf2);
+document.querySelector('.move-right').addEventListener('click', (e) => {
+  conf.dateRange[0].subtract(1, conf.intervals)
+  conf.dateRange[1].subtract(1, conf.intervals)
+  updateData(conf);
 }, false);
