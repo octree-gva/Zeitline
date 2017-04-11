@@ -13,6 +13,8 @@ let conf = {
     {date: moment().add(2, 'days'), label: 'test2'},
     {date: new Date('May 2017'), label: 'test3'},
     {date: new Date('15 May 2017'), label: 'test4'},
+    {date: new Date('15 May 2017'), label: 'test4B'},
+    {date: new Date('15 May 2017'), label: 'test4C'},
     {date: new Date('Aug 2017'), label: 'test5'},
     {date: new Date('Sep 2017'), label: 'test6'},
     {date: new Date('24 Dec 2017'), label: 'test7'},
@@ -24,7 +26,10 @@ let conf = {
     {date: new Date('Aug 2018'), label: 'test12'},
   ],
   onClick: function() {
-    alert(this.label);
+    document.querySelector('body').style.background = ['#9b59b6', '#1abc9c', '#f39c12'][Math.floor(Math.random() * 3)];
+    setTimeout(() => {
+      document.querySelector('body').style.background = '#fff';
+    }, 1100);
   },
 };
 
@@ -62,15 +67,6 @@ focus.append('g')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xAxis);
 
-// let circles = focus.selectAll('circle');
-//   .data(conf.data)
-//   .enter()
-//   .append('circle')
-//   .attr('class', 'dot')
-//   .attr('r', 5)
-//   .attr('cx', (d) => x(d.date))
-//   .attr('cy', 50);
-
 // focus
 //   .selectAll('text')
 //   .data(conf.data)
@@ -80,7 +76,6 @@ focus.append('g')
 //     return 'translate(' + x(d.date) + ', 0)';
 //   })
 //   .text((d) => d.label);
-
 
 // let t = d3.transition()
 //     .duration(500)
@@ -107,27 +102,62 @@ function updateData(newConf) {
     .append('circle')
     .attr('class', 'dot')
     .attr('cx', (d) => x(d.date))
-    .attr('cy', 50)
-    .on('click', (circle) => {
-      if (newConf.onClick) {
-        newConf.onClick.apply(circle);
+    .attr('transform', function(d, i) {
+      if (i > 0) {
+        let currenty = x(d.date);
+        let previousy = x(newConf.data[i-1].date);
+        if (currenty - previousy < 20) {
+          if (newConf.data[i-1].pos) {
+            d.pos = newConf.data[i-1].pos + 1;
+          } else {
+            d.pos = 1;
+          }
+          return 'translate(' + 0 + ',' + -25 * d.pos + ')';
+        }
       }
-      d3.event.stopPropagation();
     })
+    .attr('cy', 120)
+    // .on('click', (circle) => {
+    //   if (newConf.onClick) {
+    //     newConf.onClick.apply(circle);
+    //   }
+    //   d3.event.stopPropagation();
+    // })
     .attr('r', 0)
     .transition()
     // .ease(d3.easeCubicOut)
     // .duration(500)
     .attr('r', 8);
 
+  focus.selectAll('circle')
+    .on('click', function(circle) {
+      d3.select(this)
+        .transition()
+        .ease(d3.easeBounceOut)
+        .duration(500)
+        .attr('r', 25)
+        .transition()
+        .duration(500)
+        .call(() => {
+          if (newConf.onClick) {
+            newConf.onClick.apply(circle);
+          }
+          // d3.event.stopPropagation();
+        })
+        .delay(500)
+        .attr('r', 8);
+      // d3.event.stopPropagation();
+  });
+
   // focus.selectAll('circle')
-  //   .on('click', function(circle) {
+  //   .on('mouseover', function(circle) {
   //     d3.select(this)
   //       .transition()
   //       .ease(d3.easeElastic)
   //       .duration(500)
   //       .attr('r', 20)
-  //     d3.event.stopPropagation();
+  //       .delay(500)
+  //       .attr('r', 8)
   // });
 
   if (newConf.timeFormat && newConf.timeFormat !== '') {
@@ -143,18 +173,6 @@ function updateData(newConf) {
     .duration(500)
     .call(xAxis);
   // }
-
-  // let zoom = d3.zoom().on('zoom', zoomed);
-
-  // let transform = d3.event.transform;
-
-  // // rescale the x linear scale so that we can draw the top axis
-  // let xNewScale = transform.rescaleX(x);
-  // xAxis.scale(xNewScale);
-  // // gTopAxis.call(xTopAxis);
-
-  // // draw the circles in their new positions
-  // circles.attr('cx', function(d) { return transform.applyX(x(d)); });
 }
 
 updateData(conf);

@@ -86,9 +86,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var conf = {
-  dateRange: [new Date('Jan 2015'), new Date('Dec 2018')],
-  intervals: 'Year', // Day, Week, Month, Year
-  data: [{ date: new Date('Jan 2015'), label: 'test1' }, { date: new Date('Feb 2016'), label: 'test2' }, { date: new Date('Mar 2016'), label: 'test3' }, { date: new Date('Apr 2017'), label: 'test4' }, { date: new Date('May 2017'), label: 'test5' }, { date: new Date('Jun 2017'), label: 'test6' }, { date: new Date('Jul 2017'), label: 'test7' }]
+  dateRange: [(0, _moment2.default)(), (0, _moment2.default)().add(1, 'Year')],
+  timeFormat: '%B',
+  intervals: 'Month', // Day, Week, Month, Year
+  data: [{ date: (0, _moment2.default)().add(5, 'hours'), label: 'test1' }, { date: (0, _moment2.default)().add(2, 'days'), label: 'test2' }, { date: new Date('May 2017'), label: 'test3' }, { date: new Date('15 May 2017'), label: 'test4' }, { date: new Date('15 May 2017'), label: 'test4B' }, { date: new Date('15 May 2017'), label: 'test4C' }, { date: new Date('Aug 2017'), label: 'test5' }, { date: new Date('Sep 2017'), label: 'test6' }, { date: new Date('24 Dec 2017'), label: 'test7' }, { date: new Date('31 Dec 2017'), label: 'test8' }, { date: new Date('Jan 2018'), label: 'test9' }, { date: new Date('10 May 2018'), label: 'test10' }, { date: new Date('10 May 2018'), label: 'test11' }, { date: new Date('25 May 2018'), label: 'test13' }, { date: new Date('Aug 2018'), label: 'test12' }],
+  onClick: function onClick() {
+    document.querySelector('body').style.background = ['#9b59b6', '#1abc9c', '#f39c12'][Math.floor(Math.random() * 3)];
+    setTimeout(function () {
+      document.querySelector('body').style.background = '#fff';
+    }, 1100);
+  }
 };
 
 var svg = d3.select('svg');
@@ -115,25 +122,6 @@ var focus = svg.append('g').attr('class', 'focus').attr('transform', 'translate(
 
 focus.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0,' + height + ')').call(xAxis);
 
-// focus.selectAll('dot')
-//   .attr('class', 'dot')
-//   .data(conf.data)
-//   .enter()
-//   .append('circle')
-//   .attr('r', 5)
-//   .attr('cx', (d) => x(d.date))
-//   .attr('cy', 120);
-// .attr('transform', (d) => {
-//   // console.log(d)
-//   return 'translate(' + x(d.date) + ', 0)'
-// })
-// .append('text')
-// .text((d) => d.label);
-
-var circles = focus.selectAll('circle').data(conf.data).enter().append('circle').attr('class', 'dot').attr('r', 5).attr('cx', function (d) {
-  return x(d.date);
-}).attr('cy', 50);
-
 // focus
 //   .selectAll('text')
 //   .data(conf.data)
@@ -144,12 +132,11 @@ var circles = focus.selectAll('circle').data(conf.data).enter().append('circle')
 //   })
 //   .text((d) => d.label);
 
-
-var t = d3.transition().duration(750).ease(d3.easeLinear);
+// let t = d3.transition()
+//     .duration(500)
+//     .ease(d3.easeLinear);
 
 function updateData(newConf) {
-  // console.log(newConf);
-
   // Range
   if (newConf.dateRange) {
     x.domain(d3.extent(newConf.dateRange));
@@ -160,16 +147,57 @@ function updateData(newConf) {
     xAxis.ticks(d3['time' + newConf.intervals]);
   }
 
-  circles.remove();
+  focus.selectAll('circle')
+  // .exit()
+  .remove();
 
-  circles = focus.selectAll('circle').data(newConf.data).enter().append('circle').attr('class', 'dot2').attr('r', 5).attr('cx', function (d) {
+  focus.selectAll('circle').data(newConf.data).enter().append('circle').attr('class', 'dot').attr('cx', function (d) {
     return x(d.date);
-  }).attr('cy', 50).on('click', function (circle) {
-    if (newConf.callback) {
-      newConf.callback.apply(circle);
+  }).attr('transform', function (d, i) {
+    if (i > 0) {
+      var currenty = x(d.date);
+      var previousy = x(newConf.data[i - 1].date);
+      if (currenty - previousy < 20) {
+        if (newConf.data[i - 1].pos) {
+          d.pos = newConf.data[i - 1].pos + 1;
+        } else {
+          d.pos = 1;
+        }
+        return 'translate(' + 0 + ',' + -25 * d.pos + ')';
+      }
     }
-    d3.event.stopPropagation();
+  }).attr('cy', 120)
+  // .on('click', (circle) => {
+  //   if (newConf.onClick) {
+  //     newConf.onClick.apply(circle);
+  //   }
+  //   d3.event.stopPropagation();
+  // })
+  .attr('r', 0).transition()
+  // .ease(d3.easeCubicOut)
+  // .duration(500)
+  .attr('r', 8);
+
+  focus.selectAll('circle').on('click', function (circle) {
+    d3.select(this).transition().ease(d3.easeBounceOut).duration(500).attr('r', 25).transition().duration(500).call(function () {
+      if (newConf.onClick) {
+        newConf.onClick.apply(circle);
+      }
+      // d3.event.stopPropagation();
+    }).delay(500).attr('r', 8);
+    // d3.event.stopPropagation();
   });
+
+  // focus.selectAll('circle')
+  //   .on('mouseover', function(circle) {
+  //     d3.select(this)
+  //       .transition()
+  //       .ease(d3.easeElastic)
+  //       .duration(500)
+  //       .attr('r', 20)
+  //       .delay(500)
+  //       .attr('r', 8)
+  // });
 
   if (newConf.timeFormat && newConf.timeFormat !== '') {
     xAxis.tickFormat(function (d) {
@@ -181,113 +209,39 @@ function updateData(newConf) {
   }
 
   // if (newConf.intervals || newConf.dateRange) {
-  svg.select('.axis--x').transition(t).call(xAxis);
+  svg.select('.axis--x').transition().duration(500).call(xAxis);
   // }
-
-  // circles
-  //   .data(newConf.data)
-  //   .attr('class', 'dot2')
-  //   .enter()
-  //   .append('circle')
-  //   .attr('r', 5)
-  //   .attr('cx', (d) => x(d.date))
-  //   .attr('cy', 50);
-
-  // circles
-  //   .attr('class', 'dot2')
-  //   .data(newConf.data)
-  //   // .enter()
-  //   // .append('circle')
-  //   // .attr('r', 5)
-  //   // .attr('cx', (d) => x(d.date))
-  //   // // .attr('x', (d) => x(d.date))
-  //   // .attr('cy', 50);
-
-  //   circles
-  //     .enter()
-  //     .append('circle')
-
-  //   circles
-  //     .transition(t)
-  //     .attr('r', 5)
-  //     .attr('cy', 20)
-  //     .attr('cx', (d) => d.date);
-
-  //   circles
-  //     .exit()
-  //     .remove();
-
-
-  // // Edit dots
-  // circles
-  //   // .enter()
-
-  // .append('circle')
-  // .attr('r', 5)
-  // .attr('cy', 50)
-
-  //   // .data(conf2.data)
-  //   .transition(t)
-  //   // .duration(750)
-  //   // .attr('d', (newConf.data))
-  //   .attr('cx', (d) => x(d.date))
-  //   ;
-
-  // let zoom = d3.zoom().on('zoom', zoomed);
-
-  // let transform = d3.event.transform;
-
-  // // rescale the x linear scale so that we can draw the top axis
-  // let xNewScale = transform.rescaleX(x);
-  // xAxis.scale(xNewScale);
-  // // gTopAxis.call(xTopAxis);
-
-  // // draw the circles in their new positions
-  // circles.attr('cx', function(d) { return transform.applyX(x(d)); });
 }
 
-var conf2 = {
-  dateRange: [(0, _moment2.default)(), (0, _moment2.default)().add(1, 'month')],
-  // timeFormat: '',
-  intervals: 'Month', // Day, Week, Month, Year
-  data: [{ date: (0, _moment2.default)().add(5, 'hours'), label: 'test1' }, { date: (0, _moment2.default)().add(2, 'days'), label: 'test2' }, { date: new Date('May 2017'), label: 'test3' }, { date: new Date('15 May 2017'), label: 'test4' }, { date: new Date('Aug 2017'), label: 'test5' }, { date: new Date('Sep 2017'), label: 'test6' }, { date: new Date('Jan 2018'), label: 'test7' }],
-  callback: function callback() {
-    alert(this.label);
-  }
-};
+updateData(conf);
 
 document.querySelectorAll('.interval').forEach(function (e) {
   e.addEventListener('click', function (e) {
     var typeInt = e.target.getAttribute('data-interval');
     var ticksInterval = e.target.getAttribute('data-ticks-interval');
     var timeFormat = e.target.getAttribute('data-time-format');
-    conf2.timeFormat = timeFormat;
-    conf2.intervals = ticksInterval;
+    conf.timeFormat = timeFormat;
+    conf.intervals = ticksInterval;
 
-    var d0 = (0, _moment2.default)();
-    var d1 = (0, _moment2.default)().add(1, typeInt);
-
-    conf2.dateRange = [d0, d1];
-    updateData(conf2);
+    conf.dateRange = [(0, _moment2.default)(), (0, _moment2.default)().add(1, typeInt)];
+    updateData(conf);
   }, false);
 });
 
-var days = 365;
+document.querySelector('.move-left').addEventListener('click', function (e) {
+  var diff = conf.dateRange[1] - conf.dateRange[0];
 
-document.querySelector('.zoom-in').addEventListener('click', function (e) {
-  var d0 = (0, _moment2.default)();
-  var d1 = (0, _moment2.default)().add(50, 'days');
-
-  conf2.dateRange = [d0, d1];
-  updateData(conf2);
+  conf.dateRange[0].subtract(diff);
+  conf.dateRange[1].subtract(diff);
+  updateData(conf);
 }, false);
 
-document.querySelector('.zoom-out').addEventListener('click', function (e) {
-  var d0 = (0, _moment2.default)();
-  var d1 = (0, _moment2.default)().subtract(50, 'days');
+document.querySelector('.move-right').addEventListener('click', function (e) {
+  var diff = conf.dateRange[1] - conf.dateRange[0];
 
-  conf2.dateRange = [d0, d1];
-  updateData(conf2);
+  conf.dateRange[0].add(diff);
+  conf.dateRange[1].add(diff);
+  updateData(conf);
 }, false);
 
 /***/ }),
