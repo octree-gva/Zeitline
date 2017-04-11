@@ -6,5 +6,8 @@
   },
   "globals": {
     "d3": true
+  },
+  "parserOptions": {
+      "sourceType": "module"
   }
 }
