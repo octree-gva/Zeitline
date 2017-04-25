@@ -7,16 +7,17 @@
     "test": "test"
   },
   "dependencies": {
-    "d3": "^4.7.4",
+    "d3": "^4.8.0",
     "moment": "^2.18.1"
   },
   "devDependencies": {
+    "@types/d3": "^4.7.0",
     "babel-core": "^6.24.0",
-    "babel-loader": "^6.4.1",
-    "babel-preset-env": "^1.2.2",
-    "eslint": "^3.18.0",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.4.0",
+    "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
-    "webpack": "^2.3.1"
+    "webpack": "^2.4.1"
   },
   "scripts": {
     "dev": "webpack",
