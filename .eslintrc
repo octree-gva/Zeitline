@@ -5,6 +5,7 @@
     "es6": true
   },
   "globals": {
+    "require": true,
     "d3": true
   },
   "parserOptions": {
