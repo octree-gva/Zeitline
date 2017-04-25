@@ -2,12 +2,12 @@
 <meta charset="utf-8">
 <style>
 .dot {
-  fill: #6be;
+  fill: #4249ae;
   transition: fill .2s ease-out;
 }
 
 .dot:hover {
-  fill: #6e9;
+  fill: #5d8;
   /*r: 15;*/
 }
 
@@ -28,6 +28,13 @@
 
 .dots :hover circle {
   fill: red;
+}
+
+.reference-line {
+  stroke: #ee7d79;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 8;
+  stroke-width: 2;
 }
 
 button {
@@ -52,13 +59,28 @@ button {
   text-align: center;
 }
 
+.axis.axis--x .domain {
+  stroke: #e4e4e4;
+  stroke-width: 3;
+}
+
+.axis.axis--x .tick text {
+  opacity: .6;
+}
+
+.axis.axis--x .tick line {
+  transform: translateY(-9px);
+  stroke: rgba(200, 200, 200, .8);
+  stroke-width: 1;
+}
+
 body {
   transition: background-color .3s ease;
 }
 </style>
 <body>
   <div class="wrapper">
-    <svg width="700" height="180"></svg>
+    <svg width="950" height="180"></svg>
 
     <div class="controlbar">
       <button class="move-left"><</button>
