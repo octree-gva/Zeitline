@@ -9,52 +9,37 @@ let conf = {
   timeFormat: '%B',
   ticksIntervals: 'Month', // Day, Week, Month, Year
   intervals: [
-    [moment().add(8, 'months'), moment().add(12, 'months'), 300],
-    [moment().add(20, 'months'), moment().add(25, 'months'), 100],
-    [moment().add(30, 'months'), moment().add(31, 'months'), 20],
+    [moment().add(8, 'months'), moment().add(10, 'months'), 200],
+    // [moment().add(20, 'months'), moment().add(25, 'months'), 100],
+    // [moment().add(30, 'months'), moment().add(31, 'months'), 20],
   ],
   data: [
-    {date: moment().add(1, 'hours'), label: 'a'},
-    {date: moment().add(1, 'months'), label: 'a'},
-    {date: moment().add(2, 'months'), label: 'a'},
-    {date: moment().add(3, 'months'), label: 'a'},
-    {date: moment().add(4, 'months'), label: 'a'},
-    {date: moment().add(5, 'months'), label: 'a'},
-    {date: moment().add(6, 'months'), label: 'a'},
-    {date: moment().add(7, 'months'), label: 'a'},
-    {date: moment().add(8, 'months'), label: 'a'},
-    {date: moment().add(9, 'months'), label: 'a'},
-    {date: moment().add(10, 'months'), label: 'a'},
-    {date: moment().add(11, 'months'), label: 'a'},
-    {date: moment().add(12, 'months'), label: 'a'},
-    {date: moment().add(4, 'years'), label: 'a'},
-
-    // {date: moment().add(10, 'hours'), label: 'test1'},
-    // {date: moment().add(2, 'days'), label: 'test2'},
-    // {date: new Date('29 Apr 2017'), label: 'test3a'},
-    // {date: new Date('29 Apr 2017'), label: 'test3b'},
-    // {date: new Date('1 May 2017'), label: 'test3c'},
-    // {date: new Date('10 May 2017'), label: 'test3d'},
-    // {date: new Date('25 May 2017'), label: 'test4'},
-    // {date: new Date('25 May 2017'), label: 'test4B'},
-    // {date: new Date('30 May 2017'), label: 'test4C'},
-    // {date: new Date('10 Jun 2017'), label: 'test_Jun1'},
-    // {date: new Date('15 Jun 2017'), label: 'test_Jun2'},
-    // {date: new Date('10 Aug 2017'), label: 'test5'},
-    // {date: new Date('Sep 2017'), label: 'test6'},
-    // {date: new Date('10 Oct 2017'), label: 'test6'},
-    // {date: new Date('24 Dec 2017'), label: 'test7'},
-    // {date: new Date('31 Dec 2017'), label: 'test8'},
-    // {date: new Date('Jan 2018'), label: 'test9'},
-    // {date: new Date('Feb 2018'), label: 'test9'},
-    // {date: new Date('10 May 2018'), label: 'test10'},
-    // {date: new Date('10 May 2018'), label: 'test11'},
-    // {date: new Date('25 May 2018'), label: 'test13'},
-    // {date: new Date('Aug 2018'), label: 'test12'},
-    // {date: new Date('Jan 2019'), label: 'test13'},
-    // {date: new Date('Jan 2021'), label: 'test14'},
-    // {date: new Date('Jan 2022'), label: 'test15'},
-    // {date: new Date('Jan 2030'), label: 'test16'},
+    {date: moment().add(10, 'hours'), label: 'test1'},
+    {date: moment().add(2, 'days'), label: 'test2'},
+    {date: new Date('29 Apr 2017'), label: 'test3a'},
+    {date: new Date('29 Apr 2017'), label: 'test3b'},
+    {date: new Date('1 May 2017'), label: 'test3c'},
+    {date: new Date('10 May 2017'), label: 'test3d'},
+    {date: new Date('25 May 2017'), label: 'test4'},
+    {date: new Date('25 May 2017'), label: 'test4B'},
+    {date: new Date('30 May 2017'), label: 'test4C'},
+    {date: new Date('10 Jun 2017'), label: 'test_Jun1'},
+    {date: new Date('15 Jun 2017'), label: 'test_Jun2'},
+    {date: new Date('10 Aug 2017'), label: 'test5'},
+    {date: new Date('Sep 2017'), label: 'test6'},
+    {date: new Date('10 Oct 2017'), label: 'test6'},
+    {date: new Date('24 Dec 2017'), label: 'test7'},
+    {date: new Date('31 Dec 2017'), label: 'test8'},
+    {date: new Date('Jan 2018'), label: 'test9'},
+    {date: new Date('Feb 2018'), label: 'test9'},
+    {date: new Date('10 May 2018'), label: 'test10'},
+    {date: new Date('10 May 2018'), label: 'test11'},
+    {date: new Date('25 May 2018'), label: 'test13'},
+    {date: new Date('Aug 2018'), label: 'test12'},
+    {date: new Date('Jan 2019'), label: 'test13'},
+    {date: new Date('Jan 2021'), label: 'test14'},
+    {date: new Date('Jan 2022'), label: 'test15'},
+    {date: new Date('Jan 2030'), label: 'test16'},
   ],
   onClick: function() {
     console.log(this);
@@ -70,29 +55,36 @@ const margin = {top: 20, right: 20, bottom: 25, left: 30};
 const width = +svg.attr('width') - margin.left - margin.right;
 const height = +svg.attr('height') - margin.top - margin.bottom;
 
-const dates = conf.data.map((d) => d.date);
-
 const intervalsSum = conf.intervals.reduce((sum, interval) => sum + interval[2], 0);
 
 const xMain = d3.scaleTime()
-  .domain(d3.extent(dates))
+  .domain(d3.extent(conf.dateRange))
   .range([0, width - intervalsSum]);
 
-let pivots = [];
-let eaten = 0;
-conf.intervals.forEach((interval) => {
-  pivots.push(xMain(interval[0]) + eaten);
-  pivots.push(xMain(interval[0]) + interval[2] + eaten); // Add width
-
-  eaten += xMain(interval[0]) - xMain(interval[1]) + interval[2];
-});
+const pivots = conf.intervals.reduce((res, interval) => {
+  const xInterpolate = xMain(interval[0]);
+  return {
+    pivots: res.pivots.concat([
+      xInterpolate + res.eaten,
+      xInterpolate + interval[2] + res.eaten,
+    ]),
+    eaten: res.eaten + xInterpolate - xMain(interval[1]) + interval[2],
+  };
+}, {
+  pivots: [],
+  eaten: 0,
+}).pivots;
 
 const range = [0, ...pivots, width];
 const domain = conf.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
 const x = d3.scaleTime()
-  .domain([dates[0], ...domain, dates[dates.length - 1]])
-  .range(range); // pivots
+  .domain([
+    d3.extent(conf.dateRange)[0],
+    ...domain,
+    d3.extent(conf.dateRange)[1],
+  ])
+  .range(range); // all pivots
 
 // timeDay, timeWeek, timeMonth, timeYear
 const xAxis = d3.axisBottom(x)
@@ -126,17 +118,6 @@ range.forEach((pivot, index) => {
       .attr('y1', height)
       .attr('y2', height - 50);
 });
-
-
-// focus
-//   .selectAll('text')
-//   .data(conf.data)
-//   .append('text')
-//   .attr('transform', (d) => {
-//     // console.log(d)
-//     return 'translate(' + x(d.date) + ', 0)';
-//   })
-//   .text((d) => d.label);
 
 // let t = d3.transition()
 //     .duration(500)
