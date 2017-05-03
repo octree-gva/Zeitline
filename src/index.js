@@ -8,8 +8,6 @@ const defaults = {
   ],
   timeFormat: '%B',
   ticksIntervals: 'Month',
-  intervals: [
-  ],
   data: [
   ],
   onClick: function() {
@@ -19,32 +17,98 @@ const defaults = {
 export default class Timeline {
 
   constructor(conf) {
-    // this.conf = conf;
-    Object.assign(this, defaults, conf);
-
+    this.setConf(conf);
     this.init();
   }
 
+  /**
+   * Initialize timeline
+   */
   init() {
     this.svg = d3.select('svg');
     this.margin = {top: 20, right: 20, bottom: 25, left: 30};
     this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
     this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
+    this.timeline = this.svg.append('g')
+        .attr('class', 'timeline')
+        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
   }
 
+  /**
+   * Set timeline configuration
+   *
+   * @param {object} conf
+   */
+  setConf(conf) {
+    // Override the default configuration
+    Object.assign(this, defaults, conf);
+  }
+
+  /**
+   * Render x axis
+   */
   renderAxis() {
+    const pivots = this.getPivots(this.dateRange, this.intervals);
+
+    const range = [0, ...pivots, this.width];
+    const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
+
+    // Create polylinear scale time (from range A to range B with intervals in between)
+    this.x = d3.scaleTime()
+      .domain([
+        d3.extent(this.dateRange)[0],
+        ...domain,
+        d3.extent(this.dateRange)[1],
+      ])
+      .range(range); // all pivots
+
+    // Create axis with the given tick interval
+    this.xAxis = d3.axisBottom(this.x)
+      .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
+      .tickPadding(-5)
+      .tickSize(18);
+      // .tickFormat(d3.time.format('%Y'),)
+
+    // Draw axis
+    this.timeline.append('g')
+        .attr('class', 'axis axis--x')
+        .attr('transform', 'translate(0,' + this.height + ')')
+        .call(this.xAxis);
+
+    // Show intervals separations
+    range.forEach((pivot) => {
+      this.timeline
+        .append('line')
+        .attr('class', 'linear reference-line')
+          .attr('x1', +pivot)
+          .attr('x2', +pivot)
+          .attr('y1', this.height)
+          .attr('y2', this.height - 50);
+    });
+  }
+
+  /**
+   * Compute pivots for intervals based on dateRange
+   *
+   * @param {array} dateRange
+   * @param {array} intervals
+   * @return {array} List of pivots (in px)
+   */
+  getPivots(dateRange, intervals) {
     // Sum intervals size in px
-    const intervalsSum = this.intervals.reduce((sum, interval) => sum + interval[2], 0);
+    const intervalsSum = intervals.reduce((sum, interval) => sum + interval[2], 0);
 
     // Sum intervals duration
-    const intervalsDateSum = this.intervals
+    const intervalsDateSum = intervals
       .reduce((duration, interval) => duration.add(interval[1] - interval[0]), moment.duration(0));
 
+    // Create the main scale without intervals
     const xMain = d3.scaleTime()
-      .domain(d3.extent([this.dateRange[0], this.dateRange[1] - intervalsDateSum]))
+      .domain(d3.extent([dateRange[0], dateRange[1] - intervalsDateSum]))
       .range([0, this.width - intervalsSum]);
 
-    const pivots = this.intervals.reduce((res, interval) => {
+    // Compute each pivot
+    return intervals.reduce((res, interval) => {
       const xInterpolate = xMain(interval[0]);
       return {
         pivots: res.pivots.concat([
@@ -58,109 +122,31 @@ export default class Timeline {
       pivots: [],
       eaten: 0,
     }).pivots;
-
-    const range = [0, ...pivots, this.width];
-    const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
-
-    this.x = d3.scaleTime()
-      .domain([
-        d3.extent(this.dateRange)[0],
-        ...domain,
-        d3.extent(this.dateRange)[1],
-      ])
-      .range(range); // all pivots
-
-    // timeDay, timeWeek, timeMonth, timeYear
-    this.xAxis = d3.axisBottom(this.x)
-      .ticks(d3[`time${this.ticksIntervals}`])
-      .tickPadding(-5)
-      .tickSize(18);
-      // .tickFormat(d3.time.format('%Y'),)
-
-    this.svg.append('defs').append('clipPath')
-        .attr('id', 'clip')
-        .append('rect')
-        .attr('width', this.width)
-        .attr('height', this.height);
-
-    this.focus = this.svg.append('g')
-        .attr('class', 'focus')
-        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-
-    this.focus.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', 'translate(0,' + this.height + ')')
-        .call(this.xAxis);
-
-    // Show intervals separations
-    range.forEach((pivot, index) => {
-      this.focus
-        .append('line')
-        .attr('class', 'linear reference-line')
-          .attr('x1', +pivot)
-          .attr('x2', +pivot)
-          .attr('y1', this.height)
-          .attr('y2', this.height - 50);
-    });
   }
 
   /**
-   * Update data
+   * Render data as circles on the timeline
    *
-   * @param {object} newConf
+   * @param {array} data
    */
-  update(newConf) {
-    // Range
-    if (newConf.dateRange) {
-      // x.domain(d3.extent(newConf.dateRange));
-      // x.domain(newConf.dateRange);
-    }
-
-    // Intervals
-    if (newConf.ticksIntervals) {
-      this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
-    }
-
-    this.focus.selectAll('circle')
+  renderData(data) {
+    this.timeline.selectAll('circle')
       // .exit()
       .remove();
 
-    let that = this;
-
-    this.focus.selectAll('circle')
-      .data(newConf.data)
+    this.timeline.selectAll('circle')
+      .data(data)
       .enter()
       .append('circle')
       .attr('class', 'dot')
       .attr('cx', (d) => this.x(d.date))
-      .attr('transform', function(d, i) {
-        if (i > 0) {
-          let currenty = that.x(d.date);
-          let previousy = that.x(newConf.data[i-1].date);
-          if (currenty - previousy < 15) {
-            if (newConf.data[i-1].pos) {
-              d.pos = newConf.data[i-1].pos + 1;
-            } else {
-              d.pos = 1;
-            }
-            return 'translate(' + 0 + ',' + -15 * d.pos + ')';
-          }
-        }
-      })
-      .attr('cy', 120)
-      // .on('click', (circle) => {
-      //   if (newConf.onClick) {
-      //     newConf.onClick.apply(circle);
-      //   }
-      //   d3.event.stopPropagation();
-      // })
+      .attr('cy', this.height)
       .attr('r', 0)
       .transition()
-      // .ease(d3.easeCubicOut)
-      // .duration(500)
-      .attr('r', 6);
+      .attr('r', 5);
 
-    this.focus.selectAll('circle')
+    let that = this;
+    this.timeline.selectAll('circle')
       .on('click', function(circle) {
         d3.select(this)
           .transition()
@@ -170,15 +156,44 @@ export default class Timeline {
           .transition()
           .duration(500)
           .call(() => {
-            if (newConf.onClick) {
-              newConf.onClick.apply(circle);
+            if (that.onClick) {
+              that.onClick.apply(circle);
             }
             // d3.event.stopPropagation();
           })
           .delay(500)
-          .attr('r', 6); // reset size
-        // d3.event.stopPropagation();
+          .attr('r', 5); // reset size
     });
+  }
+
+  /**
+   * Update data
+   *
+   * @param {object} Configuration
+   */
+  update(newConf) {
+    this.setConf(newConf);
+
+    // Range
+    if (newConf.dateRange) {
+      this.x.domain(d3.extent(newConf.dateRange));
+
+      // TODO
+      // if (newConf.intervals) {
+      //   const pivots = this.getPivots(newConf.dateRange, newConf.intervals);
+      //   const range = [0, ...pivots, this.width];
+      //   this.x.range(range);
+      // }
+    }
+
+    // Intervals
+    if (newConf.ticksIntervals) {
+      this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
+    }
+
+    // this.renderAxis();
+
+    this.renderData(newConf.data);
 
     if (newConf.timeFormat && newConf.timeFormat !== '') {
       this.xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
@@ -195,8 +210,12 @@ export default class Timeline {
     // }
   }
 
+  /**
+   * Render timeline
+   */
   render() {
     this.renderAxis();
+    this.renderData(this.data);
   }
 }
 
@@ -253,9 +272,9 @@ let conf = {
   },
 };
 
-let t = new Timeline();
+let t = new Timeline(conf);
 t.render();
-t.update(conf);
+// t.update(conf);
 
 document.querySelectorAll('.interval').forEach((e) => {
   e.addEventListener('click', (e) => {
