@@ -14,8 +14,19 @@ const defaults = {
   },
 };
 
+/**
+ * Timeline class
+ *
+ * @export
+ * @class Timeline
+ */
 export default class Timeline {
 
+  /**
+   * Creates an instance of Timeline
+   *
+   * @param {object} conf Configuration
+   */
   constructor(conf) {
     this.setConf(conf);
     this.init();
@@ -26,15 +37,16 @@ export default class Timeline {
    */
   init() {
     this.svg = d3.select('svg');
-    this.margin = {top: 20, right: 20, bottom: 25, left: 30};
+    this.margin = {top: 20, right: 20, bottom: 20, left: 20};
     this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
     this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
+    this.positionY = this.height / 1.4;
     this.timeline = this.svg.append('g')
         .attr('class', 'timeline')
         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
     this.axis = this.timeline.append('g')
         .attr('class', 'axis axis--x')
-        .attr('transform', 'translate(0,' + this.height + ')');
+        .attr('transform', 'translate(0,' + this.positionY + ')');
   }
 
   /**
@@ -52,7 +64,6 @@ export default class Timeline {
    */
   renderAxis() {
     const pivots = this.getPivots(this.dateRange, this.intervals);
-
     const range = [0, ...pivots, this.width];
     const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
@@ -68,8 +79,8 @@ export default class Timeline {
     // Create axis with the given tick interval
     this.xAxis = d3.axisBottom(this.x)
       .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
-      .tickPadding(-5)
-      .tickSize(18);
+      .tickPadding(-70)
+      .tickSize(20);
       // .tickFormat(d3.time.format('%Y'),)
 
     // Draw axis
@@ -77,7 +88,6 @@ export default class Timeline {
       .transition()
       .duration(500)
       .call(this.xAxis);
-
 
     // Remove old intervals separation if needed
     this.timeline.selectAll('.reference-line')
@@ -88,10 +98,10 @@ export default class Timeline {
       this.timeline
         .append('line')
         .attr('class', 'linear reference-line')
-          .attr('x1', +pivot)
-          .attr('x2', +pivot)
-          .attr('y1', this.height)
-          .attr('y2', this.height - 50);
+          .attr('x1', +pivot - 0.5)
+          .attr('x2', +pivot - 0.5)
+          .attr('y1', this.positionY - 30)
+          .attr('y2', this.positionY + 30);
     });
   }
 
@@ -148,7 +158,7 @@ export default class Timeline {
       .append('circle')
       .attr('class', 'dot')
       .attr('cx', (d) => this.x(d.date))
-      .attr('cy', this.height)
+      .attr('cy', this.positionY)
       .attr('r', 0)
       .transition()
       .attr('r', 5);
@@ -198,7 +208,6 @@ export default class Timeline {
     if (newConf.ticksIntervals) {
       this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
     }
-
 
     this.renderData(newConf.data);
 

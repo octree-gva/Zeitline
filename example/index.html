@@ -11,10 +11,6 @@
   /*r: 15;*/
 }
 
-.dot2 {
-  fill: #e99;
-}
-
 .zoom {
   cursor: move;
   fill: none;
@@ -33,8 +29,8 @@
 .reference-line {
   stroke: #ee7d79;
   shape-rendering: crispEdges;
-  stroke-dasharray: 8;
-  stroke-width: 2;
+  stroke-dasharray: 6.7;
+  stroke-width: 1.5;
 }
 
 button {
@@ -61,7 +57,7 @@ button {
 
 .axis.axis--x .domain {
   stroke: #e4e4e4;
-  stroke-width: 3;
+  stroke-width: 4;
 }
 
 .axis.axis--x .tick text {
@@ -69,8 +65,8 @@ button {
 }
 
 .axis.axis--x .tick line {
-  transform: translateY(-9px);
-  stroke: rgba(200, 200, 200, .8);
+  transform: translateY(-10px);
+  stroke: rgba(180, 180, 180, .5);
   stroke-width: 1;
 }
 
@@ -80,7 +76,7 @@ body {
 </style>
 <body>
   <div class="wrapper">
-    <svg width="950" height="180"></svg>
+    <svg width="900" height="100"></svg>
 
     <div class="controlbar">
       <button class="move-left"><</button>
