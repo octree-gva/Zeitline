@@ -32,6 +32,9 @@ export default class Timeline {
     this.timeline = this.svg.append('g')
         .attr('class', 'timeline')
         .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+    this.axis = this.timeline.append('g')
+        .attr('class', 'axis axis--x')
+        .attr('transform', 'translate(0,' + this.height + ')');
   }
 
   /**
@@ -70,12 +73,17 @@ export default class Timeline {
       // .tickFormat(d3.time.format('%Y'),)
 
     // Draw axis
-    this.timeline.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', 'translate(0,' + this.height + ')')
-        .call(this.xAxis);
+    this.axis
+      .transition()
+      .duration(500)
+      .call(this.xAxis);
 
-    // Show intervals separations
+
+    // Remove old intervals separation if needed
+    this.timeline.selectAll('.reference-line')
+      .remove();
+
+    // Draw intervals separation
     range.forEach((pivot) => {
       this.timeline
         .append('line')
@@ -169,7 +177,7 @@ export default class Timeline {
   /**
    * Update data
    *
-   * @param {object} Configuration
+   * @param {object} newConf Configuration
    */
   update(newConf) {
     this.setConf(newConf);
@@ -191,7 +199,6 @@ export default class Timeline {
       this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
     }
 
-    // this.renderAxis();
 
     this.renderData(newConf.data);
 
@@ -203,10 +210,11 @@ export default class Timeline {
     }
 
     // if (newConf.ticksIntervals || newConf.dateRange) {
-    this.svg.select('.axis--x')
-      .transition()
-      .duration(500)
-      .call(this.xAxis);
+    this.renderAxis();
+    // this.axis
+    //   .transition()
+    //   .duration(500)
+    //   .call(this.xAxis);
     // }
   }
 
