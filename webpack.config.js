@@ -1,9 +1,9 @@
 const path = require('path');
 
 const config = {
-  entry: './src/index.js',
+  entry: './src/example.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'), // eslint-disable-line
     filename: 'd3-timeline.bundle.js',
   },
   module: {
@@ -23,4 +23,4 @@ const config = {
   },
 };
 
-module.exports = config;
+module.exports = config; // eslint-disable-line
