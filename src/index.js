@@ -1,10 +1,9 @@
 import * as d3 from 'd3';
-import moment from 'moment';
 
 const defaults = {
   dateRange: [
-    moment('2017-01-01'),
-    moment('2018-01-01'),
+    new Date(2017, 1, 1),
+    new Date(2018, 1, 1),
   ],
   timeFormat: '%B',
   ticksIntervals: 'Month',
@@ -118,7 +117,7 @@ export default class Timeline {
 
     // Sum intervals duration
     const intervalsDateSum = intervals
-      .reduce((duration, interval) => duration.add(interval[1] - interval[0]), moment.duration(0));
+      .reduce((duration, interval) => duration += interval[1] - interval[0], 0);
 
     // Create the main scale without intervals
     const xMain = d3.scaleTime()
