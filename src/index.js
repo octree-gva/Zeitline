@@ -9,6 +9,8 @@ const defaults = {
   ticksIntervals: 'Month',
   data: [
   ],
+  intervals: [
+  ],
   onClick: function() {
   },
 };
@@ -208,7 +210,6 @@ export default class Timeline {
       this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
     }
 
-    this.renderData(newConf.data);
 
     if (newConf.timeFormat && newConf.timeFormat !== '') {
       this.xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
@@ -224,6 +225,8 @@ export default class Timeline {
     //   .duration(500)
     //   .call(this.xAxis);
     // }
+
+    this.renderData(newConf.data);
   }
 
   /**
