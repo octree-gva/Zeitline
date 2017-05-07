@@ -1,6 +1,3 @@
-import Timeline from './index';
-import moment from 'moment';
-
 let conf = {
   dateRange: [
     moment('2017-01-01'),
@@ -50,38 +47,38 @@ let conf = {
   },
 };
 
-let t = new Timeline(conf);
+let t = new Timeline.default(conf);
 t.render();
-// t.update(conf);
+t.update(conf);
 
-document.querySelectorAll('.interval').forEach((e) => {
-  e.addEventListener('click', (e) => {
-    const typeInt = e.target.getAttribute('data-interval');
-    const ticksInterval = e.target.getAttribute('data-ticks-interval');
-    const timeFormat = e.target.getAttribute('data-time-format');
-    conf.timeFormat = timeFormat;
-    conf.ticksIntervals = ticksInterval;
+// document.querySelectorAll('.interval').forEach((e) => {
+//   e.addEventListener('click', (e) => {
+//     const typeInt = e.target.getAttribute('data-interval');
+//     const ticksInterval = e.target.getAttribute('data-ticks-interval');
+//     const timeFormat = e.target.getAttribute('data-time-format');
+//     conf.timeFormat = timeFormat;
+//     conf.ticksIntervals = ticksInterval;
 
-    conf.dateRange = [
-      moment(),
-      moment().add(1, typeInt),
-    ];
-    t.update(conf);
-  }, false);
-});
+//     conf.dateRange = [
+//       moment(),
+//       moment().add(1, typeInt),
+//     ];
+//     t.update(conf);
+//   }, false);
+// });
 
-document.querySelector('.move-left').addEventListener('click', (e) => {
-  const diff = conf.dateRange[1] - conf.dateRange[0];
+// document.querySelector('.move-left').addEventListener('click', (e) => {
+//   const diff = conf.dateRange[1] - conf.dateRange[0];
 
-  conf.dateRange[0] -= diff;
-  conf.dateRange[1] -= diff;
-  t.update(conf);
-}, false);
+//   conf.dateRange[0] -= diff;
+//   conf.dateRange[1] -= diff;
+//   t.update(conf);
+// }, false);
 
-document.querySelector('.move-right').addEventListener('click', (e) => {
-  const diff = conf.dateRange[1] - conf.dateRange[0];
+// document.querySelector('.move-right').addEventListener('click', (e) => {
+//   const diff = conf.dateRange[1] - conf.dateRange[0];
 
-  conf.dateRange[0] += diff;
-  conf.dateRange[1] += diff;
-  t.update(conf);
-}, false);
+//   conf.dateRange[0] += diff;
+//   conf.dateRange[1] += diff;
+//   t.update(conf);
+// }, false);

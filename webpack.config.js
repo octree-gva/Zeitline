@@ -1,10 +1,9 @@
-const path = require('path');
-
 const config = {
-  entry: './src/example.js',
+  entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'), // eslint-disable-line
-    filename: 'd3-timeline.bundle.js',
+    filename: './dist/d3-timeline.bundle.js',
+    library: 'Timeline',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [

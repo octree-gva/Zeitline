@@ -2,7 +2,8 @@
   "name": "d3-timeline",
   "description": "D3 Timeline",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "dist/d3-timeline.bundle.js",
+  "module": "src/index.js",
   "directories": {
     "test": "test"
   },
@@ -11,16 +12,18 @@
     "moment": "^2.18.1"
   },
   "devDependencies": {
-    "@types/d3": "^4.7.0",
+    "@types/d3": "^4.8.0",
     "babel-core": "^6.24.0",
     "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
-    "webpack": "^2.4.1"
+    "webpack": "^2.5.1",
+    "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
-    "dev": "webpack",
+    "build": "webpack",
+    "dev": "webpack-dev-server",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
