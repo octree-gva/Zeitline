@@ -1,25 +1,25 @@
-const path = require('path');
-
 const config = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'd3-timeline.bundle.js'
+    filename: './dist/d3-timeline.bundle.js',
+    library: 'Timeline',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        exclude: /(node_modules|test)/,
+        exclude: /(node_modules|tests|dist)/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env']
-          }
-        }
-      }
-    ]
-  }
+            presets: ['env'],
+            cacheDirectory: true,
+          },
+        },
+      },
+    ],
+  },
 };
 
-module.exports = config;
+module.exports = config; // eslint-disable-line

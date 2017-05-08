@@ -11,3 +11,30 @@ npm install d3-timeline
 ## API Reference
 
 ## Tests
+
+
+## Dev
+
+Install the dependencies
+
+```
+npm install
+or
+yarn install
+```
+
+### Running the dev server
+
+```
+yarn dev
+```
+
+The project is then served on http://localhost:8080/
+
+### Build the project
+
+```
+yarn build
+```
+
+The project will be build in `./dist/d3-timeline.bundle.js`
