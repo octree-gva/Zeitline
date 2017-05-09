@@ -1,4 +1,6 @@
-# D3 Timeline
+# Zeitline
+
+A D3 Timeline
 
 [![license](https://img.shields.io/github/license/octree-gva/d3-timeline.svg?style=flat-square)]()
 

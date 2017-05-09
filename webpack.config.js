@@ -1,8 +1,8 @@
 const config = {
   entry: './src/index.js',
   output: {
-    filename: './dist/d3-timeline.bundle.js',
-    library: 'Timeline',
+    filename: './dist/zeitline.bundle.js',
+    library: 'Zeitline',
     libraryTarget: 'umd',
   },
   module: {
