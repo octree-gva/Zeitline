@@ -3,11 +3,12 @@ let conf = {
     moment('2017-01-01'),
     moment('2018-01-01'),
   ],
-  timeFormat: '%B',
-  ticksIntervals: 'Month', // Day, Week, Month, Year
+  timeFormat: '%B %e',
+  // ticksIntervals: 'Month', // Day, Week, Month, Year
   intervals: [
     [moment('2017-04-01'), moment('2017-06-01'), 350],
     [moment('2017-08-01'), moment('2017-10-01'), 50],
+    [moment('2018-08-01'), moment('2018-10-01'), 150],
     // [moment().add(7, 'months'), moment().add(10, 'months'), 100],
   ],
   data: [
