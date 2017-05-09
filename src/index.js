@@ -90,20 +90,23 @@ export default class Timeline {
       .duration(500)
       .call(this.xAxis);
 
-    // Remove old intervals separation if needed
-    this.timeline.selectAll('.reference-line')
-      .remove();
+    let lines = this.timeline.selectAll('.reference-line')
+      .data(range, (d) => +d);
 
     // Draw intervals separation
-    range.forEach((pivot) => {
-      this.timeline
-        .append('line')
-        .attr('class', 'linear reference-line')
-          .attr('x1', +pivot - 0.5)
-          .attr('x2', +pivot - 0.5)
-          .attr('y1', this.positionY - 30)
-          .attr('y2', this.positionY + 30);
-    });
+    lines
+      .enter()
+      .append('line')
+      .attr('class', 'linear reference-line')
+        .attr('x1', (pivot) => pivot - 0.5)
+        .attr('x2', (pivot) => pivot - 0.5)
+        .attr('y1', this.positionY - 30)
+        .attr('y2', this.positionY + 30);
+
+    // Remove old intervals separation if needed
+    lines
+      .exit()
+      .remove();
   }
 
   /**
@@ -149,12 +152,11 @@ export default class Timeline {
    * @param {array} data
    */
   renderData(data) {
-    this.timeline.selectAll('circle')
-      // .exit()
-      .remove();
+    let circles = this.timeline.selectAll('circle')
+      .data(data, (d) => d);
 
-    this.timeline.selectAll('circle')
-      .data(data)
+    // Draw circles
+    circles
       .enter()
       .append('circle')
       .attr('class', 'dot')
@@ -183,6 +185,11 @@ export default class Timeline {
           .delay(500)
           .attr('r', 5); // reset size
     });
+
+    // Remove out of frame circles
+    circles
+      .exit()
+      .remove();
   }
 
   /**
