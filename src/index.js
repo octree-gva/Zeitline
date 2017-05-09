@@ -81,7 +81,7 @@ export default class Timeline {
     this.xAxis = d3.axisBottom(this.x)
       // .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat(d3.timeFormat(this.timeFormat))
-      .tickValues(this.x.domain())
+      .tickValues([...this.x.domain(), new Date()])
       .tickPadding(-70)
       .tickSize(20);
 
@@ -103,6 +103,18 @@ export default class Timeline {
         .attr('x2', (pivot) => pivot - 0.5)
         .attr('y1', this.positionY - 30)
         .attr('y2', this.positionY + 30);
+
+    // Add special reference line for today
+    let todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
+      .data([this.x(new Date())], (d) => d);
+
+    todayLine.enter()
+      .append('line')
+      .attr('class', 'linear reference-line reference-line-today')
+        .attr('x1', (pivot) => pivot - 0.5)
+        .attr('x2', (pivot) => pivot - 0.5)
+        .attr('y1', this.positionY - 30)
+        .attr('y2', this.positionY);
 
     // Remove old intervals separation if needed
     lines
