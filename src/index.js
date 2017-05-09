@@ -166,10 +166,9 @@ export default class Timeline {
       .transition()
       .attr('r', 5);
 
-    let that = this;
     this.timeline.selectAll('circle')
-      .on('click', function(circle) {
-        d3.select(this)
+      .on('click', (circle) => {
+        d3.select(d3.event.target)
           .transition()
           .ease(d3.easeBounceOut)
           .duration(500)
@@ -177,8 +176,8 @@ export default class Timeline {
           .transition()
           .duration(500)
           .call(() => {
-            if (that.onClick) {
-              that.onClick.apply(circle);
+            if (this.onClick) {
+              this.onClick.apply(circle);
             }
             // d3.event.stopPropagation();
           })
