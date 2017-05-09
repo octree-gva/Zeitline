@@ -1,7 +1,7 @@
 const config = {
   entry: './src/index.js',
   output: {
-    filename: './dist/zeitline.bundle.js',
+    filename: './dist/zeitline.bundle.min.js',
     library: 'Zeitline',
     libraryTarget: 'umd',
   },

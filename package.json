@@ -22,7 +22,7 @@
     "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p",
     "dev": "webpack-dev-server",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
