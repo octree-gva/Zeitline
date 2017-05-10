@@ -98,8 +98,8 @@ export default class Timeline {
       .enter()
       .append('line')
       .attr('class', 'linear reference-line')
-        .attr('x1', (pivot) => pivot - 0.5)
-        .attr('x2', (pivot) => pivot - 0.5)
+        .attr('x1', (pivot) => pivot + .5)
+        .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
         .attr('y2', this.positionY + 30);
 
@@ -110,8 +110,8 @@ export default class Timeline {
     todayLine.enter()
       .append('line')
       .attr('class', 'linear reference-line reference-line-today')
-        .attr('x1', (pivot) => pivot - 0.5)
-        .attr('x2', (pivot) => pivot - 0.5)
+        .attr('x1', (pivot) => pivot + .5)
+        .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
         .attr('y2', this.positionY);
 
