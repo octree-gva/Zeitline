@@ -65,7 +65,6 @@ export default class Timeline {
    */
   renderAxis() {
     const pivots = this.getPivots(this.dateRange, this.intervals);
-    const range = [0, ...pivots, this.width];
     const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
     // Create polylinear scale time (from range A to range B with intervals in between)
@@ -75,7 +74,7 @@ export default class Timeline {
         ...domain,
         d3.extent(this.dateRange)[1],
       ])
-      .range(range); // all pivots
+      .range([0, ...pivots, this.width]); // all pivots
 
     // Create axis with the given tick interval
     this.xAxis = d3.axisBottom(this.x)
@@ -92,7 +91,7 @@ export default class Timeline {
       .call(this.xAxis);
 
     let lines = this.timeline.selectAll('.reference-line')
-      .data(range, (d) => +d);
+      .data(pivots, (d) => +d);
 
     // Draw intervals separation
     lines
