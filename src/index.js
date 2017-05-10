@@ -44,10 +44,13 @@ export default class Timeline {
     this.positionY = this.height / 1.4;
     this.timeline = this.svg.append('g')
         .attr('class', 'timeline')
-        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-    this.axis = this.timeline.append('g')
+        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+    this.axisLabels = this.timeline.append('g')
         .attr('class', 'axis axis--x')
-        .attr('transform', 'translate(0,' + this.positionY + ')');
+        .attr('transform', `translate(0, ${this.positionY})`);
+    this.axisTicks = this.timeline.append('g')
+        .attr('class', 'axis axis--x')
+        .attr('transform', `translate(0, ${this.positionY})`);
   }
 
   /**
@@ -77,25 +80,35 @@ export default class Timeline {
       .range([0, ...pivots, this.width]); // all pivots
 
     // Create axis with the given tick interval
-    this.xAxis = d3.axisBottom(this.x)
+    const xAxisLabel = d3.axisBottom(this.x)
       // .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat(d3.timeFormat(this.timeFormat))
-      .tickValues([...this.x.domain(), new Date()])
+      .tickValues([new Date(), ...this.x.domain()])
+      .tickPadding(-50)
+      .tickSize(0);
+
+    const xAxisTicks = d3.axisBottom(this.x)
+      .tickFormat('')
       .tickPadding(-70)
       .tickSize(20);
 
     // Draw axis
-    this.axis
+    this.axisLabels
       .transition()
       .duration(500)
-      .call(this.xAxis);
+      .call(xAxisLabel);
+
+    // Draw axis
+    this.axisTicks
+      .transition()
+      .duration(500)
+      .call(xAxisTicks);
 
     let lines = this.timeline.selectAll('.reference-line')
       .data(pivots, (d) => +d);
 
     // Draw intervals separation
-    lines
-      .enter()
+    lines.enter()
       .append('line')
       .attr('class', 'linear reference-line')
         .attr('x1', (pivot) => pivot + .5)
@@ -116,8 +129,7 @@ export default class Timeline {
         .attr('y2', this.positionY);
 
     // Remove old intervals separation if needed
-    lines
-      .exit()
+    lines.exit()
       .remove();
   }
 
@@ -228,12 +240,12 @@ export default class Timeline {
     //   this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
     // }
 
-    if (newConf.timeFormat && newConf.timeFormat !== '') {
-      this.xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
-    } else {
-      // Reset default format
-      this.xAxis.tickFormat(null);
-    }
+    // if (newConf.timeFormat && newConf.timeFormat !== '') {
+    //   // this.xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
+    // } else {
+    //   // Reset default format
+    //   // this.xAxis.tickFormat(null);
+    // }
 
     // if (newConf.ticksIntervals || newConf.dateRange) {
     this.renderAxis();
