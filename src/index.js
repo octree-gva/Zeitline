@@ -85,12 +85,14 @@ export default class Timeline {
       .tickFormat(d3.timeFormat(this.timeFormat))
       .tickValues([new Date(), ...this.x.domain()])
       .tickPadding(-50)
-      .tickSize(0);
+      .tickSize(0)
+      .tickSizeOuter(.5);
 
     const xAxisTicks = d3.axisBottom(this.x)
       .tickFormat('')
       .tickPadding(-70)
-      .tickSize(20);
+      .tickSize(20)
+      .tickSizeOuter(.5);
 
     // Draw axis
     this.axisLabels
@@ -173,7 +175,7 @@ export default class Timeline {
   /**
    * Render data as circles on the timeline
    *
-   * @param {array} data
+   * @param {array} data Array of objects
    */
   renderData(data) {
     let circles = this.timeline.selectAll('circle')
