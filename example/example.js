@@ -48,7 +48,7 @@ let conf = {
   },
 };
 
-let t = new Zeitline.default(conf);
+let t = new Zeitline.Timeline(conf);
 t.render();
 t.update(conf);
 
