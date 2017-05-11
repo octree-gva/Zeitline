@@ -13,6 +13,12 @@ const defaults = {
   ],
   onClick: function() {
   },
+  margin: {
+    top: 20,
+    right: 20,
+    bottom: 20,
+    left: 20,
+  },
 };
 
 /**
@@ -38,7 +44,6 @@ export default class Timeline {
    */
   init() {
     this.svg = d3.select('svg');
-    this.margin = {top: 20, right: 20, bottom: 20, left: 20};
     this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
     this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
     this.positionY = this.height / 1.4;
