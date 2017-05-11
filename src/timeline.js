@@ -86,7 +86,7 @@ export default class Timeline {
     const xAxisLabel = d3.axisBottom(this.x)
       // .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat(d3.timeFormat(this.timeFormat))
-      .tickValues([new Date(), ...this.x.domain()])
+      .tickValues([new Date(), ...domain])
       .tickPadding(-50)
       .tickSize(0)
       .tickSizeOuter(.5);
