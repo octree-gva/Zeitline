@@ -1,15 +1,16 @@
 {
-  "name": "d3-timeline",
-  "description": "D3 Timeline",
+  "name": "zeitline",
+  "description": "Zeitline",
   "version": "0.0.0",
   "main": "dist/d3-timeline.bundle.js",
   "module": "src/index.js",
   "directories": {
-    "test": "test"
+    "lib": "src",
+    "test": "test",
+    "example": "example"
   },
   "dependencies": {
-    "d3": "^4.8.0",
-    "moment": "^2.18.1"
+    "d3": "^4.8.0"
   },
   "devDependencies": {
     "@types/d3": "^4.8.0",
@@ -22,7 +23,9 @@
     "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
-    "build": "webpack -p",
+    "build": "webpack && NODE_ENV=production webpack",
+    "build:umd": "webpack",
+    "build:umd:min": "NODE_ENV=production webpack",
     "dev": "webpack-dev-server",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"

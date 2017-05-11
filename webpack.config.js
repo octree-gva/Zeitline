@@ -1,7 +1,13 @@
+const path = require('path');
+const webpack = require('webpack');
+
+const production = process.env.NODE_ENV === 'production'; // eslint-disable-line
+
 const config = {
   entry: './src/index.js',
   output: {
-    filename: './dist/zeitline.bundle.min.js',
+    path: path.resolve(__dirname, 'dist'), // eslint-disable-line
+    filename: production ? 'zeitline.bundle.min.js' : 'zeitline.bundle.js',
     library: 'Zeitline',
     libraryTarget: 'umd',
   },
@@ -9,7 +15,7 @@ const config = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /(node_modules|tests|dist)/,
+        exclude: /(node_modules|test|dist)/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -20,6 +26,9 @@ const config = {
       },
     ],
   },
+  plugins: production ? [
+    new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
+  ] : [],
 };
 
-module.exports = config; // eslint-disable-line
+module.exports = config;
