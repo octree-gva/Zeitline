@@ -185,12 +185,13 @@ export default class Timeline {
     circles
       .enter()
       .append('circle')
-      .attr('class', 'dot')
-      .attr('cx', (d) => this.x(d.date))
-      .attr('cy', this.positionY)
-      .attr('r', 0)
-      .transition()
-      .attr('r', 5);
+        .attr('class', 'dot')
+        .attr('cx', (d) => this.x(d.date))
+        .attr('cy', this.positionY + .5)
+      .merge(circles)
+        .attr('r', 0)
+        .transition()
+        .attr('r', 4);
 
     this.timeline.selectAll('circle')
       .on('click', (circle) => {
@@ -208,7 +209,7 @@ export default class Timeline {
             // d3.event.stopPropagation();
           })
           .delay(500)
-          .attr('r', 5); // reset size
+          .attr('r', 4); // reset size
     });
 
     // Remove out of frame circles
