@@ -7,7 +7,7 @@ const defaults = {
     new Date(2018, 1, 1),
   ],
   timeFormat: '%B',
-  // ticksIntervals: 'Month',
+  ticksIntervals: 'Month',
   data: [],
   intervals: [],
   onClick: () => {},
@@ -84,7 +84,6 @@ export default class Timeline {
 
     // Create axis with the given tick interval
     const xAxisLabel = d3.axisBottom(this.x)
-      // .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat(d3.timeFormat(this.timeFormat))
       .tickValues([new Date(), ...domain])
       .tickPadding(-50)
@@ -92,6 +91,7 @@ export default class Timeline {
       .tickSizeOuter(.5);
 
     const xAxisTicks = d3.axisBottom(this.x)
+      .ticks(d3[`time${this.ticksIntervals}`]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat('')
       .tickPadding(-70)
       .tickSize(20)
