@@ -19,6 +19,8 @@
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
+    "jsdom": "^10.1.0",
+    "mocha": "^3.3.0",
     "webpack": "^2.5.1",
     "webpack-dev-server": "^2.4.5"
   },
@@ -28,7 +30,7 @@
     "build:umd:min": "NODE_ENV=production webpack",
     "dev": "webpack-dev-server",
     "watch": "webpack --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

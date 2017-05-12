@@ -104,3 +104,14 @@ yarn build
 ```
 
 The project will be build in `./dist/d3-timeline.bundle.js`
+
+
+## Tests
+
+To run the tests, use npm or yarn
+
+```
+npm run test
+or
+yarn test
+```

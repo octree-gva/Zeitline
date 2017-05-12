@@ -118,7 +118,7 @@ export default class Timeline {
     // Draw intervals separation
     lines.enter()
       .append('line')
-      .attr('class', 'linear reference-line')
+      .attr('class', 'linear reference-line reference-interval')
         .attr('x1', (pivot) => pivot + .5)
         .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
