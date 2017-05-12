@@ -11,11 +11,9 @@ const defaults = {
   data: [],
   intervals: [],
   onClick: () => {},
-  margin: {
-    top: 20,
-    right: 20,
-    bottom: 20,
-    left: 20,
+  options: {
+      margin: {top: 20, right: 20, bottom: 20, left: 20},
+      animation: {time: 300, ease: d3.easePoly},
   },
 };
 
@@ -42,18 +40,22 @@ export default class Timeline {
    */
   init() {
     this.svg = d3.select('svg');
-    this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
-    this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
+    const {margin, animation} = this.options;
+    this.width = +this.svg.attr('width') - margin.left - margin.right;
+    this.height = +this.svg.attr('height') - margin.top - margin.bottom;
     this.positionY = this.height / 1.4;
     this.timeline = this.svg.append('g')
         .attr('class', 'timeline')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+        .attr('transform', `translate(${margin.left}, ${margin.top})`);
     this.axisLabels = this.timeline.append('g')
         .attr('class', 'axis axis--x')
         .attr('transform', `translate(0, ${this.positionY})`);
     this.axisTicks = this.timeline.append('g')
         .attr('class', 'axis axis--x')
         .attr('transform', `translate(0, ${this.positionY})`);
+    this.transition = d3.transition()
+      .duration(animation.time)
+      .ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
   }
 
   /**
@@ -99,14 +101,12 @@ export default class Timeline {
 
     // Draw axis
     this.axisLabels
-      .transition()
-      .duration(500)
+      .transition(this.transition)
       .call(xAxisLabel);
 
     // Draw axis
     this.axisTicks
-      .transition()
-      .duration(500)
+      .transition(this.transition)
       .call(xAxisTicks);
 
     let lines = this.timeline.selectAll('.reference-line')
@@ -193,18 +193,15 @@ export default class Timeline {
         .attr('cy', this.positionY + .5)
       .merge(circles)
         .attr('r', 0)
-        .transition()
+        .transition(this.transition)
         .attr('r', 4);
 
     this.timeline.selectAll('circle')
       .on('click', (circle) => {
         d3.select(d3.event.target)
-          .transition()
-          .ease(d3.easeBounceOut)
-          .duration(500)
+          .transition(this.transition)
           .attr('r', 15)
-          .transition()
-          .duration(500)
+          .transition(this.transition)
           .call(() => {
             if (this.onClick) {
               this.onClick.apply(circle);
@@ -272,8 +269,4 @@ export default class Timeline {
     this.renderData(this.data);
   }
 }
-
-// let t = d3.transition()
-//     .duration(500)
-//     .ease(d3.easeLinear);
 
