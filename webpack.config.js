@@ -1,4 +1,3 @@
-const path = require('path');
 const webpack = require('webpack');
 
 const production = process.env.NODE_ENV === 'production'; // eslint-disable-line
@@ -6,8 +5,7 @@ const production = process.env.NODE_ENV === 'production'; // eslint-disable-line
 const config = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'), // eslint-disable-line
-    filename: production ? 'zeitline.bundle.min.js' : 'zeitline.bundle.js',
+    filename: production ? './dist/zeitline.bundle.min.js' : './dist/zeitline.bundle.js',
     library: 'Zeitline',
     libraryTarget: 'umd',
   },
