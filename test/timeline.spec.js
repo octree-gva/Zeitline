@@ -1,7 +1,8 @@
 const fs = require('fs');
 const jsdom = require('jsdom');
-const assert = require('assert');
 const {JSDOM} = jsdom;
+const chai = require('chai');
+const assert = chai.assert;
 const Zeitline = fs.readFileSync('./dist/zeitline.bundle.js', {encoding: 'utf-8'});
 
 const dom = `<html>
@@ -22,7 +23,7 @@ describe('Timeline base', () => {
     it('should return an instance of Timeline', () => {
       let t = new window.Zeitline.Timeline();
 
-      return t instanceof window.Zeitline.Timeline;
+      assert.equal(t instanceof window.Zeitline.Timeline, true);
     });
 
     it('should have axis', () => {
@@ -82,14 +83,16 @@ describe('Timeline intervals', () => {
     assert.equal(separations.length, 2);
   });
 
-  it(`should have ${conf.intervals[0][2]}px between intervals`, () => {
+  it(`should have 200px between intervals`, () => {
     // cast in integer to avoid float error
-    assert.equal((intervalX(1) - intervalX(0)) | 0, conf.intervals[0][2]);
+    assert.equal((intervalX(1) - intervalX(0)) | 0, 200);
   });
 
-  // it('should render centered interval', () => {
-  //   const timelineWidth = window.document.querySelector('svg').getAttribute('width');
+  it('should render centered interval', () => {
+    const timelineWidth = window.document.querySelector('svg').getAttribute('width');
 
-  //   assert.equal(timelineWidth - (intervalX(0) + intervalX(1)) | 0, 0);
-  // });
+    // +-5 px near the center
+    assert.isAbove(timelineWidth - (intervalX(0) + intervalX(1)) | 0, -5);
+    assert.isBelow(timelineWidth - (intervalX(0) + intervalX(1)) | 0, 5);
+  });
 });

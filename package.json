@@ -10,6 +10,7 @@
     "example": "example"
   },
   "dependencies": {
+    "chai": "^3.5.0",
     "d3": "^4.8.0"
   },
   "devDependencies": {
