@@ -1,5 +1,9 @@
 {
   "env": {
-    "jest": true
+    "mocha": true
+  },
+  "globals": {
+    "require": true,
+    "exports": true
   }
 }

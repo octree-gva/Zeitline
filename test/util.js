@@ -1,6 +1,11 @@
 const fs = require('fs');
 const {JSDOM} = require('jsdom');
 
+/**
+ * Construct the window with a virtual dom
+ *
+ * @return {JSDOM}
+ */
 function getWindow() {
   const dom = `<html>
   <body>
@@ -26,4 +31,4 @@ exports.getWindowWithZeitline = (conf) => {
   timeline.render();
 
   return window;
-}
+};

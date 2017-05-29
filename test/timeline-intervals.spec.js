@@ -24,8 +24,8 @@ describe('Timeline intervals', () => {
     };
   });
 
-  let separations, window;
-
+  let window;
+  let separations;
   beforeEach(() => {
     window = util.getWindowWithZeitline(conf);
 
