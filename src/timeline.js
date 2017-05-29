@@ -261,7 +261,9 @@ export default class Timeline {
     //   .call(this.xAxis);
     // }
 
-    this.renderData(newConf.data);
+    if (newConf.data) {
+      this.renderData(newConf.data);
+    }
   }
 
   /**
