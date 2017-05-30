@@ -184,26 +184,56 @@ export default class Timeline {
    * @param {array} data Array of objects
    */
   renderData(data) {
-    let circles = this.timeline.selectAll('circle')
-      .data(data, (d) => d);
+    let dataTime = data
+      .map((d) => [this.x(d.date), 0, d.label])
+      .sort((a, b) => a[0] - b[0]);
 
-    // Draw circles
-    circles
+    const epsi = 12;
+    dataTime = dataTime.reduce(({firstInCluster, acc}, x, i, xs) => {
+      if (firstInCluster === null) {
+        firstInCluster = x[0];
+      } else if (Math.abs(x[0] - xs[i-1][0]) > epsi) {
+        acc.push([firstInCluster, xs[i-1][0] - firstInCluster]);
+        firstInCluster = x[0];
+      }
+
+      if (i + 1 === xs.length) {
+        acc.push([firstInCluster, x[0] - firstInCluster]);
+      }
+
+      return {
+        firstInCluster,
+        acc,
+      };
+    }, {
+      firstInCluster: null,
+      acc: [],
+    }).acc;
+
+    let events = this.timeline.selectAll('.event')
+      .data(dataTime, (d) => d);
+
+    events
       .enter()
-      .append('circle')
-        .attr('class', 'dot')
-        .attr('cx', (d) => this.x(d.date))
-        .attr('cy', this.positionY + .5)
-      .merge(circles)
-        .attr('r', 0)
+      .append('rect')
+        .attr('class', 'event')
+        .attr('rx', 3)
+        .attr('ry', 3)
+        .attr('x', (d) => d[0] - 2.5)
+        .attr('y', this.positionY - 2.5)
+        .attr('width', (d) => 6 + d[1])
+        .attr('height', 6)
+      .merge(events)
+        .attr('height', 0)
         .transition(this.transition)
-        .attr('r', 4);
+        .attr('height', 6);
 
-    this.timeline.selectAll('circle')
+    // Draw events
+    this.timeline.selectAll('rect')
       .on('click', (circle) => {
         d3.select(d3.event.target)
           .transition(this.transition)
-          .attr('r', 15)
+          // .attr('height', 15)
           .transition(this.transition)
           .call(() => {
             if (this.onClick) {
@@ -211,12 +241,12 @@ export default class Timeline {
             }
             // d3.event.stopPropagation();
           })
-          .delay(500)
-          .attr('r', 4); // reset size
+          .delay(500);
+          // .attr('height', 6); // reset size
     });
 
-    // Remove out of frame circles
-    circles
+    // Remove out of frame events
+    events
       .exit()
       .remove();
   }
