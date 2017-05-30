@@ -162,15 +162,15 @@ export default class Timeline {
       .range([0, this.width - intervalsSum]);
 
     // Compute each pivot
-    return intervals.reduce((res, interval) => {
+    return intervals.reduce(({pivots, eaten}, interval) => {
       const xInterpolate = xMain(interval[0]);
       return {
-        pivots: res.pivots.concat([
-          xInterpolate + res.eaten,
-          xMain(interval[0]) + interval[2] + res.eaten,
+        pivots: pivots.concat([
+          xInterpolate + eaten,
+          xMain(interval[0]) + interval[2] + eaten,
         ]),
         // Intervals previously "eaten" (in px)
-        eaten: res.eaten + xInterpolate - xMain(interval[1]) + interval[2],
+        eaten: eaten + xInterpolate - xMain(interval[1]) + interval[2],
       };
     }, {
       pivots: [],
