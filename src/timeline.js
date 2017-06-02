@@ -52,7 +52,13 @@ export default class Timeline {
         .attr('transform', `translate(0, ${this.positionY})`);
     this.axisTicks = this.timeline.append('g')
         .attr('class', 'axis axis--x')
-        .attr('transform', `translate(0, ${this.positionY})`);
+        .attr('transform', `translate(0, ${this.positionY})`)
+        .on('click', () => {
+          this.onTimelineClick(
+            d3.mouse(d3.event.currentTarget)[0],
+            this.x.invert(d3.mouse(d3.event.currentTarget)[0])
+          );
+        });
     this.transition = d3.transition()
       .duration(animation.time)
       .ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
@@ -139,6 +145,15 @@ export default class Timeline {
     // Remove old intervals separation if needed
     lines.exit()
       .remove();
+  }
+
+  /**
+   * Register a callback on timeline click
+   *
+   * @param {any} callback
+   */
+  onTimelineClick(callback) {
+    this.onTimelineClick = callback;
   }
 
   /**
