@@ -188,13 +188,23 @@ export default class Timeline {
       .map((d) => [this.x(d.date), 0, d.label])
       .sort((a, b) => a[0] - b[0]);
 
-    const epsi = 12;
+    const epsilon = 80;
+    const maxSize = 15;
     dataTime = dataTime.reduce(({firstInCluster, acc}, x, i, xs) => {
       if (firstInCluster === null) {
         firstInCluster = x[0];
-      } else if (Math.abs(x[0] - xs[i-1][0]) > epsi) {
-        acc.push([firstInCluster, xs[i-1][0] - firstInCluster]);
-        firstInCluster = x[0];
+      } else {
+        // Squared difference between xi and xi+1
+        const intAB = Math.pow(x[0] - xs[i-1][0], 2);
+
+        // Difference between x0 and xi+1
+        const intAZ = xs[i-1][0] - firstInCluster;
+
+        if (intAB > epsilon || intAZ > maxSize) {
+          // We end the current cluster
+          acc.push([firstInCluster, intAZ]);
+          firstInCluster = x[0];
+        }
       }
 
       if (i + 1 === xs.length) {
