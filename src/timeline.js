@@ -213,20 +213,21 @@ export default class Timeline {
     let events = this.timeline.selectAll('.event')
       .data(dataTime, (d) => d);
 
+    const height = 2.5; // height of events circles
     events
       .enter()
       .append('rect')
         .attr('class', 'event')
-        .attr('rx', 3)
-        .attr('ry', 3)
-        .attr('x', (d) => d[0] - 2.5)
-        .attr('y', this.positionY - 2.5)
-        .attr('width', (d) => 6 + d[1])
-        .attr('height', 6)
+        .attr('rx', height)
+        .attr('ry', height)
+        .attr('x', (d) => d[0] - height + .5)
+        .attr('y', this.positionY - height + .5)
+        .attr('width', (d) => height * 2 + d[1])
+        .attr('height', height * 2)
       .merge(events)
         .attr('height', 0)
         .transition(this.transition)
-        .attr('height', 6);
+        .attr('height', height * 2);
 
     // Draw events
     this.timeline.selectAll('rect')
