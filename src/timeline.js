@@ -185,30 +185,30 @@ export default class Timeline {
    */
   renderData(data) {
     let dataTime = data
-      .map((d) => [this.x(d.date), 0, d.label])
+      .map((d) => [this.x(d.date), d.label])
       .sort((a, b) => a[0] - b[0]);
 
     const epsilon = 80;
     const maxSize = 15;
     dataTime = dataTime.reduce(({firstInCluster, acc}, x, i, xs) => {
       if (firstInCluster === null) {
-        firstInCluster = x[0];
+        firstInCluster = x;
       } else {
         // Squared difference between xi and xi+1
         const intAB = Math.pow(x[0] - xs[i-1][0], 2);
 
         // Difference between x0 and xi+1
-        const intAZ = xs[i-1][0] - firstInCluster;
+        const intAZ = xs[i-1][0] - firstInCluster[0];
 
         if (intAB > epsilon || intAZ > maxSize) {
           // We end the current cluster
-          acc.push([firstInCluster, intAZ]);
-          firstInCluster = x[0];
+          acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1]]);
+          firstInCluster = x;
         }
       }
 
       if (i + 1 === xs.length) {
-        acc.push([firstInCluster, x[0] - firstInCluster]);
+        acc.push([firstInCluster[0], x[0] - firstInCluster[0]]);
       }
 
       return {
@@ -241,14 +241,14 @@ export default class Timeline {
 
     // Draw events
     this.timeline.selectAll('rect')
-      .on('click', (circle) => {
+      .on('click', (event) => {
         d3.select(d3.event.target)
-          .transition(this.transition)
+          // .transition(this.transition)
           // .attr('height', 15)
           .transition(this.transition)
           .call(() => {
             if (this.onClick) {
-              this.onClick.apply(circle);
+              this.onClick.apply(event);
             }
             // d3.event.stopPropagation();
           })
