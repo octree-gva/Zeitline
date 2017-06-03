@@ -205,7 +205,7 @@ export default class Timeline {
 
     const epsilon = 80;
     const maxSize = 15;
-    dataTime = dataTime.reduce(({firstInCluster, acc}, x, i, xs) => {
+    dataTime = dataTime.reduce(({firstInCluster, eaten, acc}, x, i, xs) => {
       if (firstInCluster === null) {
         firstInCluster = x;
       } else {
@@ -217,8 +217,9 @@ export default class Timeline {
 
         if (intAB > epsilon || intAZ > maxSize) {
           // We end the current cluster
-          acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1]]);
+          acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1], eaten]);
           firstInCluster = x;
+          eaten = 0;
         }
       }
 
@@ -228,19 +229,33 @@ export default class Timeline {
 
       return {
         firstInCluster,
+        eaten: eaten + 1,
         acc,
       };
     }, {
       firstInCluster: null,
+      eaten: 0,
       acc: [],
     }).acc;
 
-    let events = this.timeline.selectAll('.event')
+    const events = this.timeline.selectAll('.event-group')
       .data(dataTime, (d) => d);
 
     const height = 2.5; // height of events circles
-    events
+
+    const eventsEnter = events
       .enter()
+      .append('g')
+        .attr('class', 'event-group');
+
+    eventsEnter
+      .filter((d) => d[4] > 1)
+      .append('text')
+        .attr('dx', (d) => d[0] + d[1] / 2 - 2)
+        .attr('dy', this.positionY - 8)
+        .text((d) => d[4] < 100 ? d[4] : '99+');
+
+    eventsEnter
       .append('rect')
         .attr('class', 'event')
         .attr('rx', height)
@@ -248,7 +263,9 @@ export default class Timeline {
         .attr('x', (d) => d[0] - height + .5)
         .attr('y', this.positionY - height + .5)
         .attr('width', (d) => height * 2 + d[1])
-        .attr('height', height * 2)
+        .attr('height', height * 2);
+
+    eventsEnter
       .merge(events)
         .attr('height', 0)
         .transition(this.transition)
