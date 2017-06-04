@@ -142,6 +142,8 @@ var Timeline = function () {
   _createClass(Timeline, [{
     key: 'init',
     value: function init() {
+      var _this = this;
+
       this.svg = d3.select('svg');
       var _options = this.options,
           margin = _options.margin,
@@ -152,7 +154,9 @@ var Timeline = function () {
       this.positionY = this.height / 1.4;
       this.timeline = this.svg.append('g').attr('class', 'timeline').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
       this.axisLabels = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')');
-      this.axisTicks = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')');
+      this.axisTicks = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')').on('click', function () {
+        _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
+      });
       this.transition = d3.transition().duration(animation.time).ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
     }
 
@@ -192,8 +196,8 @@ var Timeline = function () {
       // Create axis with the given tick interval
       var xAxisLabel = d3.axisBottom(this.x).tickFormat(d3.timeFormat(this.timeFormat)).tickValues([new Date()].concat(_toConsumableArray(domain))).tickPadding(-50).tickSize(0).tickSizeOuter(.5);
 
-      var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals]) // timeDay, timeWeek, timeMonth, timeYear
-      .tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
+      var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals] // timeDay, timeWeek, timeMonth, timeYear
+      ).tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
 
       // Draw axis
       this.axisLabels.transition(this.transition).call(xAxisLabel);
@@ -225,6 +229,18 @@ var Timeline = function () {
 
       // Remove old intervals separation if needed
       lines.exit().remove();
+    }
+
+    /**
+     * Register a callback on timeline click
+     *
+     * @param {any} callback
+     */
+
+  }, {
+    key: 'onTimelineClick',
+    value: function onTimelineClick(callback) {
+      this.onTimelineClick = callback;
     }
 
     /**
@@ -277,56 +293,85 @@ var Timeline = function () {
   }, {
     key: 'renderData',
     value: function renderData(data) {
-      var _this = this;
+      var _this2 = this;
 
       var dataTime = data.map(function (d) {
-        return [_this.x(d.date), 0, d.label];
+        return [_this2.x(d.date), d.label];
       }).sort(function (a, b) {
         return a[0] - b[0];
       });
 
-      var epsi = 12;
+      var epsilon = 80;
+      var maxSize = 15;
       dataTime = dataTime.reduce(function (_ref2, x, i, xs) {
         var firstInCluster = _ref2.firstInCluster,
+            eaten = _ref2.eaten,
             acc = _ref2.acc;
 
         if (firstInCluster === null) {
-          firstInCluster = x[0];
-        } else if (Math.abs(x[0] - xs[i - 1][0]) > epsi) {
-          acc.push([firstInCluster, xs[i - 1][0] - firstInCluster]);
-          firstInCluster = x[0];
+          firstInCluster = x;
+        } else {
+          // Squared difference between xi and xi+1
+          var intAB = Math.pow(x[0] - xs[i - 1][0], 2);
+
+          // Difference between x0 and xi+1
+          var intAZ = xs[i - 1][0] - firstInCluster[0];
+
+          if (intAB > epsilon || intAZ > maxSize) {
+            // We end the current cluster
+            acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i - 1][1], eaten]);
+            firstInCluster = x;
+            eaten = 0;
+          }
         }
 
         if (i + 1 === xs.length) {
-          acc.push([firstInCluster, x[0] - firstInCluster]);
+          acc.push([firstInCluster[0], x[0] - firstInCluster[0]]);
         }
 
         return {
           firstInCluster: firstInCluster,
+          eaten: eaten + 1,
           acc: acc
         };
       }, {
         firstInCluster: null,
+        eaten: 0,
         acc: []
       }).acc;
 
-      var events = this.timeline.selectAll('.event').data(dataTime, function (d) {
+      var events = this.timeline.selectAll('.event-group').data(dataTime, function (d) {
         return d;
       });
 
-      events.enter().append('rect').attr('class', 'event').attr('rx', 3).attr('ry', 3).attr('x', function (d) {
-        return d[0] - 2.5;
-      }).attr('y', this.positionY - 2.5).attr('width', function (d) {
-        return 6 + d[1];
-      }).attr('height', 6).merge(events).attr('height', 0).transition(this.transition).attr('height', 6);
+      var height = 2.5; // height of events circles
+
+      var eventsEnter = events.enter().append('g').attr('class', 'event-group');
+
+      eventsEnter.filter(function (d) {
+        return d[4] > 1;
+      }).append('text').attr('dx', function (d) {
+        return d[0] + d[1] / 2 - 2;
+      }).attr('dy', this.positionY - 8).text(function (d) {
+        return d[4] < 100 ? d[4] : '99+';
+      });
+
+      eventsEnter.append('rect').attr('class', 'event').attr('rx', height).attr('ry', height).attr('x', function (d) {
+        return d[0] - height + .5;
+      }).attr('y', this.positionY - height + .5).attr('width', function (d) {
+        return height * 2 + d[1];
+      }).attr('height', height * 2);
+
+      eventsEnter.merge(events).attr('height', 0).transition(this.transition).attr('height', height * 2);
 
       // Draw events
-      this.timeline.selectAll('rect').on('click', function (circle) {
-        d3.select(d3.event.target).transition(_this.transition)
+      this.timeline.selectAll('rect').on('click', function (event) {
+        d3.select(d3.event.target
+        // .transition(this.transition)
         // .attr('height', 15)
-        .transition(_this.transition).call(function () {
-          if (_this.onClick) {
-            _this.onClick.apply(circle);
+        ).transition(_this2.transition).call(function () {
+          if (_this2.onClick) {
+            _this2.onClick.apply(event);
           }
           // d3.event.stopPropagation();
         }).delay(500);
