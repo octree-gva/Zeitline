@@ -125,6 +125,7 @@ export default class Timeline {
 
     // Draw intervals separation
     lines.enter()
+      .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('line')
       .attr('class', 'linear reference-line reference-interval')
         .attr('x1', (pivot) => pivot + .5)
@@ -217,6 +218,7 @@ export default class Timeline {
 
         if (intAB > this.options.clustering.epsilon || intAZ > this.options.clustering.maxSize) {
           // We end the current cluster
+          // [firstEvent date (number), interval first-last events, first event label, current interval (number)]
           acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1], eaten]);
           firstInCluster = x;
           eaten = 0;
@@ -247,13 +249,14 @@ export default class Timeline {
         .attr('class', 'event-group');
 
     eventsEnter
-      .filter((d) => d[4] > 1)
+      .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
       .append('text')
         .attr('dx', (d) => d[0] + d[1] / 2 - 2)
         .attr('dy', this.positionY - 8)
         .text((d) => d[4] < 100 ? d[4] : '99+');
 
     eventsEnter
+      .filter((d) => d[0] > 0 && d[0] < this.width)
       .append('rect')
         .attr('class', 'event')
         .attr('rx', this.options.events.size)
