@@ -14,6 +14,8 @@ const defaults = {
   options: {
       margin: {top: 20, right: 20, bottom: 20, left: 20},
       animation: {time: 300, ease: d3.easePoly},
+      clustering: {maxSize: 15, epsilon: 20},
+      events: {size: 2},
   },
 };
 
@@ -203,8 +205,6 @@ export default class Timeline {
       .map((d) => [this.x(d.date), d.label])
       .sort((a, b) => a[0] - b[0]);
 
-    const epsilon = 80;
-    const maxSize = 15;
     dataTime = dataTime.reduce(({firstInCluster, eaten, acc}, x, i, xs) => {
       if (firstInCluster === null) {
         firstInCluster = x;
@@ -215,7 +215,7 @@ export default class Timeline {
         // Difference between x0 and xi+1
         const intAZ = xs[i-1][0] - firstInCluster[0];
 
-        if (intAB > epsilon || intAZ > maxSize) {
+        if (intAB > this.options.clustering.epsilon || intAZ > this.options.clustering.maxSize) {
           // We end the current cluster
           acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1], eaten]);
           firstInCluster = x;
@@ -241,8 +241,6 @@ export default class Timeline {
     const events = this.timeline.selectAll('.event-group')
       .data(dataTime, (d) => d);
 
-    const height = 2.5; // height of events circles
-
     const eventsEnter = events
       .enter()
       .append('g')
@@ -258,18 +256,18 @@ export default class Timeline {
     eventsEnter
       .append('rect')
         .attr('class', 'event')
-        .attr('rx', height)
-        .attr('ry', height)
-        .attr('x', (d) => d[0] - height + .5)
-        .attr('y', this.positionY - height + .5)
-        .attr('width', (d) => height * 2 + d[1])
-        .attr('height', height * 2);
+        .attr('rx', this.options.events.size)
+        .attr('ry', this.options.events.size)
+        .attr('x', (d) => d[0] - this.options.events.size + .5)
+        .attr('y', this.positionY - this.options.events.size + .5)
+        .attr('width', (d) => this.options.events.size * 2 + d[1])
+        .attr('height', this.options.events.size * 2);
 
     eventsEnter
       .merge(events)
         .attr('height', 0)
         .transition(this.transition)
-        .attr('height', height * 2);
+        .attr('height', this.options.events.size * 2);
 
     // Draw events
     this.timeline.selectAll('rect')
