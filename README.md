@@ -77,6 +77,12 @@ t.update({/* config */}); // update the timeline with a new configuration
 - **`options`** (`object`)
   - `margin` (`{top: number, right: number, bottom: number, left: number}`)
   - `animation` (`{time: number, ease: string}`): The ease propriety specifies the transition easing function for elements in the timeline, check [d3-ease documentation](https://github.com/d3/d3-ease#api-reference) for more information.
+  - `clustering`
+    - `maxSize: number`: Max size of cluster in pixels
+    - `epsilon: number`: Gravity between events when cluster
+  - `events`
+    - `size: number`: Size of events circles
+
 
 
 ## Dev
