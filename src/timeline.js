@@ -176,19 +176,28 @@ export default class Timeline {
 
     // Create the main scale without intervals
     const xMain = d3.scaleTime()
+      // Domain will be reduce from (date A to date Z) to (date A to (date Z - intervals time))
       .domain(d3.extent([dateRange[0], dateRange[1] - intervalsDateSum]))
+      // Range (size of the axis) will be reduce from full width to full width minus intervals size
       .range([0, this.width - intervalsSum]);
 
     // Compute each pivot
+    // A pivot represent the start or the end of an interval
     return intervals.reduce(({pivots, eaten}, interval) => {
-      const xInterpolate = xMain(interval[0]);
+      // Projection of the start of the given interval on the main axis along with the
+      // addition of the "eaten" intervals
+      const xInterpolate = xMain(interval[0]) + eaten;
+
+      // We calculate a new interval and add it to our pivots
       return {
         pivots: pivots.concat([
-          xInterpolate + eaten,
-          xMain(interval[0]) + interval[2] + eaten,
+          // Start of the interval
+          xInterpolate,
+          // End of the interval (start of the interval + size of the interval)
+          xInterpolate + interval[2],
         ]),
         // Intervals previously "eaten" (in px)
-        eaten: eaten + xInterpolate - xMain(interval[1]) + interval[2],
+        eaten: xInterpolate - xMain(interval[1]) + interval[2],
       };
     }, {
       pivots: [],
