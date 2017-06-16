@@ -42,13 +42,13 @@ t.render();
 
 ### Getting started
 
-To instanciate the timeline, simple import `Timeline` from `Zeitline`.
+To instantiate the timeline, simple import `Timeline` from `Zeitline`.
 An optional configuration can be passed in the constructor `Timeline(configuration: object)`.
 
 ```js
 import {Timeline} from 'Zeitline';
 
-let t = new Timeline({/* config */}); // instanciate the timeline with an optional configuration
+let t = new Timeline({/* config */}); // instantiate the timeline with an optional configuration
 ```
 
 To render the timeline, use the `render()` function.
@@ -57,7 +57,7 @@ To render the timeline, use the `render()` function.
 t.render(); // render the timeline
 ```
 
-To update the timline with a new configuration, use the `update(configuration: object)` function
+To update the timeline with a new configuration, use the `update(configuration: object)` function
 and pass the new configuration.
 
 ```js
