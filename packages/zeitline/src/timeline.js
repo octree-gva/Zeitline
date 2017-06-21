@@ -128,6 +128,7 @@ export default class Timeline {
     lines.enter()
       .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('line')
+      .attr('stroke', '#000')
       .attr('class', 'linear reference-line reference-interval')
         .attr('x1', (pivot) => pivot + .5)
         .attr('x2', (pivot) => pivot + .5)
@@ -251,6 +252,8 @@ export default class Timeline {
     }).acc;
 
     const events = this.timeline.selectAll('.event-group')
+      .style('font-size', '10px')
+      .style('font-family', 'sans-serif')
       .data(dataTime, (d) => d);
 
     const eventsEnter = events

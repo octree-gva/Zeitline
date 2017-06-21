@@ -109,7 +109,9 @@ var defaults = {
   onClick: function onClick() {},
   options: {
     margin: { top: 20, right: 20, bottom: 20, left: 20 },
-    animation: { time: 300, ease: d3.easePoly }
+    animation: { time: 300, ease: d3.easePoly },
+    clustering: { maxSize: 15, epsilon: 20 },
+    events: { size: 2 }
   }
 };
 
@@ -185,6 +187,8 @@ var Timeline = function () {
   }, {
     key: 'renderAxis',
     value: function renderAxis() {
+      var _this2 = this;
+
       var pivots = this.getPivots(this.dateRange, this.intervals);
       var domain = this.intervals.reduce(function (all, int) {
         return all.concat([int[0], int[1]]);
@@ -196,8 +200,8 @@ var Timeline = function () {
       // Create axis with the given tick interval
       var xAxisLabel = d3.axisBottom(this.x).tickFormat(d3.timeFormat(this.timeFormat)).tickValues([new Date()].concat(_toConsumableArray(domain))).tickPadding(-50).tickSize(0).tickSizeOuter(.5);
 
-      var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals] // timeDay, timeWeek, timeMonth, timeYear
-      ).tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
+      var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals]) // timeDay, timeWeek, timeMonth, timeYear
+      .tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
 
       // Draw axis
       this.axisLabels.transition(this.transition).call(xAxisLabel);
@@ -210,7 +214,9 @@ var Timeline = function () {
       });
 
       // Draw intervals separation
-      lines.enter().append('line').attr('class', 'linear reference-line reference-interval').attr('x1', function (pivot) {
+      lines.enter().filter(function (pivot) {
+        return pivot > 0 && pivot < _this2.width;
+      }).append('line').attr('class', 'linear reference-line reference-interval').attr('x1', function (pivot) {
         return pivot + .5;
       }).attr('x2', function (pivot) {
         return pivot + .5;
@@ -265,18 +271,31 @@ var Timeline = function () {
       }, 0);
 
       // Create the main scale without intervals
-      var xMain = d3.scaleTime().domain(d3.extent([dateRange[0], dateRange[1] - intervalsDateSum])).range([0, this.width - intervalsSum]);
+      var xMain = d3.scaleTime()
+      // Domain will be reduce from (date A to date Z) to (date A to (date Z - intervals time))
+      .domain(d3.extent([dateRange[0], dateRange[1] - intervalsDateSum]))
+      // Range (size of the axis) will be reduce from full width to full width minus intervals size
+      .range([0, this.width - intervalsSum]);
 
       // Compute each pivot
+      // A pivot represent the start or the end of an interval
       return intervals.reduce(function (_ref, interval) {
         var pivots = _ref.pivots,
             eaten = _ref.eaten;
 
-        var xInterpolate = xMain(interval[0]);
+        // Projection of the start of the given interval on the main axis along with the
+        // addition of the "eaten" intervals
+        var xInterpolate = xMain(interval[0]) + eaten;
+
+        // We calculate a new interval and add it to our pivots
         return {
-          pivots: pivots.concat([xInterpolate + eaten, xMain(interval[0]) + interval[2] + eaten]),
+          pivots: pivots.concat([
+          // Start of the interval
+          xInterpolate,
+          // End of the interval (start of the interval + size of the interval)
+          xInterpolate + interval[2]]),
           // Intervals previously "eaten" (in px)
-          eaten: eaten + xInterpolate - xMain(interval[1]) + interval[2]
+          eaten: xInterpolate - xMain(interval[1]) + interval[2]
         };
       }, {
         pivots: [],
@@ -293,16 +312,14 @@ var Timeline = function () {
   }, {
     key: 'renderData',
     value: function renderData(data) {
-      var _this2 = this;
+      var _this3 = this;
 
       var dataTime = data.map(function (d) {
-        return [_this2.x(d.date), d.label];
+        return [_this3.x(d.date), d.label];
       }).sort(function (a, b) {
         return a[0] - b[0];
       });
 
-      var epsilon = 80;
-      var maxSize = 15;
       dataTime = dataTime.reduce(function (_ref2, x, i, xs) {
         var firstInCluster = _ref2.firstInCluster,
             eaten = _ref2.eaten,
@@ -317,8 +334,9 @@ var Timeline = function () {
           // Difference between x0 and xi+1
           var intAZ = xs[i - 1][0] - firstInCluster[0];
 
-          if (intAB > epsilon || intAZ > maxSize) {
+          if (intAB > _this3.options.clustering.epsilon || intAZ > _this3.options.clustering.maxSize) {
             // We end the current cluster
+            // [firstEvent date (number), interval first-last events, first event label, current interval (number)]
             acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i - 1][1], eaten]);
             firstInCluster = x;
             eaten = 0;
@@ -344,34 +362,35 @@ var Timeline = function () {
         return d;
       });
 
-      var height = 2.5; // height of events circles
-
       var eventsEnter = events.enter().append('g').attr('class', 'event-group');
 
       eventsEnter.filter(function (d) {
         return d[4] > 1;
-      }).append('text').attr('dx', function (d) {
+      }) // Show the number on top of clusters with 2+ elements
+      .append('text').attr('dx', function (d) {
         return d[0] + d[1] / 2 - 2;
       }).attr('dy', this.positionY - 8).text(function (d) {
         return d[4] < 100 ? d[4] : '99+';
       });
 
-      eventsEnter.append('rect').attr('class', 'event').attr('rx', height).attr('ry', height).attr('x', function (d) {
-        return d[0] - height + .5;
-      }).attr('y', this.positionY - height + .5).attr('width', function (d) {
-        return height * 2 + d[1];
-      }).attr('height', height * 2);
+      eventsEnter.filter(function (d) {
+        return d[0] > 0 && d[0] < _this3.width;
+      }).append('rect').attr('class', 'event').attr('rx', this.options.events.size).attr('ry', this.options.events.size).attr('x', function (d) {
+        return d[0] - _this3.options.events.size + .5;
+      }).attr('y', this.positionY - this.options.events.size + .5).attr('width', function (d) {
+        return _this3.options.events.size * 2 + d[1];
+      }).attr('height', this.options.events.size * 2);
 
-      eventsEnter.merge(events).attr('height', 0).transition(this.transition).attr('height', height * 2);
+      eventsEnter.merge(events).attr('height', 0).transition(this.transition).attr('height', this.options.events.size * 2);
 
       // Draw events
       this.timeline.selectAll('rect').on('click', function (event) {
-        d3.select(d3.event.target
+        d3.select(d3.event.target)
         // .transition(this.transition)
         // .attr('height', 15)
-        ).transition(_this2.transition).call(function () {
-          if (_this2.onClick) {
-            _this2.onClick.apply(event);
+        .transition(_this3.transition).call(function () {
+          if (_this3.onClick) {
+            _this3.onClick.apply(event);
           }
           // d3.event.stopPropagation();
         }).delay(500);

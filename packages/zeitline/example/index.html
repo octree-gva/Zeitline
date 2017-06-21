@@ -12,11 +12,6 @@
   /*r: 15;*/
 }
 
-.event-group text {
-  opacity: 0.6;
-  font-size: 9px;
-  font-family: sans-serif;
-}
 
 .zoom {
   cursor: move;
@@ -63,17 +58,17 @@ button {
   text-align: center;
 }
 
-.axis.axis--x .domain {
+.axis--x .domain {
   stroke: #e4e4e4;
   stroke-width: 4;
   stroke-linecap: round;
 }
 
-.axis.axis--x .tick text {
+.axis--x .tick text, .event-group text {
   opacity: .6;
 }
 
-.axis.axis--x .tick line {
+.axis--x .tick line {
   transform: translateY(-10px);
   stroke: rgba(180, 180, 180, .5);
   stroke-width: 1;
