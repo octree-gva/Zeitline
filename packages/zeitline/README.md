@@ -69,6 +69,7 @@ t.update({/* config */}); // update the timeline with a new configuration
 - **`dateRange`** (`array<Date>`): Range of the timeline, from date A to date B.
 - **`data`** (`array<{date: Date, label: string}>`): Array of data to represent each dots on the timeline.
   - Example: `data: [{date: new Date(), label: 'First task'}, ...]`
+- **`selector`** (`string | HtmlElement`): Mount the timeline to the given Html node
 - **`intervals`** (`array<array>>`): To create intervals in the timeline. Add an array of Date A, Date B and then size in pixels.
   - Example: `intervals: [[new Date(2017, 1, 1'), new Date(2017, 3, 1), 200], ...]`
 - **`timeFormat`** (`string`): String to format the labels, check the [d3-time-format documentation](https://github.com/d3/d3-time-format#locale_format) for more information about the available formats.

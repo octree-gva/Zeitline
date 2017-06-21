@@ -6,6 +6,7 @@ const defaults = {
     new Date(2017, 1, 1),
     new Date(2018, 1, 1),
   ],
+  selector: 'svg',
   timeFormat: '%B',
   ticksIntervals: 'Month',
   data: [],
@@ -41,7 +42,7 @@ export default class Timeline {
    * Initialize timeline
    */
   init() {
-    this.svg = d3.select('svg');
+    this.svg = d3.select(this.selector);
     const {margin, animation} = this.options;
     this.width = +this.svg.attr('width') - margin.left - margin.right;
     this.height = +this.svg.attr('height') - margin.top - margin.bottom;
