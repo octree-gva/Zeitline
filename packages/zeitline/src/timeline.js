@@ -252,14 +252,14 @@ export default class Timeline {
     }).acc;
 
     const events = this.timeline.selectAll('.event-group')
-      .style('font-size', '10px')
-      .style('font-family', 'sans-serif')
       .data(dataTime, (d) => d);
 
     const eventsEnter = events
       .enter()
       .append('g')
-        .attr('class', 'event-group');
+        .attr('class', 'event-group')
+        .style('font-size', '10px')
+        .style('font-family', 'sans-serif');
 
     eventsEnter
       .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
