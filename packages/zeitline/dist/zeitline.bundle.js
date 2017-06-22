@@ -102,6 +102,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // Default configuration
 var defaults = {
   dateRange: [new Date(2017, 1, 1), new Date(2018, 1, 1)],
+  selector: 'svg',
   timeFormat: '%B',
   ticksIntervals: 'Month',
   data: [],
@@ -146,7 +147,7 @@ var Timeline = function () {
     value: function init() {
       var _this = this;
 
-      this.svg = d3.select('svg');
+      this.svg = d3.select(this.selector);
       var _options = this.options,
           margin = _options.margin,
           animation = _options.animation;
@@ -216,11 +217,33 @@ var Timeline = function () {
       // Draw intervals separation
       lines.enter().filter(function (pivot) {
         return pivot > 0 && pivot < _this2.width;
-      }).append('line').attr('class', 'linear reference-line reference-interval').attr('x1', function (pivot) {
+      }).append('line').attr('stroke', '#000').attr('stroke-width', '2').attr('class', 'linear reference-line reference-interval').attr('x1', function (pivot) {
         return pivot + .5;
       }).attr('x2', function (pivot) {
         return pivot + .5;
-      }).attr('y1', this.positionY - 30).attr('y2', this.positionY + 30);
+      }).attr('y1', this.positionY - 30).attr('y2', this.positionY + 30).call(d3.drag().on('drag', function () {
+        d3.select(this).attr('x1', d3.event.x).attr('x2', d3.event.x);
+      }).on('end', function (e) {
+        var i = void 0;
+        for (i = 0; i < pivots.length; ++i) {
+          if (pivots[i] === e) {
+            break;
+          }
+        }
+
+        var intervalIndex = Math.floor(i / 2);
+        var dateIndex = i % 2;
+        var diff = d3.event.x - pivots[i];
+
+        if (dateIndex === 0) {
+          _this2.intervals[intervalIndex][2] -= diff;
+        } else {
+          _this2.intervals[intervalIndex][2] += diff;
+        }
+
+        _this2.renderAxis();
+        _this2.renderData(_this2.data);
+      }));
 
       // Add special reference line for today
       var todayLine = this.timeline.selectAll('.reference-line-today.reference-line').data([this.x(new Date())], function (d) {
@@ -362,7 +385,7 @@ var Timeline = function () {
         return d;
       });
 
-      var eventsEnter = events.enter().append('g').attr('class', 'event-group');
+      var eventsEnter = events.enter().append('g').attr('class', 'event-group').style('font-size', '10px').style('font-family', 'sans-serif');
 
       eventsEnter.filter(function (d) {
         return d[4] > 1;

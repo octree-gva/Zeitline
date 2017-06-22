@@ -129,11 +129,39 @@ export default class Timeline {
       .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('line')
       .attr('stroke', '#000')
+      .attr('stroke-width', '2')
       .attr('class', 'linear reference-line reference-interval')
         .attr('x1', (pivot) => pivot + .5)
         .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
-        .attr('y2', this.positionY + 30);
+        .attr('y2', this.positionY + 30)
+      .call(d3.drag()
+      .on('drag', function() {
+        d3.select(this)
+          .attr('x1', d3.event.x)
+          .attr('x2', d3.event.x);
+      })
+      .on('end', (e) => {
+        let i;
+        for (i = 0; i < pivots.length; ++i) {
+          if (pivots[i] === e) {
+            break;
+          }
+        }
+
+        const intervalIndex = Math.floor(i / 2);
+        const dateIndex = i % 2;
+        const diff = d3.event.x - pivots[i];
+
+        if (dateIndex === 0) {
+          this.intervals[intervalIndex][2] -= diff;
+        } else {
+          this.intervals[intervalIndex][2] += diff;
+        }
+
+        this.renderAxis();
+        this.renderData(this.data);
+      }));
 
     // Add special reference line for today
     let todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
