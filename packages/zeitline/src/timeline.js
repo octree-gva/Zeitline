@@ -83,8 +83,10 @@ export default class Timeline {
   /**
    * Render x axis
    */
-  renderAxis() {
-    const pivots = this.getPivots(this.dateRange, this.intervals);
+  renderAxis(pivots = null) {
+    if (pivots === null) {
+      pivots = this.getPivots(this.dateRange, this.intervals);
+    }
     const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
     // Create polylinear scale time (from range A to range B with intervals in between)
@@ -142,24 +144,13 @@ export default class Timeline {
           .attr('x2', d3.event.x);
       })
       .on('end', (e) => {
-        let i;
-        for (i = 0; i < pivots.length; ++i) {
-          if (pivots[i] === e) {
-            break;
+        pivots.forEach((p, i) => {
+          if (p === e) {
+            pivots[i] = d3.event.x;
           }
-        }
+        });
 
-        const intervalIndex = Math.floor(i / 2);
-        const dateIndex = i % 2;
-        const diff = d3.event.x - pivots[i];
-
-        if (dateIndex === 0) {
-          this.intervals[intervalIndex][2] -= diff;
-        } else {
-          this.intervals[intervalIndex][2] += diff;
-        }
-
-        this.renderAxis();
+        this.renderAxis(pivots);
         this.renderData(this.data);
       }));
 

@@ -43,9 +43,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -73,11 +70,31 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Timeline = undefined;
+
+var _timeline = __webpack_require__(1);
+
+var _timeline2 = _interopRequireDefault(_timeline);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Timeline = _timeline2.default;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -190,7 +207,11 @@ var Timeline = function () {
     value: function renderAxis() {
       var _this2 = this;
 
-      var pivots = this.getPivots(this.dateRange, this.intervals);
+      var pivots = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      if (pivots === null) {
+        pivots = this.getPivots(this.dateRange, this.intervals);
+      }
       var domain = this.intervals.reduce(function (all, int) {
         return all.concat([int[0], int[1]]);
       }, []);
@@ -224,24 +245,13 @@ var Timeline = function () {
       }).attr('y1', this.positionY - 30).attr('y2', this.positionY + 30).call(d3.drag().on('drag', function () {
         d3.select(this).attr('x1', d3.event.x).attr('x2', d3.event.x);
       }).on('end', function (e) {
-        var i = void 0;
-        for (i = 0; i < pivots.length; ++i) {
-          if (pivots[i] === e) {
-            break;
+        pivots.forEach(function (p, i) {
+          if (p === e) {
+            pivots[i] = d3.event.x;
           }
-        }
+        });
 
-        var intervalIndex = Math.floor(i / 2);
-        var dateIndex = i % 2;
-        var diff = d3.event.x - pivots[i];
-
-        if (dateIndex === 0) {
-          _this2.intervals[intervalIndex][2] -= diff;
-        } else {
-          _this2.intervals[intervalIndex][2] += diff;
-        }
-
-        _this2.renderAxis();
+        _this2.renderAxis(pivots);
         _this2.renderData(_this2.data);
       }));
 
@@ -488,26 +498,6 @@ var Timeline = function () {
 }();
 
 exports.default = Timeline;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Timeline = undefined;
-
-var _timeline = __webpack_require__(0);
-
-var _timeline2 = _interopRequireDefault(_timeline);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.Timeline = _timeline2.default;
 
 /***/ }),
 /* 2 */
