@@ -123,7 +123,7 @@ export default class Timeline {
       .transition(this.transition)
       .call(xAxisTicks);
 
-    const lines = this.timeline.selectAll('.pivot-group')
+    const pivotsGroup = this.timeline.selectAll('.pivot-group')
       .data(pivots, (d) => +d);
 
     // Condition to avoid pivots overlapping
@@ -133,7 +133,7 @@ export default class Timeline {
     // Draw intervals separation
     const that = this;
     let lastX;
-    const linesGroupEnter = lines.enter()
+    const pivotsGroupEnter = pivotsGroup.enter()
       .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('g')
         .attr('class', 'pivot-group')
@@ -148,18 +148,18 @@ export default class Timeline {
               .attr('transform', `translate(${d3.event.x}, ${that.positionY - 30})`);
           }
         })
-        .on('end', function(x) {
+        .on('end', (x) => {
           const index = pivots.indexOf(x);
 
           if (isOverlapping(pivots, index, lastX, 9)) {
             pivots[index] = lastX;
-            that.renderAxis(pivots);
-            that.renderData(that.data);
+            this.renderAxis(pivots);
+            this.renderData(this.data);
           }
         })
       );
 
-    linesGroupEnter
+    pivotsGroupEnter
       .append('rect')
         .attr('fill', 'transparent')
         // .attr('class', 'event')
@@ -169,7 +169,7 @@ export default class Timeline {
         .attr('width', 18)
         .attr('height', 60);
 
-    linesGroupEnter
+    pivotsGroupEnter
       .append('line')
       .attr('stroke', '#000')
       .attr('stroke-width', '2')
@@ -180,6 +180,10 @@ export default class Timeline {
         // .attr('x2', (pivot) => pivot + .5)
         .attr('y1', 0)
         .attr('y2', 60);
+
+    // Remove old pivots if needed
+    pivotsGroup.exit()
+      .remove();
 
     // Add special reference line for today
     const todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
@@ -193,8 +197,7 @@ export default class Timeline {
         .attr('y1', this.positionY - 30)
         .attr('y2', this.positionY);
 
-    // Remove old intervals separation if needed
-    lines.exit()
+    todayLine.exit()
       .remove();
   }
 

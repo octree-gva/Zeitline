@@ -231,29 +231,51 @@ var Timeline = function () {
       // Draw axis
       this.axisTicks.transition(this.transition).call(xAxisTicks);
 
-      var lines = this.timeline.selectAll('.reference-line').data(pivots, function (d) {
+      var pivotsGroup = this.timeline.selectAll('.pivot-group').data(pivots, function (d) {
         return +d;
       });
 
-      // Draw intervals separation
-      lines.enter().filter(function (pivot) {
-        return pivot > 0 && pivot < _this2.width;
-      }).append('line').attr('stroke', '#000').attr('stroke-width', '2').attr('class', 'linear reference-line reference-interval').attr('x1', function (pivot) {
-        return pivot + .5;
-      }).attr('x2', function (pivot) {
-        return pivot + .5;
-      }).attr('y1', this.positionY - 30).attr('y2', this.positionY + 30).call(d3.drag().on('drag', function () {
-        d3.select(this).attr('x1', d3.event.x).attr('x2', d3.event.x);
-      }).on('end', function (e) {
-        pivots.forEach(function (p, i) {
-          if (p === e) {
-            pivots[i] = d3.event.x;
-          }
-        });
+      // Condition to avoid pivots overlapping
+      var isOverlapping = function isOverlapping(pivots, index, x, margin) {
+        return x - margin > (pivots[index - 1] || 0) && x + margin < (pivots[index + 1] || _this2.width);
+      };
 
-        _this2.renderAxis(pivots);
-        _this2.renderData(_this2.data);
+      // Draw intervals separation
+      var that = this;
+      var lastX = void 0;
+      var pivotsGroupEnter = pivotsGroup.enter().filter(function (pivot) {
+        return pivot > 0 && pivot < _this2.width;
+      }).append('g').attr('class', 'pivot-group').attr('transform', function (pivot) {
+        return 'translate(' + (pivot + .5) + ', ' + (_this2.positionY - 30) + ')';
+      }).call(d3.drag().on('drag', function (x) {
+        var index = pivots.indexOf(x);
+        if (isOverlapping(pivots, index, d3.event.x, 10)) {
+          lastX = d3.event.x;
+          d3.select(this).attr('class', 'pivot-group draggable').attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
+        }
+      }).on('end', function (x) {
+        var index = pivots.indexOf(x);
+
+        if (isOverlapping(pivots, index, lastX, 9)) {
+          pivots[index] = lastX;
+          _this2.renderAxis(pivots);
+          _this2.renderData(_this2.data);
+        }
       }));
+
+      pivotsGroupEnter.append('rect').attr('fill', 'transparent')
+      // .attr('class', 'event')
+      // .attr('x', (pivot) => pivot + .5)
+      // .attr('y', this.positionY - 30)
+      .attr('x', -9).attr('width', 18).attr('height', 60);
+
+      pivotsGroupEnter.append('line').attr('stroke', '#000').attr('stroke-width', '2').attr('class', 'linear reference-line reference-interval').attr('x1', 0).attr('x2', 0)
+      // .attr('x1', (pivot) => pivot + .5)
+      // .attr('x2', (pivot) => pivot + .5)
+      .attr('y1', 0).attr('y2', 60);
+
+      // Remove old pivots if needed
+      pivotsGroup.exit().remove();
 
       // Add special reference line for today
       var todayLine = this.timeline.selectAll('.reference-line-today.reference-line').data([this.x(new Date())], function (d) {
@@ -266,8 +288,7 @@ var Timeline = function () {
         return pivot + .5;
       }).attr('y1', this.positionY - 30).attr('y2', this.positionY);
 
-      // Remove old intervals separation if needed
-      lines.exit().remove();
+      todayLine.exit().remove();
     }
 
     /**
