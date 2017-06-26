@@ -123,39 +123,66 @@ export default class Timeline {
       .transition(this.transition)
       .call(xAxisTicks);
 
-    let lines = this.timeline.selectAll('.reference-line')
+    const lines = this.timeline.selectAll('.pivot-group')
       .data(pivots, (d) => +d);
 
+    // Condition to avoid pivots overlapping
+    const isOverlapping = (pivots, index, x, margin) =>
+      x - margin > (pivots[index - 1] || 0) && x + margin < (pivots[index + 1] || this.width);
+
     // Draw intervals separation
-    lines.enter()
+    const that = this;
+    let lastX;
+    const linesGroupEnter = lines.enter()
       .filter((pivot) => pivot > 0 && pivot < this.width)
+      .append('g')
+        .attr('class', 'pivot-group')
+        .attr('transform', (pivot) => `translate(${pivot + .5}, ${this.positionY - 30})`)
+      .call(d3.drag()
+        .on('drag', function(x) {
+          const index = pivots.indexOf(x);
+          if (isOverlapping(pivots, index, d3.event.x, 10)) {
+            lastX = d3.event.x;
+            d3.select(this)
+              .attr('class', 'pivot-group draggable')
+              .attr('transform', `translate(${d3.event.x}, ${that.positionY - 30})`);
+          }
+        })
+        .on('end', function(x) {
+          const index = pivots.indexOf(x);
+
+          if (isOverlapping(pivots, index, lastX, 9)) {
+            pivots[index] = lastX;
+            that.renderAxis(pivots);
+            that.renderData(that.data);
+          }
+        })
+      );
+
+    linesGroupEnter
+      .append('rect')
+        .attr('fill', 'transparent')
+        // .attr('class', 'event')
+        // .attr('x', (pivot) => pivot + .5)
+        // .attr('y', this.positionY - 30)
+        .attr('x', -9)
+        .attr('width', 18)
+        .attr('height', 60);
+
+    linesGroupEnter
       .append('line')
       .attr('stroke', '#000')
       .attr('stroke-width', '2')
       .attr('class', 'linear reference-line reference-interval')
-        .attr('x1', (pivot) => pivot + .5)
-        .attr('x2', (pivot) => pivot + .5)
-        .attr('y1', this.positionY - 30)
-        .attr('y2', this.positionY + 30)
-      .call(d3.drag()
-      .on('drag', function() {
-        d3.select(this)
-          .attr('x1', d3.event.x)
-          .attr('x2', d3.event.x);
-      })
-      .on('end', (e) => {
-        pivots.forEach((p, i) => {
-          if (p === e) {
-            pivots[i] = d3.event.x;
-          }
-        });
-
-        this.renderAxis(pivots);
-        this.renderData(this.data);
-      }));
+        .attr('x1', 0)
+        .attr('x2', 0)
+        // .attr('x1', (pivot) => pivot + .5)
+        // .attr('x2', (pivot) => pivot + .5)
+        .attr('y1', 0)
+        .attr('y2', 60);
 
     // Add special reference line for today
-    let todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
+    const todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
       .data([this.x(new Date())], (d) => d);
 
     todayLine.enter()
