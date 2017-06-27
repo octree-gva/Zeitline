@@ -270,11 +270,13 @@ export default class Timeline {
       if (firstInCluster === null) {
         firstInCluster = x;
       } else {
-        // Squared difference between xi and xi+1
-        const intAB = Math.pow(x[0] - xs[i-1][0], 2);
+        const prec = xs[i-1][0] || 0;
+
+        // Squared interval between xi-1 and xi
+        const intAB = Math.pow(x[0] - prec, 2);
 
         // Difference between x0 and xi+1
-        const intAZ = xs[i-1][0] - firstInCluster[0];
+        const intAZ = prec - firstInCluster[0];
 
         if (intAB > this.options.clustering.epsilon || intAZ > this.options.clustering.maxSize) {
           // We end the current cluster
