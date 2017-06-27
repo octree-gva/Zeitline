@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import {throttle} from './utils';
 
 // Default configuration
 const defaults = {
@@ -17,6 +18,7 @@ const defaults = {
       animation: {time: 300, ease: d3.easePoly},
       clustering: {maxSize: 15, epsilon: 20},
       events: {size: 2},
+      dragAndDrop: {throttle: 25},
   },
 };
 
@@ -82,6 +84,8 @@ export default class Timeline {
 
   /**
    * Render x axis
+   *
+   * @param {array} pivots (optional)
    */
   renderAxis(pivots = null) {
     if (pivots === null) {
@@ -90,13 +94,15 @@ export default class Timeline {
     const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
     // Create polylinear scale time (from range A to range B with intervals in between)
-    this.x = d3.scaleTime()
+    const getScaleTime = () => d3.scaleTime()
       .domain([
         d3.extent(this.dateRange)[0],
         ...domain,
         d3.extent(this.dateRange)[1],
       ])
       .range([0, ...pivots, this.width]); // all pivots
+
+    this.x = getScaleTime();
 
     // Create axis with the given tick interval
     const xAxisLabel = d3.axisBottom(this.x)
@@ -128,31 +134,44 @@ export default class Timeline {
 
     // Condition to avoid pivots overlapping
     const isOverlapping = (pivots, index, x, margin) =>
-      x - margin > (pivots[index - 1] || 0) && x + margin < (pivots[index + 1] || this.width);
+      x - margin <= (pivots[index - 1] || 0) || x + margin >= (pivots[index + 1] || this.width);
+
+    // Function to render events via throttle
+    const throttleEventRender = throttle(() => {
+      pivots[lastPivotIndex] = lastPivotX;
+
+      this.x = getScaleTime();
+      this.renderData(this.data);
+    }, this.options.dragAndDrop.throttle);
 
     // Draw intervals separation
     const that = this;
-    let lastX;
+    let lastPivotX;
+    let lastPivotIndex;
     const pivotsGroupEnter = pivotsGroup.enter()
       .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('g')
         .attr('class', 'pivot-group')
         .attr('transform', (pivot) => `translate(${pivot + .5}, ${this.positionY - 30})`)
       .call(d3.drag()
+        .on('start', (x) => {
+          lastPivotIndex = pivots.indexOf(x);
+        })
         .on('drag', function(x) {
-          const index = pivots.indexOf(x);
-          if (isOverlapping(pivots, index, d3.event.x, 10)) {
-            lastX = d3.event.x;
+          if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
+            lastPivotX = d3.event.x;
+
             d3.select(this)
-              .attr('class', 'pivot-group draggable')
+              .classed('draggable', true)
               .attr('transform', `translate(${d3.event.x}, ${that.positionY - 30})`);
+
+            // Render events with the new pivot position after throttle
+            throttleEventRender();
           }
         })
         .on('end', (x) => {
-          const index = pivots.indexOf(x);
-
-          if (isOverlapping(pivots, index, lastX, 9)) {
-            pivots[index] = lastX;
+          if (!isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
+            pivots[lastPivotIndex] = lastPivotX;
             this.renderAxis(pivots);
             this.renderData(this.data);
           }
@@ -305,11 +324,14 @@ export default class Timeline {
     const events = this.timeline.selectAll('.event-group')
       .data(dataTime, (d) => d);
 
+    const eventsSize = this.options.events.size;
+
     const eventsEnter = events
       .enter()
       .append('g')
         .attr('class', 'event-group')
-        .attr('transform', (d) => `translate(${d[0] - this.options.events.size + .5}, ${this.positionY - this.options.events.size + .5})`)
+        .attr('transform', (d) =>
+          `translate(${d[0] - eventsSize + .5}, ${this.positionY - eventsSize + .5})`)
         .style('font-size', '10px')
         .style('font-family', 'sans-serif');
 
@@ -324,16 +346,16 @@ export default class Timeline {
       .filter((d) => d[0] > 0 && d[0] < this.width)
       .append('rect')
         .attr('class', 'event')
-        .attr('rx', this.options.events.size)
-        .attr('ry', this.options.events.size)
-        .attr('width', (d) => this.options.events.size * 2 + d[1])
-        .attr('height', this.options.events.size * 2);
+        .attr('rx', eventsSize)
+        .attr('ry', eventsSize)
+        .attr('width', (d) => eventsSize * 2 + d[1])
+        .attr('height', eventsSize * 2);
 
-    eventsEnter
-      .merge(events)
-        .attr('height', 0)
-        .transition(this.transition)
-        .attr('height', this.options.events.size * 2);
+    // eventsEnter
+    //   .merge(events)
+    //     .attr('height', 0)
+    //     .transition(this.transition)
+    //     .attr('height', eventsSize * 2);
 
     // Draw events
     this.timeline.selectAll('rect')
