@@ -251,7 +251,9 @@ var Timeline = function () {
         var index = pivots.indexOf(x);
         if (isOverlapping(pivots, index, d3.event.x, 10)) {
           lastX = d3.event.x;
-          d3.select(this).attr('class', 'pivot-group draggable').attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
+          d3.select(this)
+          // .classed("draggable", true);
+          .attr('class', 'pivot-group draggable').attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
         }
       }).on('end', function (x) {
         var index = pivots.indexOf(x);
@@ -382,11 +384,13 @@ var Timeline = function () {
         if (firstInCluster === null) {
           firstInCluster = x;
         } else {
-          // Squared difference between xi and xi+1
-          var intAB = Math.pow(x[0] - xs[i - 1][0], 2);
+          var prec = xs[i - 1][0] || 0;
+
+          // Squared interval between xi-1 and xi
+          var intAB = Math.pow(x[0] - prec, 2);
 
           // Difference between x0 and xi+1
-          var intAZ = xs[i - 1][0] - firstInCluster[0];
+          var intAZ = prec - firstInCluster[0];
 
           if (intAB > _this3.options.clustering.epsilon || intAZ > _this3.options.clustering.maxSize) {
             // We end the current cluster
