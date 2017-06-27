@@ -309,14 +309,15 @@ export default class Timeline {
       .enter()
       .append('g')
         .attr('class', 'event-group')
+        .attr('transform', (d) => `translate(${d[0] - this.options.events.size + .5}, ${this.positionY - this.options.events.size + .5})`)
         .style('font-size', '10px')
         .style('font-family', 'sans-serif');
 
     eventsEnter
       .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
       .append('text')
-        .attr('dx', (d) => d[0] + d[1] / 2 - 2)
-        .attr('dy', this.positionY - 8)
+        .attr('dx', (d) => d[1] / 2 - 1) // Center text on top of the cluster
+        .attr('dy', -5)
         .text((d) => d[4] < 100 ? d[4] : '99+');
 
     eventsEnter
@@ -325,8 +326,6 @@ export default class Timeline {
         .attr('class', 'event')
         .attr('rx', this.options.events.size)
         .attr('ry', this.options.events.size)
-        .attr('x', (d) => d[0] - this.options.events.size + .5)
-        .attr('y', this.positionY - this.options.events.size + .5)
         .attr('width', (d) => this.options.events.size * 2 + d[1])
         .attr('height', this.options.events.size * 2);
 
