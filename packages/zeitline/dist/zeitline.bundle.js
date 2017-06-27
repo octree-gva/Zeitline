@@ -110,6 +110,8 @@ var _d = __webpack_require__(2);
 
 var d3 = _interopRequireWildcard(_d);
 
+var _utils = __webpack_require__(3);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -129,7 +131,8 @@ var defaults = {
     margin: { top: 20, right: 20, bottom: 20, left: 20 },
     animation: { time: 300, ease: d3.easePoly },
     clustering: { maxSize: 15, epsilon: 20 },
-    events: { size: 2 }
+    events: { size: 2 },
+    dragAndDrop: { throttle: 25 }
   }
 };
 
@@ -200,6 +203,8 @@ var Timeline = function () {
 
     /**
      * Render x axis
+     *
+     * @param {array} pivots (optional)
      */
 
   }, {
@@ -217,7 +222,11 @@ var Timeline = function () {
       }, []);
 
       // Create polylinear scale time (from range A to range B with intervals in between)
-      this.x = d3.scaleTime().domain([d3.extent(this.dateRange)[0]].concat(_toConsumableArray(domain), [d3.extent(this.dateRange)[1]])).range([0].concat(_toConsumableArray(pivots), [this.width])); // all pivots
+      var getScaleTime = function getScaleTime() {
+        return d3.scaleTime().domain([d3.extent(_this2.dateRange)[0]].concat(_toConsumableArray(domain), [d3.extent(_this2.dateRange)[1]])).range([0].concat(_toConsumableArray(pivots), [_this2.width]));
+      }; // all pivots
+
+      this.x = getScaleTime();
 
       // Create axis with the given tick interval
       var xAxisLabel = d3.axisBottom(this.x).tickFormat(d3.timeFormat(this.timeFormat)).tickValues([new Date()].concat(_toConsumableArray(domain))).tickPadding(-50).tickSize(0).tickSizeOuter(.5);
@@ -237,29 +246,39 @@ var Timeline = function () {
 
       // Condition to avoid pivots overlapping
       var isOverlapping = function isOverlapping(pivots, index, x, margin) {
-        return x - margin > (pivots[index - 1] || 0) && x + margin < (pivots[index + 1] || _this2.width);
+        return x - margin <= (pivots[index - 1] || 0) || x + margin >= (pivots[index + 1] || _this2.width);
       };
+
+      // Function to render events via throttle
+      var throttleEventRender = (0, _utils.throttle)(function () {
+        pivots[lastPivotIndex] = lastPivotX;
+
+        _this2.x = getScaleTime();
+        _this2.renderData(_this2.data);
+      }, this.options.dragAndDrop.throttle);
 
       // Draw intervals separation
       var that = this;
-      var lastX = void 0;
+      var lastPivotX = void 0;
+      var lastPivotIndex = void 0;
       var pivotsGroupEnter = pivotsGroup.enter().filter(function (pivot) {
         return pivot > 0 && pivot < _this2.width;
       }).append('g').attr('class', 'pivot-group').attr('transform', function (pivot) {
         return 'translate(' + (pivot + .5) + ', ' + (_this2.positionY - 30) + ')';
-      }).call(d3.drag().on('drag', function (x) {
-        var index = pivots.indexOf(x);
-        if (isOverlapping(pivots, index, d3.event.x, 10)) {
-          lastX = d3.event.x;
-          d3.select(this)
-          // .classed("draggable", true);
-          .attr('class', 'pivot-group draggable').attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
+      }).call(d3.drag().on('start', function (x) {
+        lastPivotIndex = pivots.indexOf(x);
+      }).on('drag', function (x) {
+        if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
+          lastPivotX = d3.event.x;
+
+          d3.select(this).classed('draggable', true).attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
+
+          // Render events with the new pivot position after throttle
+          throttleEventRender();
         }
       }).on('end', function (x) {
-        var index = pivots.indexOf(x);
-
-        if (isOverlapping(pivots, index, lastX, 9)) {
-          pivots[index] = lastX;
+        if (!isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
+          pivots[lastPivotIndex] = lastPivotX;
           _this2.renderAxis(pivots);
           _this2.renderData(_this2.data);
         }
@@ -420,39 +439,42 @@ var Timeline = function () {
         return d;
       });
 
-      var eventsEnter = events.enter().append('g').attr('class', 'event-group').style('font-size', '10px').style('font-family', 'sans-serif');
+      var eventsSize = this.options.events.size;
+
+      var eventsEnter = events.enter().append('g').attr('class', 'event-group').attr('transform', function (d) {
+        return 'translate(' + (d[0] - eventsSize + .5) + ', ' + (_this3.positionY - eventsSize + .5) + ')';
+      }).style('font-size', '10px').style('font-family', 'sans-serif');
 
       eventsEnter.filter(function (d) {
         return d[4] > 1;
       }) // Show the number on top of clusters with 2+ elements
       .append('text').attr('dx', function (d) {
-        return d[0] + d[1] / 2 - 2;
-      }).attr('dy', this.positionY - 8).text(function (d) {
+        return d[1] / 2 - 1;
+      }) // Center text on top of the cluster
+      .attr('dy', -5).text(function (d) {
         return d[4] < 100 ? d[4] : '99+';
       });
 
       eventsEnter.filter(function (d) {
         return d[0] > 0 && d[0] < _this3.width;
-      }).append('rect').attr('class', 'event').attr('rx', this.options.events.size).attr('ry', this.options.events.size).attr('x', function (d) {
-        return d[0] - _this3.options.events.size + .5;
-      }).attr('y', this.positionY - this.options.events.size + .5).attr('width', function (d) {
-        return _this3.options.events.size * 2 + d[1];
-      }).attr('height', this.options.events.size * 2);
+      }).append('rect').attr('class', 'event').attr('rx', eventsSize).attr('ry', eventsSize).attr('width', function (d) {
+        return eventsSize * 2 + d[1];
+      }).attr('height', eventsSize * 2);
 
-      eventsEnter.merge(events).attr('height', 0).transition(this.transition).attr('height', this.options.events.size * 2);
+      // eventsEnter
+      //   .merge(events)
+      //     .attr('height', 0)
+      //     .transition(this.transition)
+      //     .attr('height', eventsSize * 2);
 
       // Draw events
       this.timeline.selectAll('rect').on('click', function (event) {
-        d3.select(d3.event.target)
-        // .transition(this.transition)
-        // .attr('height', 15)
-        .transition(_this3.transition).call(function () {
+        d3.select(d3.event.target).transition(_this3.transition).attr('height', 15).transition(_this3.transition).call(function () {
           if (_this3.onClick) {
             _this3.onClick.apply(event);
           }
           // d3.event.stopPropagation();
-        }).delay(500);
-        // .attr('height', 6); // reset size
+        }).delay(500).attr('height', 6); // reset size
       });
 
       // Remove out of frame events
@@ -17395,6 +17417,51 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.throttle = throttle;
+/**
+ * Returns a new function that, when invoked, invokes `func` at most once per `wait` milliseconds.
+ * Adapted from https://github.com/component/throttle/blob/master/index.js
+ *
+ * @param {Function} func Function to wrap.
+ * @param {Number} wait Number of milliseconds that must elapse between `func` invocations.
+ * @return {Function} A new function that wraps the `func` function passed in.
+ */
+function throttle(func, wait) {
+  var ctx = void 0;
+  var args = void 0;
+  var rtn = void 0;
+  var timeoutID = void 0; // caching
+  var last = 0;
+
+  return function throttled() {
+    ctx = this;
+    args = arguments;
+    var delta = new Date() - last;
+    if (!timeoutID) {
+      if (delta >= wait) call();else timeoutID = setTimeout(call, wait - delta);
+    }
+    return rtn;
+  };
+
+  function call() {
+    timeoutID = 0;
+    last = +new Date();
+    rtn = func.apply(ctx, args);
+    ctx = null;
+    args = null;
+  }
+}
 
 /***/ })
 /******/ ]);
