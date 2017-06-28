@@ -432,5 +432,14 @@ export default class Timeline {
     this.renderAxis();
     this.renderData(this.data);
   }
+
+  /**
+   * Destroy
+   */
+  destroy() {
+    setTimeout(() => {
+      this.svg.remove();
+    }, 0);
+  }
 }
 
