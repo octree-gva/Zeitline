@@ -3,5 +3,6 @@ node_modules
 !.eslintrc
 !.editorconfig
 !.gitignore
+!.travis.yml
 *.log
 __*
