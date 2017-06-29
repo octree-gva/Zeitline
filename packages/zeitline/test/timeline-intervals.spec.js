@@ -8,13 +8,13 @@ describe('Timeline intervals', () => {
   before(() => {
     conf = {
       dateRange: [
-        new Date('2000-1-1'),
-        new Date('2010-1-1'),
+        new Date('2000-01-01'),
+        new Date('2010-01-01'),
       ],
       intervals: [
         [
-          new Date('2001-1-1'),
-          new Date('2009-1-1'),
+          new Date('2001-01-01'),
+          new Date('2009-01-01'),
           200,
         ],
       ],
@@ -30,10 +30,10 @@ describe('Timeline intervals', () => {
     window = util.getWindowWithZeitline(conf);
 
     separations = window.document.querySelector('svg')
-      .querySelectorAll('.reference-interval');
+      .querySelectorAll('.pivot-group');
   });
 
-  const intervalX = (i) => +separations[i].getAttribute('x1');
+  const intervalX = (i) => +separations[i].getAttribute('transform').match(/([0-9\.]+)/)[0];
 
   it('should render 2 intervals', () => {
     assert.equal(separations.length, 2);
