@@ -163,14 +163,14 @@ export default class Timeline {
 
             d3.select(this)
               .classed('draggable', true)
-              .attr('transform', `translate(${d3.event.x}, ${that.positionY - 30})`);
+              .attr('transform', `translate(${lastPivotX}, ${that.positionY - 30})`);
 
             // Render events with the new pivot position after throttle
             throttleEventRender();
           }
         })
         .on('end', (x) => {
-          if (!isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
+          if (lastPivotX && !isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
             pivots[lastPivotIndex] = lastPivotX;
             this.renderAxis(pivots);
             this.renderData(this.data);
