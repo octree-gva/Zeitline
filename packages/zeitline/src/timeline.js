@@ -180,7 +180,7 @@ export default class Timeline {
 
     pivotsGroupEnter
       .append('rect')
-        .attr('fill', 'transparent')
+        .attr('fill', 'none')
         // .attr('class', 'event')
         // .attr('x', (pivot) => pivot + .5)
         // .attr('y', this.positionY - 30)
