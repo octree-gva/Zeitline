@@ -77,7 +77,7 @@ export default class Timeline {
   setConf(conf = {}) {
     // Override the default configuration
     if (conf.options) {
-      conf.options = Object.assign({}, defaults.options, conf.options);
+      conf.options = {...defaults.options, ...conf.options};
     }
     Object.assign(this, defaults, conf);
   }
