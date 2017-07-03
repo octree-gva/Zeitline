@@ -190,13 +190,11 @@ export default class Timeline {
 
     pivotsGroupEnter
       .append('line')
-      .attr('stroke', '#000')
-      .attr('stroke-width', '2')
       .attr('class', 'linear reference-line reference-interval')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 2)
         .attr('x1', 0)
         .attr('x2', 0)
-        // .attr('x1', (pivot) => pivot + .5)
-        // .attr('x2', (pivot) => pivot + .5)
         .attr('y1', 0)
         .attr('y2', 60);
 
@@ -211,6 +209,8 @@ export default class Timeline {
     todayLine.enter()
       .append('line')
       .attr('class', 'linear reference-line reference-line-today')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 1)
         .attr('x1', (pivot) => pivot + .5)
         .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
