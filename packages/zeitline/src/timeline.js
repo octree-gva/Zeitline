@@ -75,11 +75,48 @@ export default class Timeline {
    * @param {object} conf
    */
   setConf(conf = {}) {
+    // Check if configuration is valid
+    const mergedConf = this.checkAndNormalizeConf({...defaults, ...conf});
+
     // Override the default configuration
     if (conf.options) {
       conf.options = {...defaults.options, ...conf.options};
     }
-    Object.assign(this, defaults, conf);
+
+    Object.assign(this, mergedConf);
+  }
+
+  /**
+   * Check if the configuration is valid and remove empty elements if needed
+   *
+   * @param {object} conf
+   * @return {object} Normalized conf
+   */
+  checkAndNormalizeConf(conf) {
+    if (!conf.dateRange || !conf.dateRange.reduce) {
+      throw new TypeError('DateRange should be an array');
+    }
+
+    if (!conf.data || !conf.data.reduce) {
+      throw new TypeError('Data should be an array');
+    }
+
+    if (!conf.intervals || !conf.intervals.reduce) {
+      throw new TypeError('Intervals should be an array');
+    }
+
+    conf = {
+      ...conf,
+      dateRange: conf.dateRange.filter(Boolean),
+      data: conf.data.filter(Boolean),
+      intervals: conf.intervals.filter(Boolean),
+    };
+
+    if (conf.dateRange.length < 2) {
+      throw new TypeError('Date range should have two dates (start and end)');
+    }
+
+    return conf;
   }
 
   /**
