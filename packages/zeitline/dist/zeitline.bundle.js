@@ -104,6 +104,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _d = __webpack_require__(2);
@@ -194,11 +196,50 @@ var Timeline = function () {
     value: function setConf() {
       var conf = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+      // Check if configuration is valid
+      var mergedConf = this.checkAndNormalizeConf(_extends({}, defaults, conf));
+
       // Override the default configuration
       if (conf.options) {
-        conf.options = Object.assign({}, defaults.options, conf.options);
+        conf.options = _extends({}, defaults.options, conf.options);
       }
-      Object.assign(this, defaults, conf);
+
+      Object.assign(this, mergedConf);
+    }
+
+    /**
+     * Check if the configuration is valid and remove empty elements if needed
+     *
+     * @param {object} conf
+     * @return {object} Normalized conf
+     */
+
+  }, {
+    key: 'checkAndNormalizeConf',
+    value: function checkAndNormalizeConf(conf) {
+      if (!conf.dateRange || !conf.dateRange.reduce) {
+        throw new TypeError('DateRange should be an array');
+      }
+
+      if (!conf.data || !conf.data.reduce) {
+        throw new TypeError('Data should be an array');
+      }
+
+      if (!conf.intervals || !conf.intervals.reduce) {
+        throw new TypeError('Intervals should be an array');
+      }
+
+      conf = _extends({}, conf, {
+        dateRange: conf.dateRange.filter(Boolean),
+        data: conf.data.filter(Boolean),
+        intervals: conf.intervals.filter(Boolean)
+      });
+
+      if (conf.dateRange.length < 2) {
+        throw new TypeError('Date range should have two dates (start and end)');
+      }
+
+      return conf;
     }
 
     /**
@@ -271,29 +312,26 @@ var Timeline = function () {
         if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
           lastPivotX = d3.event.x;
 
-          d3.select(this).classed('draggable', true).attr('transform', 'translate(' + d3.event.x + ', ' + (that.positionY - 30) + ')');
+          d3.select(this).classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
 
           // Render events with the new pivot position after throttle
           throttleEventRender();
         }
       }).on('end', function (x) {
-        if (!isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
+        if (lastPivotX && !isOverlapping(pivots, lastPivotIndex, lastPivotX, 9)) {
           pivots[lastPivotIndex] = lastPivotX;
           _this2.renderAxis(pivots);
           _this2.renderData(_this2.data);
         }
       }));
 
-      pivotsGroupEnter.append('rect').attr('fill', 'transparent')
+      pivotsGroupEnter.append('rect').attr('fill-opacity', 0)
       // .attr('class', 'event')
       // .attr('x', (pivot) => pivot + .5)
       // .attr('y', this.positionY - 30)
       .attr('x', -9).attr('width', 18).attr('height', 60);
 
-      pivotsGroupEnter.append('line').attr('stroke', '#000').attr('stroke-width', '2').attr('class', 'linear reference-line reference-interval').attr('x1', 0).attr('x2', 0)
-      // .attr('x1', (pivot) => pivot + .5)
-      // .attr('x2', (pivot) => pivot + .5)
-      .attr('y1', 0).attr('y2', 60);
+      pivotsGroupEnter.append('line').attr('class', 'linear reference-line reference-interval').attr('stroke', '#000').attr('stroke-width', 2).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 60);
 
       // Remove old pivots if needed
       pivotsGroup.exit().remove();
@@ -303,7 +341,7 @@ var Timeline = function () {
         return d;
       });
 
-      todayLine.enter().append('line').attr('class', 'linear reference-line reference-line-today').attr('x1', function (pivot) {
+      todayLine.enter().append('line').attr('class', 'linear reference-line reference-line-today').attr('stroke', '#000').attr('stroke-width', 1).attr('x1', function (pivot) {
         return pivot + .5;
       }).attr('x2', function (pivot) {
         return pivot + .5;
@@ -469,12 +507,16 @@ var Timeline = function () {
 
       // Draw events
       this.timeline.selectAll('rect').on('click', function (event) {
-        d3.select(d3.event.target).transition(_this3.transition).attr('height', 15).transition(_this3.transition).call(function () {
+        d3.select(d3.event.target)
+        // .transition(this.transition)
+        // .attr('height', 15)
+        .transition(_this3.transition).call(function () {
           if (_this3.onClick) {
             _this3.onClick.apply(event);
           }
           // d3.event.stopPropagation();
-        }).delay(500).attr('height', 6); // reset size
+        }).delay(500);
+        // .attr('height', 6); // reset size
       });
 
       // Remove out of frame events
@@ -538,6 +580,20 @@ var Timeline = function () {
     value: function render() {
       this.renderAxis();
       this.renderData(this.data);
+    }
+
+    /**
+     * Destroy
+     */
+
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      var _this4 = this;
+
+      setTimeout(function () {
+        _this4.svg.remove();
+      }, 0);
     }
   }]);
 
