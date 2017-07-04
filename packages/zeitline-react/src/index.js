@@ -26,11 +26,13 @@ export default class extends Component {
   }
 
   render() {
+    const { width, height } = this.props;
+
     return (
       <svg
         className="Zeitline"
-        width="900"
-        height="100"
+        width={width || 500}
+        height={height || 100}
         ref={(svg) => {this.timelineSvg = svg;}}
       ></svg>
     );

@@ -97,13 +97,12 @@ class ZeitlineDemo extends Component {
   }
 
   render() {
-
     console.log('demo', this.state)
-    // const {  } = this.props;
 
     return <div>
       <h1>Zeitline Demo</h1>
       <Zeitline
+        width={1000}
         data={this.state.data}
         intervals={this.state.intervals || []}
       />
