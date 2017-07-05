@@ -12,7 +12,6 @@ const defaults = {
   ticksIntervals: 'Month',
   data: [],
   intervals: [],
-  onClick: () => {},
   options: {
       margin: {top: 20, right: 20, bottom: 20, left: 20},
       animation: {time: 300, ease: d3.easePoly},
@@ -402,8 +401,8 @@ export default class Timeline {
           // .attr('height', 15)
           .transition(this.transition)
           .call(() => {
-            if (this.onClick) {
-              this.onClick.apply(event);
+            if (this.onEventClick) {
+              this.onEventClick(customEvent);
             }
             // d3.event.stopPropagation();
           })
