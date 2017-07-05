@@ -1,7 +1,7 @@
 {
   "name": "react-zeitline",
-  "version": "1.0.0",
-  "description": "react-zeitline React component",
+  "version": "0.0.1",
+  "description": "Zeitline React component",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -31,8 +31,12 @@
   "author": "",
   "homepage": "",
   "license": "MIT",
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octree-gva/d3-timeline.git"
+  },
   "keywords": [
+    "zeitline",
     "react-component"
   ]
 }

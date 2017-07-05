@@ -18,3 +18,23 @@
 [coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
 [coveralls]: https://coveralls.io/github/user/repo
 -->
+
+### Example
+
+```js
+class ZeitlineDemo extends Component {
+  render() {
+    return <div>
+      <Zeitline
+        width={800}
+        data={[
+            {date: new Date('30 Jun 2017'), label: 'first'},
+            {date: new Date('10 Jul 2017'), label: 'second'},
+        ]}
+      />
+    </div>
+  }
+}
+```
+
+Check the [demo](demo) to see an example of how using the component.
