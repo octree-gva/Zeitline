@@ -21,8 +21,11 @@ export default class extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     this.t.update(nextProps);
+  }
+
+  componentWillUnmount() {
+    this.t.destroy();
   }
 
   render() {
