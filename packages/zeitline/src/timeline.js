@@ -318,7 +318,7 @@ export default class Timeline {
    */
   renderData(data) {
     let dataTime = data
-      .map((d) => [this.x(d.date), d.label])
+      .map((d) => [this.x(d.date), d.label, d.date])
       .sort((a, b) => a[0] - b[0]);
 
     dataTime = dataTime.reduce(({firstInCluster, eaten, acc}, x, i, xs) => {
@@ -335,8 +335,8 @@ export default class Timeline {
 
         if (intAB > this.options.clustering.epsilon || intAZ > this.options.clustering.maxSize) {
           // We end the current cluster
-          // [firstEvent date (number), interval first-last events, first event label, current interval (number)]
-          acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i-1][1], eaten]);
+          // [firstEvent date (number), interval first-last events, first event, last event]
+          acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i-1], eaten]);
           firstInCluster = x;
           eaten = 0;
         }
@@ -402,6 +402,13 @@ export default class Timeline {
           .transition(this.transition)
           .call(() => {
             if (this.onEventClick) {
+              // Override d3 event with custom fields
+              const customEvent = d3.event;
+              customEvent.axisX = event[0];
+              customEvent.clusterSize = event[1];
+              customEvent.labels = [event[2][1], event[3][1]];
+              customEvent.dates = [event[2][2], event[3][2]];
+
               this.onEventClick(customEvent);
             }
             // d3.event.stopPropagation();

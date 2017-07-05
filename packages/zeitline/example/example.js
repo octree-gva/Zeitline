@@ -63,8 +63,8 @@ let conf = {
     {date: new Date('01 Jan 2022'), label: 'test15'},
     {date: new Date('01 Jan 2030'), label: 'test16'},
   ],
-    console.log(this); // eslint-disable-line
   onEventClick: function(event) {
+    console.log(event); // eslint-disable-line
     document.querySelector('body').style.background = ['#9b59b6', '#1abc9c', '#f39c12'][Math.floor(Math.random() * 3)];
     setTimeout(() => {
       document.querySelector('body').style.background = '#fff';
