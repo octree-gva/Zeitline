@@ -20,4 +20,20 @@ describe('Zeitline', () => {
       expect(node.innerHTML).toContain('svg')
     })
   })
+
+  it('have two events', () => {
+    render(<Zeitline data={[
+      {date: new Date('30 Jun 2017'), label: 'first'},
+      {date: new Date('10 Jul 2017'), label: 'second'},
+    ]}/>, node, () => {
+      expect(node.querySelectorAll('.event-group').length).toEqual(2)
+    })
+  })
+
+  it('have no more svg node', () => {
+    render(<Zeitline/>, node, () => {
+      unmountComponentAtNode(node);
+      expect(node.innerHTML).toEqual('')
+    })
+  })
 })
