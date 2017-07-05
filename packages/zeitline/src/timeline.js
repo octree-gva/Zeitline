@@ -15,7 +15,7 @@ const defaults = {
   options: {
       margin: {top: 20, right: 20, bottom: 20, left: 20},
       animation: {time: 300, ease: d3.easePoly},
-      clustering: {maxSize: 15, epsilon: 20},
+      clustering: {maxSize: 15, epsilon: 20, maxLabelNumber: 99},
       events: {size: 2},
       dragAndDrop: {throttle: 25},
   },
@@ -371,12 +371,13 @@ export default class Timeline {
         .style('font-size', '10px')
         .style('font-family', 'sans-serif');
 
+    const maxLabelNumber = this.options.clustering.maxLabelNumber;
     eventsEnter
       .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
       .append('text')
         .attr('dx', (d) => d[1] / 2 - 1) // Center text on top of the cluster
         .attr('dy', -5)
-        .text((d) => d[4] < 100 ? d[4] : '99+');
+        .text((d) => d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+');
 
     eventsEnter
       .filter((d) => d[0] > 0 && d[0] < this.width)

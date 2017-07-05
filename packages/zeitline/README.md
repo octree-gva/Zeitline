@@ -81,8 +81,11 @@ t.update({/* config */}); // update the timeline with a new configuration
   - `clustering`
     - `maxSize: number`: Max size of cluster in pixels
     - `epsilon: number`: Gravity between events when cluster
+    - `maxLabelNumber: number`: Maximum number possible on clusters labels
   - `events`
     - `size: number`: Size of events circles
+  - `dragAndDrop`
+    - `throttle: number`: Margin to drag and drop the pivot more easily
 
 
 
