@@ -1,7 +1,7 @@
 {
   "name": "zeitline",
   "description": "Zeitline",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/d3-timeline.bundle.js",
   "module": "src/index.js",
   "directories": {
