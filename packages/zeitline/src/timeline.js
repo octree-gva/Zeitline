@@ -391,6 +391,7 @@ export default class Timeline {
     this.timeline.selectAll('.event-group')
       .on('click', (event) => {
         d3.select(d3.event.target)
+          .interrupt()
           // .transition(this.transition)
           // .attr('height', 15)
           .transition(this.transition)
