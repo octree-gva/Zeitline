@@ -25,7 +25,7 @@
     "nwb": "0.18.x",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "zeitline": "^0.0.0"
+    "zeitline": "^0.0.2"
   },
   "author": "",
   "homepage": "",
