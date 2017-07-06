@@ -16,7 +16,7 @@ const defaults = {
   animation: {time: 300, ease: d3.easePoly},
   clustering: {maxSize: 15, epsilon: 20, maxLabelNumber: 99},
   events: {size: 2},
-  dragAndDrop: {throttle: 25},
+  dragAndDrop: {throttle: 25, zoneWidth: 15},
 };
 
 /**
@@ -212,11 +212,8 @@ export default class Timeline {
     pivotsGroupEnter
       .append('rect')
         .attr('fill-opacity', 0)
-        // .attr('class', 'event')
-        // .attr('x', (pivot) => pivot + .5)
-        // .attr('y', this.positionY - 30)
-        .attr('x', -9)
-        .attr('width', 18)
+        .attr('x', - this.dragAndDrop.zoneWidth / 2)
+        .attr('width', this.dragAndDrop.zoneWidth)
         .attr('height', 60);
 
     pivotsGroupEnter
