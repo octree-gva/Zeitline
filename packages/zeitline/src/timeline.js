@@ -26,7 +26,6 @@ const defaults = {
  * @class Timeline
  */
 export default class Timeline {
-
   /**
    * Creates an instance of Timeline
    *
@@ -367,9 +366,10 @@ export default class Timeline {
     eventsEnter
       .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
       .append('text')
-        .attr('dx', (d) => d[1] / 2 - 1) // Center text on top of the cluster
+        .text((d) => d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+')
         .attr('dy', -5)
-        .text((d) => d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+');
+        .attr('dx', (d) => d[1] / 2 + 2) // Center text on top of the cluster
+        .attr('text-anchor', 'middle');
 
     eventsEnter
       .filter((d) => d[0] > 0 && d[0] < this.width)
