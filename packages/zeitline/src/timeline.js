@@ -12,13 +12,11 @@ const defaults = {
   ticksIntervals: 'Month',
   data: [],
   intervals: [],
-  options: {
-      margin: {top: 20, right: 20, bottom: 20, left: 20},
-      animation: {time: 300, ease: d3.easePoly},
-      clustering: {maxSize: 15, epsilon: 20, maxLabelNumber: 99},
-      events: {size: 2},
-      dragAndDrop: {throttle: 25},
-  },
+  margin: {top: 20, right: 20, bottom: 20, left: 20},
+  animation: {time: 300, ease: d3.easePoly},
+  clustering: {maxSize: 15, epsilon: 20, maxLabelNumber: 99},
+  events: {size: 2},
+  dragAndDrop: {throttle: 25},
 };
 
 /**
@@ -44,7 +42,7 @@ export default class Timeline {
    */
   init() {
     this.svg = d3.select(this.selector);
-    const {margin, animation} = this.options;
+    const {margin, animation} = this;
     this.width = +this.svg.attr('width') - margin.left - margin.right;
     this.height = +this.svg.attr('height') - margin.top - margin.bottom;
     this.positionY = this.height / 1.4;
@@ -78,11 +76,6 @@ export default class Timeline {
   setConf(conf = {}) {
     // Check if configuration is valid
     const mergedConf = this.checkAndNormalizeConf({...defaults, ...conf});
-
-    // Override the default configuration
-    if (conf.options) {
-      conf.options = {...defaults.options, ...conf.options};
-    }
 
     Object.assign(this, mergedConf);
   }
@@ -180,7 +173,7 @@ export default class Timeline {
 
       this.x = getScaleTime();
       this.renderData(this.data);
-    }, this.options.dragAndDrop.throttle);
+    }, this.dragAndDrop.throttle);
 
     // Draw intervals separation
     const that = this;
@@ -335,7 +328,7 @@ export default class Timeline {
         // Difference between x0 and xi+1
         const intAZ = prec - firstInCluster[0];
 
-        if (intAB > this.options.clustering.epsilon || intAZ > this.options.clustering.maxSize) {
+        if (intAB > this.clustering.epsilon || intAZ > this.clustering.maxSize) {
           // We end the current cluster
           // [firstEvent date (number), interval first-last events, first event, last event]
           acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i-1], eaten]);
@@ -362,7 +355,7 @@ export default class Timeline {
     const events = this.timeline.selectAll('.event-group')
       .data(dataTime, (d) => d);
 
-    const eventsSize = this.options.events.size;
+    const eventsSize = this.events.size;
 
     const eventsEnter = events
       .enter()
@@ -373,7 +366,7 @@ export default class Timeline {
         .style('font-size', '10px')
         .style('font-family', 'sans-serif');
 
-    const maxLabelNumber = this.options.clustering.maxLabelNumber;
+    const maxLabelNumber = this.clustering.maxLabelNumber;
     eventsEnter
       .filter((d) => d[4] > 1) // Show the number on top of clusters with 2+ elements
       .append('text')
