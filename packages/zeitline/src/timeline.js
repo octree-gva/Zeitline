@@ -58,10 +58,12 @@ export default class Timeline {
         .attr('class', 'axis axis--x')
         .attr('transform', `translate(0, ${this.positionY})`)
         .on('click', () => {
-          this.onTimelineClick(
-            d3.mouse(d3.event.currentTarget)[0],
-            this.x.invert(d3.mouse(d3.event.currentTarget)[0])
-          );
+          if (this.onTimelineClick) {
+            this.onTimelineClick(
+              d3.mouse(d3.event.currentTarget)[0],
+              this.x.invert(d3.mouse(d3.event.currentTarget)[0])
+            );
+          }
         });
     this.transition = d3.transition()
       .duration(animation.time)
