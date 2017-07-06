@@ -377,7 +377,7 @@ export default class Timeline {
         .attr('class', 'event')
         .attr('rx', eventsSize)
         .attr('ry', eventsSize)
-        .attr('width', (d) => eventsSize * 2 + d[1])
+        .attr('width', (d) => Math.max(d[1], eventsSize * 2))
         .attr('height', eventsSize * 2);
 
     // eventsEnter
