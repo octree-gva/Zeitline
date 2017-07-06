@@ -72,38 +72,86 @@ let conf = {
   },
 };
 
-let t = new Zeitline.Timeline(conf);
-t.render();
-t.update(conf);
+d3.csv('https://raw.githubusercontent.com/wiki/arunsrinivasan/flights/NYCflights14/weather_delays14.csv', function(data) {
+  console.log('213434567')
+  conf.data = data.map(function(d) {
+    return {date: new Date(2017, +d['month'], d['day']), label: d['flight']};
+  });
 
-// document.querySelectorAll('.interval').forEach((e) => {
-//   e.addEventListener('click', (e) => {
-//     const typeInt = e.target.getAttribute('data-interval');
-//     const ticksInterval = e.target.getAttribute('data-ticks-interval');
-//     const timeFormat = e.target.getAttribute('data-time-format');
-//     conf.timeFormat = timeFormat;
-//     conf.ticksIntervals = ticksInterval;
+  let t = new Zeitline.Timeline(conf);
+  t.render();
 
-//     conf.dateRange = [
-//       moment(),
-//       moment().add(1, typeInt),
-//     ];
-//     t.update(conf);
-//   }, false);
-// });
+  t.onTimelineClick((x, y) => {
+    console.log(x, y);
+  });
+});
 
-// document.querySelector('.move-left').addEventListener('click', (e) => {
-//   const diff = conf.dateRange[1] - conf.dateRange[0];
+// conf = {
+//   dateRange: [
+//     new Date('2000-1-1'),
+//     new Date('2010-1-1'),
+//   ],
+//   intervals: [
+//     [
+//       new Date('2001-1-1'),
+//       new Date('2009-1-1'),
+//       200,
+//     ],
+//   ],
+//   options: {
+//     margin: {top: 0, left: 0, right: 0, bottom: 0},
+//   },
+// };
 
-//   conf.dateRange[0] -= diff;
-//   conf.dateRange[1] -= diff;
-//   t.update(conf);
-// }, false);
 
-// document.querySelector('.move-right').addEventListener('click', (e) => {
-//   const diff = conf.dateRange[1] - conf.dateRange[0];
+// conf = {
+//   dateRange: [
+//     new Date('2000-01-01'),
+//     new Date('2010-01-01'),
+//   ],
+//   intervals: [
+//     [
+//       new Date('2002-01-01'),
+//       new Date('2008-01-01'),
+//       200,
+//     ],
+//   ],
+//   margin: {top: 0, left: 0, right: 0, bottom: 0},
+//   dragAndDrop: {throttle: 5, zoneWidth: 5},
+// };
 
-//   conf.dateRange[0] += diff;
-//   conf.dateRange[1] += diff;
-//   t.update(conf);
-// }, false);
+
+// t.destroy();
+// t.update(conf);
+
+document.querySelectorAll('.interval').forEach((e) => {
+  e.addEventListener('click', (e) => {
+    const typeInt = e.target.getAttribute('data-interval');
+    const ticksInterval = e.target.getAttribute('data-ticks-interval');
+    const timeFormat = e.target.getAttribute('data-time-format');
+    conf.timeFormat = timeFormat;
+    conf.ticksIntervals = ticksInterval;
+
+    conf.dateRange = [
+      moment(),
+      moment().add(1, typeInt),
+    ];
+    t.update(conf);
+  }, false);
+});
+
+document.querySelector('.move-left').addEventListener('click', (e) => {
+  const diff = conf.dateRange[1] - conf.dateRange[0];
+
+  conf.dateRange[0] -= diff;
+  conf.dateRange[1] -= diff;
+  t.update(conf);
+}, false);
+
+document.querySelector('.move-right').addEventListener('click', (e) => {
+  const diff = conf.dateRange[1] - conf.dateRange[0];
+
+  conf.dateRange[0] += diff;
+  conf.dateRange[1] += diff;
+  t.update(conf);
+}, false);

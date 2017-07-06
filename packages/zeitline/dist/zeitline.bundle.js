@@ -128,14 +128,11 @@ var defaults = {
   ticksIntervals: 'Month',
   data: [],
   intervals: [],
-  onClick: function onClick() {},
-  options: {
-    margin: { top: 20, right: 20, bottom: 20, left: 20 },
-    animation: { time: 300, ease: d3.easePoly },
-    clustering: { maxSize: 15, epsilon: 20 },
-    events: { size: 2 },
-    dragAndDrop: { throttle: 25 }
-  }
+  margin: { top: 20, right: 20, bottom: 20, left: 20 },
+  animation: { time: 300, ease: d3.easePoly },
+  clustering: { maxSize: 15, epsilon: 20, maxLabelNumber: 99 },
+  events: { size: 2 },
+  dragAndDrop: { throttle: 25, zoneWidth: 15 }
 };
 
 /**
@@ -146,7 +143,6 @@ var defaults = {
  */
 
 var Timeline = function () {
-
   /**
    * Creates an instance of Timeline
    *
@@ -170,9 +166,8 @@ var Timeline = function () {
       var _this = this;
 
       this.svg = d3.select(this.selector);
-      var _options = this.options,
-          margin = _options.margin,
-          animation = _options.animation;
+      var margin = this.margin,
+          animation = this.animation;
 
       this.width = +this.svg.attr('width') - margin.left - margin.right;
       this.height = +this.svg.attr('height') - margin.top - margin.bottom;
@@ -180,7 +175,9 @@ var Timeline = function () {
       this.timeline = this.svg.append('g').attr('class', 'timeline').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
       this.axisLabels = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')');
       this.axisTicks = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')').on('click', function () {
-        _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
+        if (_this.onTimelineClick) {
+          _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
+        }
       });
       this.transition = d3.transition().duration(animation.time).ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
     }
@@ -198,11 +195,6 @@ var Timeline = function () {
 
       // Check if configuration is valid
       var mergedConf = this.checkAndNormalizeConf(_extends({}, defaults, conf));
-
-      // Override the default configuration
-      if (conf.options) {
-        conf.options = _extends({}, defaults.options, conf.options);
-      }
 
       Object.assign(this, mergedConf);
     }
@@ -296,7 +288,7 @@ var Timeline = function () {
 
         _this2.x = getScaleTime();
         _this2.renderData(_this2.data);
-      }, this.options.dragAndDrop.throttle);
+      }, this.dragAndDrop.throttle);
 
       // Draw intervals separation
       var that = this;
@@ -325,11 +317,7 @@ var Timeline = function () {
         }
       }));
 
-      pivotsGroupEnter.append('rect').attr('fill-opacity', 0)
-      // .attr('class', 'event')
-      // .attr('x', (pivot) => pivot + .5)
-      // .attr('y', this.positionY - 30)
-      .attr('x', -9).attr('width', 18).attr('height', 60);
+      pivotsGroupEnter.append('rect').attr('fill-opacity', 0).attr('x', -this.dragAndDrop.zoneWidth / 2).attr('width', this.dragAndDrop.zoneWidth).attr('height', 60);
 
       pivotsGroupEnter.append('line').attr('class', 'linear reference-line reference-interval').attr('stroke', '#000').attr('stroke-width', 2).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 60);
 
@@ -428,7 +416,7 @@ var Timeline = function () {
       var _this3 = this;
 
       var dataTime = data.map(function (d) {
-        return [_this3.x(d.date), d.label];
+        return [_this3.x(d.date), d.label, d.date];
       }).sort(function (a, b) {
         return a[0] - b[0];
       });
@@ -449,10 +437,10 @@ var Timeline = function () {
           // Difference between x0 and xi+1
           var intAZ = prec - firstInCluster[0];
 
-          if (intAB > _this3.options.clustering.epsilon || intAZ > _this3.options.clustering.maxSize) {
+          if (intAB > _this3.clustering.epsilon || intAZ > _this3.clustering.maxSize) {
             // We end the current cluster
-            // [firstEvent date (number), interval first-last events, first event label, current interval (number)]
-            acc.push([firstInCluster[0], intAZ, firstInCluster[1], xs[i - 1][1], eaten]);
+            // [firstEvent date (number), interval first-last events, first event, last event]
+            acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i - 1], eaten]);
             firstInCluster = x;
             eaten = 0;
           }
@@ -477,26 +465,27 @@ var Timeline = function () {
         return d;
       });
 
-      var eventsSize = this.options.events.size;
+      var eventsSize = this.events.size;
 
       var eventsEnter = events.enter().append('g').attr('class', 'event-group').attr('transform', function (d) {
         return 'translate(' + (d[0] - eventsSize + .5) + ', ' + (_this3.positionY - eventsSize + .5) + ')';
       }).style('font-size', '10px').style('font-family', 'sans-serif');
 
+      var maxLabelNumber = this.clustering.maxLabelNumber;
       eventsEnter.filter(function (d) {
         return d[4] > 1;
       }) // Show the number on top of clusters with 2+ elements
-      .append('text').attr('dx', function (d) {
-        return d[1] / 2 - 1;
+      .append('text').text(function (d) {
+        return d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+';
+      }).attr('dy', -5).attr('dx', function (d) {
+        return d[1] / 2 + 2;
       }) // Center text on top of the cluster
-      .attr('dy', -5).text(function (d) {
-        return d[4] < 100 ? d[4] : '99+';
-      });
+      .attr('text-anchor', 'middle');
 
       eventsEnter.filter(function (d) {
         return d[0] > 0 && d[0] < _this3.width;
       }).append('rect').attr('class', 'event').attr('rx', eventsSize).attr('ry', eventsSize).attr('width', function (d) {
-        return eventsSize * 2 + d[1];
+        return Math.max(d[1], eventsSize * 2);
       }).attr('height', eventsSize * 2);
 
       // eventsEnter
@@ -506,13 +495,20 @@ var Timeline = function () {
       //     .attr('height', eventsSize * 2);
 
       // Draw events
-      this.timeline.selectAll('rect').on('click', function (event) {
+      this.timeline.selectAll('.event-group').on('click', function (event) {
         d3.select(d3.event.target)
         // .transition(this.transition)
         // .attr('height', 15)
         .transition(_this3.transition).call(function () {
-          if (_this3.onClick) {
-            _this3.onClick.apply(event);
+          if (_this3.onEventClick) {
+            // Override d3 event with custom fields
+            var customEvent = d3.event;
+            customEvent.axisX = event[0];
+            customEvent.clusterSize = event[1];
+            customEvent.labels = [event[2][1], event[3][1]];
+            customEvent.dates = [event[2][2], event[3][2]];
+
+            _this3.onEventClick(customEvent);
           }
           // d3.event.stopPropagation();
         }).delay(500);
