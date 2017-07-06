@@ -333,8 +333,9 @@ export default class Timeline {
         }
       }
 
+      // Cluster of one element
       if (i + 1 === xs.length) {
-        acc.push([firstInCluster[0], x[0] - firstInCluster[0]]);
+        acc.push([firstInCluster[0], 0, firstInCluster, null, 0]);
       }
 
       return {
