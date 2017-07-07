@@ -227,6 +227,22 @@ var Timeline = function () {
         intervals: conf.intervals.filter(Boolean)
       });
 
+      // Order inner intervals range if needed
+      // Interval [Date B, Date A] will be switched to [Date A, Date B]
+      // (with Date A < Date B)
+      conf.intervals = conf.intervals.map(function (interval) {
+        return interval[0] - interval[1] > 0 ? [interval[1], interval[0], interval[2]] : interval;
+      });
+
+      // Check if an interval does not overlap an other one
+      var isTheirAnOverlap = !conf.intervals.reduce(function (prev, curr, i, arr) {
+        return arr[i + 1] === undefined ? prev : prev && curr[1] - arr[i + 1][0] < 0;
+      }, true);
+
+      if (isTheirAnOverlap) {
+        throw new Error('Intervals are not valid because an overlap exist');
+      }
+
       if (conf.dateRange.length < 2) {
         throw new TypeError('Date range should have two dates (start and end)');
       }
@@ -495,26 +511,27 @@ var Timeline = function () {
       //     .transition(this.transition)
       //     .attr('height', eventsSize * 2);
 
-      // Draw events
-      this.timeline.selectAll('.event-group').on('click', function (event) {
-        d3.select(d3.event.target)
-        // .transition(this.transition)
-        // .attr('height', 15)
-        .transition(_this3.transition).call(function () {
-          if (_this3.onEventClick) {
-            // Override d3 event with custom fields
-            var customEvent = d3.event;
-            customEvent.axisX = event[0];
-            customEvent.clusterSize = event[1];
-            customEvent.labels = [event[2][1], event[3][1]];
-            customEvent.dates = [event[2][2], event[3][2]];
+      if (this.eventListeners) {
+        var _loop = function _loop(key) {
+          if (_this3.eventListeners.hasOwnProperty(key)) {
+            eventsEnter.on(key, function (event) {
+              // Override d3 event with custom fields
+              var customEvent = d3.event;
+              customEvent.axisX = event[0];
+              customEvent.clusterSize = event[1];
+              customEvent.labels = [event[2][1], event[3][1]];
+              customEvent.dates = [event[2][2], event[3][2]];
 
-            _this3.onEventClick(customEvent);
+              _this3.eventListeners[key](customEvent);
+            });
           }
-          // d3.event.stopPropagation();
-        }).delay(500);
-        // .attr('height', 6); // reset size
-      });
+        };
+
+        // Add events listeners to events
+        for (var key in this.eventListeners) {
+          _loop(key);
+        }
+      }
 
       // Remove out of frame events
       events.exit().remove();
