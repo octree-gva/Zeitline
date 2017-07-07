@@ -98,6 +98,13 @@ export default class Timeline {
       throw new TypeError('Intervals should be an array');
     }
 
+    conf = {
+      ...conf,
+      dateRange: conf.dateRange.filter(Boolean),
+      data: conf.data.filter(Boolean),
+      intervals: conf.intervals.filter(Boolean),
+    };
+
     // Order inner intervals range if needed
     // Interval [Date B, Date A] will be switched to [Date A, Date B]
     // (with Date A < Date B)
@@ -117,13 +124,6 @@ export default class Timeline {
     if (isTheirAnOverlap) {
       throw new Error('Intervals are not valid because an overlap exist');
     }
-
-    conf = {
-      ...conf,
-      dateRange: conf.dateRange.filter(Boolean),
-      data: conf.data.filter(Boolean),
-      intervals: conf.intervals.filter(Boolean),
-    };
 
     if (conf.dateRange.length < 2) {
       throw new TypeError('Date range should have two dates (start and end)');
@@ -407,16 +407,12 @@ export default class Timeline {
     //     .transition(this.transition)
     //     .attr('height', eventsSize * 2);
 
-    // Draw events
-    this.timeline.selectAll('.event-group')
-      .on('click', (event) => {
-        d3.select(d3.event.target)
-          .interrupt()
-          // .transition(this.transition)
-          // .attr('height', 15)
-          .transition(this.transition)
-          .call(() => {
-            if (this.onEventClick) {
+    if (this.eventListeners) {
+      // Add events listeners to events
+      for (const key in this.eventListeners) {
+        if (this.eventListeners.hasOwnProperty(key)) {
+          eventsEnter
+            .on(key, (event) => {
               // Override d3 event with custom fields
               const customEvent = d3.event;
               customEvent.axisX = event[0];
@@ -424,13 +420,11 @@ export default class Timeline {
               customEvent.labels = [event[2][1], event[3][1]];
               customEvent.dates = [event[2][2], event[3][2]];
 
-              this.onEventClick(customEvent);
-            }
-            // d3.event.stopPropagation();
-          })
-          .delay(500);
-          // .attr('height', 6); // reset size
-    });
+              this.eventListeners[key](customEvent);
+            });
+        }
+      }
+    }
 
     // Remove out of frame events
     events
