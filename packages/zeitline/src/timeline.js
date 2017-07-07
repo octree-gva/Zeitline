@@ -98,6 +98,26 @@ export default class Timeline {
       throw new TypeError('Intervals should be an array');
     }
 
+    // Order inner intervals range if needed
+    // Interval [Date B, Date A] will be switched to [Date A, Date B]
+    // (with Date A < Date B)
+    conf.intervals = conf.intervals.map((interval) =>
+      interval[0] - interval[1] > 0
+        ? [interval[1], interval[0], interval[2]]
+        : interval
+    );
+
+    // Check if an interval does not overlap an other one
+    const isTheirAnOverlap = !conf.intervals.reduce((prev, curr, i, arr) =>
+      arr[i+1] === undefined
+        ? prev
+        : prev && (curr[1] - arr[i+1][0] < 0)
+    , true);
+
+    if (isTheirAnOverlap) {
+      throw new Error('Intervals are not valid because an overlap exist');
+    }
+
     conf = {
       ...conf,
       dateRange: conf.dateRange.filter(Boolean),
