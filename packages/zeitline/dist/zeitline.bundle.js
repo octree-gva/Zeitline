@@ -316,11 +316,18 @@ var Timeline = function () {
         return 'translate(' + (pivot + .5) + ', ' + (_this2.positionY - 30) + ')';
       }).call(d3.drag().on('start', function (x) {
         lastPivotIndex = pivots.indexOf(x);
+        if (_this2.pivotListeners && _this2.pivotListeners.start) {
+          _this2.pivotListeners.start(d3.event);
+        }
       }).on('drag', function (x) {
         if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
           lastPivotX = d3.event.x;
 
           d3.select(this).classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
+
+          if (that.pivotListeners && that.pivotListeners.drag) {
+            that.pivotListeners.drag(d3.event);
+          }
 
           // Render events with the new pivot position after throttle
           throttleEventRender();
@@ -330,12 +337,31 @@ var Timeline = function () {
           pivots[lastPivotIndex] = lastPivotX;
           _this2.renderAxis(pivots);
           _this2.renderData(_this2.data);
+
+          if (_this2.pivotListeners && _this2.pivotListeners.end) {
+            _this2.pivotListeners.end(d3.event);
+          }
         }
       }));
 
       pivotsGroupEnter.append('rect').attr('fill-opacity', 0).attr('x', -this.dragAndDrop.zoneWidth / 2).attr('width', this.dragAndDrop.zoneWidth).attr('height', 60);
 
       pivotsGroupEnter.append('line').attr('class', 'linear reference-line reference-interval').attr('stroke', '#000').attr('stroke-width', 2).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 60);
+
+      if (this.pivotListeners) {
+        var _loop = function _loop(key) {
+          if (_this2.pivotListeners.hasOwnProperty(key)) {
+            pivotsGroupEnter.on(key, function () {
+              return _this2.pivotListeners[key](d3.event);
+            });
+          }
+        };
+
+        // Add events listeners to pivots
+        for (var key in this.pivotListeners) {
+          _loop(key);
+        }
+      }
 
       // Remove old pivots if needed
       pivotsGroup.exit().remove();
@@ -512,15 +538,15 @@ var Timeline = function () {
       //     .attr('height', eventsSize * 2);
 
       if (this.eventListeners) {
-        var _loop = function _loop(key) {
+        var _loop2 = function _loop2(key) {
           if (_this3.eventListeners.hasOwnProperty(key)) {
             eventsEnter.on(key, function (event) {
               // Override d3 event with custom fields
               var customEvent = d3.event;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
-              customEvent.labels = [event[2][1], event[3][1]];
-              customEvent.dates = [event[2][2], event[3][2]];
+              customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
+              customEvent.dates = [event[2][2], event[3] ? event[3][2] : null];
 
               _this3.eventListeners[key](customEvent);
             });
@@ -529,7 +555,7 @@ var Timeline = function () {
 
         // Add events listeners to events
         for (var key in this.eventListeners) {
-          _loop(key);
+          _loop2(key);
         }
       }
 
