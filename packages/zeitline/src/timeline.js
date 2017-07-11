@@ -417,8 +417,8 @@ export default class Timeline {
               const customEvent = d3.event;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
-              customEvent.labels = [event[2][1], event[3][1]];
-              customEvent.dates = [event[2][2], event[3][2]];
+              customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
+              customEvent.dates = [event[2][2], event[3] ? event[3][2] : null];
 
               this.eventListeners[key](customEvent);
             });
