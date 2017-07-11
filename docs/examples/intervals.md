@@ -18,12 +18,12 @@ var conf = {
     [new Date('30 Jun 2017'), new Date('10 Dec 2017'), 100],
   ],
   data: [
-    {date: new Date('31 Jan 2017'), label: 'Last day of this month'},
-    {date: new Date('10 May 2017'), label: 'My birthday'},
-    {date: new Date('11 May 2017'), label: 'Birthday party'},
-    {date: new Date('10 Jun 2017'), label: 'Jazz concert'},
-    {date: new Date('28 Jun 2017'), label: 'Vacations'},
-    {date: new Date('24 Dec 2017'), label: 'Christmas !'},
+    {date: new Date('31 Jan 2017')},
+    {date: new Date('10 May 2017')},
+    {date: new Date('11 May 2017')},
+    {date: new Date('10 Jun 2017')},
+    {date: new Date('30 Jun 2017')},
+    {date: new Date('24 Dec 2017')},
   ]
 };
 
@@ -43,12 +43,12 @@ var conf = {
     [new Date('30 Jun 2017'), new Date('10 Dec 2017'), 100],
   ],
   data: [
-    {date: new Date('31 Jan 2017'), label: 'Last day of this month'},
-    {date: new Date('10 May 2017'), label: 'My birthday'},
-    {date: new Date('11 May 2017'), label: 'Birthday party'},
-    {date: new Date('10 Jun 2017'), label: 'Jazz concert'},
-    {date: new Date('28 Jun 2017'), label: 'Vacations'},
-    {date: new Date('24 Dec 2017'), label: 'Christmas !'},
+    {date: new Date('31 Jan 2017')},
+    {date: new Date('10 May 2017')},
+    {date: new Date('11 May 2017')},
+    {date: new Date('10 Jun 2017')},
+    {date: new Date('30 Jun 2017')},
+    {date: new Date('24 Dec 2017')},
   ]
 };
 

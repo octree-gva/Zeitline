@@ -14,12 +14,12 @@ var conf = {
     new Date('01 Jan 2018'),
   ],
   data: [
-    {date: new Date('31 Jan 2017'), label: 'Last day of this month'},
-    {date: new Date('10 May 2017'), label: 'My birthday'},
-    {date: new Date('11 May 2017'), label: 'Birthday party'},
-    {date: new Date('10 Jun 2017'), label: 'Jazz concert'},
-    {date: new Date('30 Jun 2017'), label: 'Vacations'},
-    {date: new Date('24 Dec 2017'), label: 'Christmas !'},
+    {date: new Date('31 Jan 2017')},
+    {date: new Date('10 May 2017')},
+    {date: new Date('11 May 2017')},
+    {date: new Date('10 Jun 2017')},
+    {date: new Date('30 Jun 2017')},
+    {date: new Date('24 Dec 2017')},
   ]
 };
 
@@ -35,12 +35,12 @@ var conf = {
     new Date('2018-01-01'),
   ],
   data: [
-    {date: new Date('31 Jan 2017'), label: 'Last day of this month'},
-    {date: new Date('10 May 2017'), label: 'My birthday'},
-    {date: new Date('11 May 2017'), label: 'Birthday party'},
-    {date: new Date('10 Jun 2017'), label: 'Jazz concert'},
-    {date: new Date('30 Jun 2017'), label: 'Vacations'},
-    {date: new Date('24 Dec 2017'), label: 'Christmas !'},
+    {date: new Date('31 Jan 2017')},
+    {date: new Date('10 May 2017')},
+    {date: new Date('11 May 2017')},
+    {date: new Date('10 Jun 2017')},
+    {date: new Date('30 Jun 2017')},
+    {date: new Date('24 Dec 2017')},
   ]
 };
 

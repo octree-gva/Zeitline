@@ -27,11 +27,7 @@ var conf = {
   ],
   eventListeners: {
     click: function(event) {
-      console.log(event);
-      timelineEl.style.background = '#3498db';
-      setTimeout(() => {
-        timelineEl.style.background = '#fff';
-      }, 1000);
+      alert(event.labels[0]);
     },
   },
   pivotListeners: {
@@ -69,11 +65,7 @@ var conf = {
   ],
   eventListeners: {
     click: function(event) {
-      console.log(event);
-      timelineEl.style.background = '#3498db';
-      setTimeout(() => {
-        timelineEl.style.background = '#fff';
-      }, 1000);
+      alert(event.labels[0]);
     },
   },
   pivotListeners: {
