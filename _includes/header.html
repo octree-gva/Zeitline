@@ -1,0 +1,24 @@
+<header>
+  <nav class="navbar navbar-light navbar-toggleable-sm bg-faded">
+    <a class="navbar-brand site-title" href="{{ site.baseurl }}/">
+      <img class="float-left" src="{{ site.baseurl }}/images/logo64b.png" />
+      {{ site.title }}
+    </a>
+    
+    <ul class="navbar-nav ml-auto">
+      {% for my_page in site.pages %}
+      <!-- section -->
+        {% if my_page.title and (my_page.layout != 'doc-example' or my_page.navbar) %}
+        <!-- | sort:"weight" -->
+        <li class="nav-item">
+          <a class="nav-link {% if my_page.url == page.url %}active{% endif %}" href="{{ my_page.url | prepend: site.baseurl }}">{{ my_page.title }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/octree-gva/Zeitline"><span class="icon-github">{% include icon-github.svg %}</span> Github</a>
+      </li>
+    </ul>
+  </nav>
+</header>
