@@ -72,6 +72,20 @@ let conf = {
       }, 1000);
     },
   },
+  pivotListeners: {
+    start: function(event) {
+      console.log('start', event);
+    },
+    drag: function(event) {
+      console.log('drag', event);
+    },
+    end: function(event) {
+      console.log('end', event);
+    },
+    click: function(e) {
+      console.log('click', e);
+    },
+  },
 };
 
 d3.csv('https://raw.githubusercontent.com/wiki/arunsrinivasan/flights/NYCflights14/weather_delays14.csv', function(data) {

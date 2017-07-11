@@ -206,6 +206,9 @@ export default class Timeline {
       .call(d3.drag()
         .on('start', (x) => {
           lastPivotIndex = pivots.indexOf(x);
+          if (this.pivotListeners && this.pivotListeners.start) {
+            this.pivotListeners.start(d3.event);
+          }
         })
         .on('drag', function(x) {
           if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
@@ -214,6 +217,10 @@ export default class Timeline {
             d3.select(this)
               .classed('draggable', true)
               .attr('transform', `translate(${lastPivotX}, ${that.positionY - 30})`);
+
+            if (that.pivotListeners && that.pivotListeners.drag) {
+              that.pivotListeners.drag(d3.event);
+            }
 
             // Render events with the new pivot position after throttle
             throttleEventRender();
@@ -224,6 +231,10 @@ export default class Timeline {
             pivots[lastPivotIndex] = lastPivotX;
             this.renderAxis(pivots);
             this.renderData(this.data);
+
+            if (this.pivotListeners && this.pivotListeners.end) {
+              this.pivotListeners.end(d3.event);
+            }
           }
         })
       );
@@ -244,6 +255,17 @@ export default class Timeline {
         .attr('x2', 0)
         .attr('y1', 0)
         .attr('y2', 60);
+
+
+    if (this.pivotListeners) {
+      // Add events listeners to pivots
+      for (const key in this.pivotListeners) {
+        if (this.pivotListeners.hasOwnProperty(key)) {
+          pivotsGroupEnter
+            .on(key, () => this.pivotListeners[key](d3.event));
+        }
+      }
+    }
 
     // Remove old pivots if needed
     pivotsGroup.exit()

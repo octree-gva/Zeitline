@@ -74,7 +74,8 @@ t.update({/* config */}); // update the timeline with a new configuration
   - Example: `intervals: [[new Date(2017, 1, 1'), new Date(2017, 3, 1), 200], ...]`
 - **`timeFormat`** (`string`): String to format the labels, check the [d3-time-format documentation](https://github.com/d3/d3-time-format#locale_format) for more information about the available formats.
 - **`ticksIntervals`** (`string`): Intervals of period for each tick, can be `Day`, `Week`, `Month` or `Year`.
-- **`eventListeners`** (`object<{typenames: callback}>`): Add a callback for the specified typenames (example: click)
+- **`eventListeners`** (`object<{typenames: callback}>`): Add a callback for the specified typenames for events (example: click)
+- **`pivotListeners`** (`object<{typenames: callback}>`): Add a callback for the specified typenames for pivots (example: drag)
 - **`margin`** (`{top: number, right: number, bottom: number, left: number}`)
 - **`animation`** (`{time: number, ease: string}`): The ease propriety specifies the transition easing function for elements in the timeline, check [d3-ease documentation](https://github.com/d3/d3-ease#api-reference) for more information.
 - **`clustering`**
