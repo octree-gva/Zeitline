@@ -2,7 +2,7 @@
   "name": "zeitline",
   "description": "Zeitline",
   "version": "0.0.4",
-  "main": "dist/d3-timeline.bundle.js",
+  "main": "dist/zeitline.bundle.js",
   "module": "src/index.js",
   "directories": {
     "lib": "src",
