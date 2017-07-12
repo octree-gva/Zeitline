@@ -1,14 +1,17 @@
 ---
-# You don't need to edit this file, it's empty on purpose.
-# Edit theme's home layout instead if you wanna make some changes
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 layout: home
 ---
 
-# Zeitline
+<div class="jumbotron mt-2">
+  <h1 class="display-3">Zeitline</h1>
+  <p class="lead">A flexible timeline implemented in D3.</p>
+  <hr class="my-4">
+  <p class="lead">
+    Please check the documentation to get started !<br>
+    <a class="btn btn-primary btn-lg" href="documentation" role="button">Documentation</a>
+    {% if site.github_username %}
+    <a class="btn btn-secondary btn-lg" href="https://github.com/{{ site.github_username }}/Zeitline">Github</a>
+    {% endif %}
+  </p>
+</div>
 
-A flexible timeline implemented in D3.
-
-Please check the
-[the documentation](documentation){:.btn .btn-primary}
-to get started !
