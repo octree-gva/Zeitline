@@ -411,13 +411,15 @@ export default class Timeline {
       .append('text')
         .text((d) => d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+')
         .attr('dy', -5)
-        .attr('dx', (d) => d[1] / 2 + 2) // Center text on top of the cluster
-        .attr('text-anchor', 'middle');
+        .attr('dx', (d) => d[1] === 0 ? 0 : d[1] / 2) // Center text on top of the cluster
+        .attr('text-anchor', 'middle')
+        .attr('pointer-events', 'auto');
 
     eventsEnter
       .filter((d) => d[0] > 0 && d[0] < this.width)
       .append('rect')
         .attr('class', 'event')
+        .attr('x', (d) => d[1] === 0 ? -eventsSize : 0)
         .attr('rx', eventsSize)
         .attr('ry', eventsSize)
         .attr('width', (d) => Math.max(d[1], eventsSize * 2))
