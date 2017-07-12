@@ -4,7 +4,6 @@
 
 .event {
   fill: #4249ae;
-  /*transition: fill .2s ease-out;*/
 }
 
 .event:hover {
@@ -39,7 +38,6 @@
 .axis--x .tick line {
   transform: translateY(-10px);
   stroke: rgba(180, 180, 180, .5);
-  stroke-width: 1;
   stroke-linecap: round;
 }
 

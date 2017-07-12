@@ -1,12 +1,13 @@
 <header>
   <nav class="navbar navbar-light navbar-toggleable-sm bg-faded">
     <a class="navbar-brand site-title" href="{{ site.baseurl }}/">
-      <img class="float-left" src="{{ site.baseurl }}/images/logo64b.png" />
+      <!--<img class="float-left" src="{{ site.baseurl }}/images/logo64b.png" />-->
       {{ site.title }}
     </a>
     
     <ul class="navbar-nav ml-auto">
-      {% for my_page in site.pages %}
+    {% assign pages = site.pages | sort: 'index' %}
+		{% for my_page in pages %}
       <!-- section -->
         {% if my_page.title and (my_page.layout != 'doc-example' or my_page.navbar) %}
         <!-- | sort:"weight" -->
@@ -17,7 +18,7 @@
       {% endfor %}
 
       <li class="nav-item">
-        <a class="nav-link" href="https://github.com/octree-gva/Zeitline"><span class="icon-github">{% include icon-github.svg %}</span> Github</a>
+        <a class="nav-link" href="https://github.com/{{ site.github_username }}/Zeitline"><span class="icon-github">{% include icon-github.svg %}</span> Github</a>
       </li>
     </ul>
   </nav>
