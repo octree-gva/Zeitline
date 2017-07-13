@@ -521,13 +521,15 @@ var Timeline = function () {
       .append('text').text(function (d) {
         return d[4] < maxLabelNumber + 1 ? d[4] : maxLabelNumber + '+';
       }).attr('dy', -5).attr('dx', function (d) {
-        return d[1] / 2 + 2;
+        return d[1] === 0 ? 0 : d[1] / 2;
       }) // Center text on top of the cluster
-      .attr('text-anchor', 'middle');
+      .attr('text-anchor', 'middle').attr('pointer-events', 'auto');
 
       eventsEnter.filter(function (d) {
         return d[0] > 0 && d[0] < _this3.width;
-      }).append('rect').attr('class', 'event').attr('rx', eventsSize).attr('ry', eventsSize).attr('width', function (d) {
+      }).append('rect').attr('class', 'event').attr('x', function (d) {
+        return d[1] === 0 ? -eventsSize : 0;
+      }).attr('rx', eventsSize).attr('ry', eventsSize).attr('width', function (d) {
         return Math.max(d[1], eventsSize * 2);
       }).attr('height', eventsSize * 2);
 
@@ -600,10 +602,6 @@ var Timeline = function () {
 
       // if (newConf.ticksIntervals || newConf.dateRange) {
       this.renderAxis();
-      // this.axis
-      //   .transition()
-      //   .duration(500)
-      //   .call(this.xAxis);
       // }
 
       if (newConf.data) {
