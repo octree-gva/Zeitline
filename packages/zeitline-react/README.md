@@ -19,7 +19,17 @@
 [coveralls]: https://coveralls.io/github/user/repo
 -->
 
-### Example
+## Installation
+
+You can simply install Zeitline like that:
+
+```
+npm install zeitline-react --save
+or
+yarn add react-zeitline
+```
+
+## Usage
 
 ```js
 class ZeitlineDemo extends Component {
