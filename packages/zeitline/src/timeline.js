@@ -4,8 +4,8 @@ import {throttle} from './utils';
 // Default configuration
 const defaults = {
   dateRange: [
-    new Date(2017, 1, 1),
-    new Date(2018, 1, 1),
+    new Date(2017, 0, 0),
+    new Date(2018, 0, 0),
   ],
   selector: 'svg',
   timeFormat: '%B',
@@ -490,10 +490,6 @@ export default class Timeline {
 
     // if (newConf.ticksIntervals || newConf.dateRange) {
     this.renderAxis();
-    // this.axis
-    //   .transition()
-    //   .duration(500)
-    //   .call(this.xAxis);
     // }
 
     if (newConf.data) {
