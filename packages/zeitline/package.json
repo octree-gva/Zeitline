@@ -10,22 +10,22 @@
     "example": "example"
   },
   "dependencies": {
-    "d3": "^4.9.1"
+    "d3": "^4.10.0"
   },
   "devDependencies": {
     "@types/d3": "^4.9.0",
     "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
+    "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.5.1",
-    "chai": "^4.0.0",
+    "babel-preset-env": "^1.6.0",
+    "chai": "^4.1.0",
     "chai-spies": "^0.7.1",
-    "eslint": "^4.0.0",
+    "eslint": "^4.2.0",
     "eslint-config-google": "^0.9.1",
-    "jsdom": "^11.0.0",
+    "jsdom": "^11.1.0",
     "mocha": "^3.4.2",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1"
   },
   "scripts": {
     "build": "webpack && NODE_ENV=production webpack",
