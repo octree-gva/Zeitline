@@ -1,5 +1,5 @@
 ---
-index: 4
+index: 5
 layout: doc-example
 title: Custom CSS style
 section: examples
