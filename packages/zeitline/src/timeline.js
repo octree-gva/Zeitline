@@ -1,15 +1,4 @@
-const d3 = Object.assign(
-  {},
-  require('d3-array'),
-  require('d3-axis'),
-  require('d3-drag'),
-  require('d3-ease'),
-  require('d3-format'),
-  require('d3-scale'),
-  require('d3-selection'),
-  require('d3-transition'),
-  require('d3-time-format')
-);
+import d3 from './partial-d3';
 import {event as currentEvent} from 'd3-selection';
 import {throttle} from './utils';
 
@@ -273,7 +262,6 @@ export default class Timeline {
         .attr('y1', 0)
         .attr('y2', 60);
 
-
     if (this.pivotListeners) {
       // Add events listeners to pivots
       for (const key in this.pivotListeners) {
@@ -455,7 +443,8 @@ export default class Timeline {
           eventsEnter
             .on(key, (event) => {
               // Override d3 event with custom fields
-              const customEvent = currentEvent;
+              // const customEvent = omg; // currentEvent;
+              const customEvent = currentEvent();
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
               customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
