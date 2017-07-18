@@ -1,16 +1,16 @@
 const d3 = Object.assign(
   {},
-  require('d3-format'),
-  require('d3-drag'),
-  require('d3-selection'),
-  require('d3-transition'),
-  require('d3-ease'),
-  require('d3-scale'),
   require('d3-array'),
   require('d3-axis'),
-  require('d3-time-format'),
-  require('d3-axis')
+  require('d3-drag'),
+  require('d3-ease'),
+  require('d3-format'),
+  require('d3-scale'),
+  require('d3-selection'),
+  require('d3-transition'),
+  require('d3-time-format')
 );
+import {event as currentEvent} from 'd3-selection';
 import {throttle} from './utils';
 
 // Default configuration
@@ -72,8 +72,8 @@ export default class Timeline {
         .on('click', () => {
           if (this.onTimelineClick) {
             this.onTimelineClick(
-              d3.mouse(d3.event.currentTarget)[0],
-              this.x.invert(d3.mouse(d3.event.currentTarget)[0])
+              d3.mouse(currentEvent.currentTarget)[0],
+              this.x.invert(d3.mouse(currentEvent.currentTarget)[0])
             );
           }
         });
@@ -224,19 +224,19 @@ export default class Timeline {
         .on('start', (x) => {
           lastPivotIndex = pivots.indexOf(x);
           if (this.pivotListeners && this.pivotListeners.start) {
-            this.pivotListeners.start(d3.event);
+            this.pivotListeners.start(currentEvent);
           }
         })
         .on('drag', function(x) {
-          if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
-            lastPivotX = d3.event.x;
+          if (!isOverlapping(pivots, lastPivotIndex, currentEvent.x, 10)) {
+            lastPivotX = currentEvent.x;
 
             d3.select(this)
               .classed('draggable', true)
               .attr('transform', `translate(${lastPivotX}, ${that.positionY - 30})`);
 
             if (that.pivotListeners && that.pivotListeners.drag) {
-              that.pivotListeners.drag(d3.event);
+              that.pivotListeners.drag(currentEvent);
             }
 
             // Render events with the new pivot position after throttle
@@ -250,7 +250,7 @@ export default class Timeline {
             this.renderData(this.data);
 
             if (this.pivotListeners && this.pivotListeners.end) {
-              this.pivotListeners.end(d3.event);
+              this.pivotListeners.end(currentEvent);
             }
           }
         })
@@ -279,7 +279,7 @@ export default class Timeline {
       for (const key in this.pivotListeners) {
         if (this.pivotListeners.hasOwnProperty(key)) {
           pivotsGroupEnter
-            .on(key, () => this.pivotListeners[key](d3.event));
+            .on(key, () => this.pivotListeners[key](currentEvent));
         }
       }
     }
@@ -455,7 +455,7 @@ export default class Timeline {
           eventsEnter
             .on(key, (event) => {
               // Override d3 event with custom fields
-              const customEvent = d3.event;
+              const customEvent = currentEvent;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
               customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
