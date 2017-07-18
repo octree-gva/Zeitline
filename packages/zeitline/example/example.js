@@ -89,7 +89,6 @@ let conf = {
 };
 
 d3.csv('https://raw.githubusercontent.com/wiki/arunsrinivasan/flights/NYCflights14/weather_delays14.csv', function(data) {
-  console.log('213434567')
   conf.data = data.map(function(d) {
     return {date: new Date(2017, +d['month'], d['day']), label: d['flight']};
   });
@@ -97,9 +96,9 @@ d3.csv('https://raw.githubusercontent.com/wiki/arunsrinivasan/flights/NYCflights
   let t = new Zeitline.Timeline(conf);
   t.render();
 
-  t.onTimelineClick((x, y) => {
-    console.log(x, y);
-  });
+  // t.onTimelineClick((x, y) => {
+  //   console.log(x, y);
+  // });
 });
 
 // conf = {
@@ -140,6 +139,7 @@ d3.csv('https://raw.githubusercontent.com/wiki/arunsrinivasan/flights/NYCflights
 // t.destroy();
 // t.update(conf);
 
+/*
 document.querySelectorAll('.interval').forEach((e) => {
   e.addEventListener('click', (e) => {
     const typeInt = e.target.getAttribute('data-interval');
@@ -171,3 +171,4 @@ document.querySelector('.move-right').addEventListener('click', (e) => {
   conf.dateRange[1] += diff;
   t.update(conf);
 }, false);
+*/
