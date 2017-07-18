@@ -29,6 +29,7 @@ export default class Timeline {
   /**
    * Creates an instance of Timeline
    *
+   * @constructor
    * @param {object} conf Configuration
    */
   constructor(conf) {
@@ -38,6 +39,8 @@ export default class Timeline {
 
   /**
    * Initialize timeline
+   *
+   * Create the svg node, the axis and calculate the margins & positions
    */
   init() {
     this.svg = d3.select(this.selector);
@@ -70,7 +73,7 @@ export default class Timeline {
   /**
    * Set timeline configuration
    *
-   * @param {object} conf
+   * @param {object} conf Configuration
    */
   setConf(conf = {}) {
     // Check if configuration is valid
@@ -80,9 +83,9 @@ export default class Timeline {
   }
 
   /**
-   * Check if the configuration is valid and remove empty elements if needed
+   * Check if the configuration is valid, reorder or remove empty elements if needed
    *
-   * @param {object} conf
+   * @param {object} conf Configuration to check and normalize
    * @return {object} Normalized conf
    */
   checkAndNormalizeConf(conf) {
@@ -134,8 +137,10 @@ export default class Timeline {
 
   /**
    * Render x axis
+   * Render the polylinear x axis with ticks and pivots and registered callbacks
    *
-   * @param {array} pivots (optional)
+   * @param {array} pivots (optional) List of pivots, if empty, pivots will be calculated
+   * from the `intervals` option
    */
   renderAxis(pivots = null) {
     if (pivots === null) {
@@ -299,11 +304,11 @@ export default class Timeline {
   }
 
   /**
-   * Compute pivots for intervals based on dateRange
+   * Compute pivots for intervals from date A to B based on `dateRange`
    *
-   * @param {array} dateRange
-   * @param {array} intervals
-   * @return {array} List of pivots (in px)
+   * @param {array} dateRange List of date A and date B
+   * @param {array} intervals List of [date A, date B, width (in pixel)]
+   * @return {array} List of pivots on the x axis (in pixel)
    */
   getPivots(dateRange, intervals) {
     // Sum intervals size in px
@@ -345,9 +350,9 @@ export default class Timeline {
   }
 
   /**
-   * Render data as circles on the timeline
+   * Render data events as circles or clusters on the timeline and register callbacks
    *
-   * @param {array} data Array of objects
+   * @param {array} data Array of data events objects (`{date: ..., label: ...}`)
    */
   renderData(data) {
     let dataTime = data
@@ -457,9 +462,9 @@ export default class Timeline {
   }
 
   /**
-   * Update data
+   * Update the timeline with the new configuration
    *
-   * @param {object} newConf Configuration
+   * @param {object} newConf New configuration with new data or options
    */
   update(newConf) {
     this.setConf(newConf);
@@ -498,7 +503,7 @@ export default class Timeline {
   }
 
   /**
-   * Render timeline
+   * Render the entire timeline
    */
   render() {
     this.renderAxis();
@@ -506,7 +511,7 @@ export default class Timeline {
   }
 
   /**
-   * Destroy
+   * Destroy the timeline, remove the svg node
    */
   destroy() {
     setTimeout(() => {
