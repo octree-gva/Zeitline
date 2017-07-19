@@ -3,3 +3,4 @@ _site
 .jekyll-metadata
 packages
 node_modules
+*.log
