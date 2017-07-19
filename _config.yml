@@ -53,5 +53,6 @@ kramdown:
   syntax_highlighter: rouge
 
 exclude:
-  - node_modules
-  - packages
+  - node_modules/
+  - packages/
+  - codedoc/

@@ -16,7 +16,7 @@
 			{% if forloop.first %}
 			<li class="nav-item nav-header">{{ section[1] }}</li>
 			{% endif %}
-			{% if my_page.title and my_page.section == section[0] %}
+			{% if my_page.title and my_page.index >= 0 and my_page.section == section[0] %}
 				<li class="nav-item">
 					<a class="nav-link {% if my_page.url == page.url %}active{% endif %}" href="{{ site.baseurl }}{{ my_page.url }}">{{ my_page.title }}</a>
 				</li>

@@ -5,7 +5,7 @@ title: Update the configuration
 section: examples
 ---
 
-Zeitline allows you to update the configuration on the fly and to re render the timeline with the new options.
+Zeitline allows you to update the configuration on the fly and to re render the timeline with the new options. You can check an [other example here](update-conf2).
 
 ```js
 var conf = {
@@ -59,7 +59,7 @@ t.render();
 var button = document.createElement('input');
 button.type = 'button';
 button.className = 'btn btn-primary';
-button.value = 'Update configuration';
+button.value = 'Update configuration (add data, change dateRange)';
 
 document.querySelector('.timeline-example').appendChild(button);
 
