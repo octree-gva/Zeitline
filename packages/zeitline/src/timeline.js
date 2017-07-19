@@ -23,13 +23,16 @@ const defaults = {
  * Timeline class
  *
  * @export
+ * @public
  * @class Timeline
+ * @author Fabien Sa
  */
 export default class Timeline {
   /**
    * Creates an instance of Timeline
    *
    * @constructor
+   * @public
    * @param {object} conf Configuration
    */
   constructor(conf) {
@@ -41,6 +44,8 @@ export default class Timeline {
    * Initialize timeline
    *
    * Create the svg node, the axis and calculate the margins & positions
+   *
+   * @protected
    */
   init() {
     this.svg = d3.select(this.selector);
@@ -73,6 +78,7 @@ export default class Timeline {
   /**
    * Set timeline configuration
    *
+   * @protected
    * @param {object} conf Configuration
    */
   setConf(conf = {}) {
@@ -85,7 +91,11 @@ export default class Timeline {
   /**
    * Check if the configuration is valid, reorder or remove empty elements if needed
    *
+   * @protected
    * @param {object} conf Configuration to check and normalize
+   * @throws {TypeError} If dateRange, data or intervals are not arrays
+   * @throws {Error} If intervals overlaps
+   * @throws {Error} If dateRange does not have 2 dates
    * @return {object} Normalized conf
    */
   checkAndNormalizeConf(conf) {
@@ -129,7 +139,7 @@ export default class Timeline {
     }
 
     if (conf.dateRange.length < 2) {
-      throw new TypeError('Date range should have two dates (start and end)');
+      throw new Error('Date range should have two dates (start and end)');
     }
 
     return conf;
@@ -137,8 +147,9 @@ export default class Timeline {
 
   /**
    * Render x axis
-   * Render the polylinear x axis with ticks and pivots and registered callbacks
+   * Render the polylinear x axis with ticks and pivots and registered events callbacks
    *
+   * @protected
    * @param {array} pivots (optional) List of pivots, if empty, pivots will be calculated
    * from the `intervals` option
    */
@@ -294,17 +305,9 @@ export default class Timeline {
   }
 
   /**
-   * Register a callback on timeline click
-   *
-   * @param {any} callback
-   */
-  onTimelineClick(callback) {
-    this.onTimelineClick = callback;
-  }
-
-  /**
    * Compute pivots for intervals from date A to B based on `dateRange`
    *
+   * @protected
    * @param {array} dateRange List of date A and date B
    * @param {array} intervals List of [date A, date B, width (in pixel)]
    * @return {array} List of pivots on the x axis (in pixel)
@@ -349,8 +352,9 @@ export default class Timeline {
   }
 
   /**
-   * Render data events as circles or clusters on the timeline and register callbacks
+   * Render data events as circles or clusters on the timeline and register events callbacks
    *
+   * @public
    * @param {array} data Array of data events objects (`{date: ..., label: ...}`)
    */
   renderData(data) {
@@ -463,6 +467,7 @@ export default class Timeline {
   /**
    * Update the timeline with the new configuration
    *
+   * @public
    * @param {object} newConf New configuration with new data or options
    */
   update(newConf) {
@@ -503,6 +508,8 @@ export default class Timeline {
 
   /**
    * Render the entire timeline
+   *
+   * @public
    */
   render() {
     this.renderAxis();
@@ -511,6 +518,8 @@ export default class Timeline {
 
   /**
    * Destroy the timeline, remove the svg node
+   *
+   * @public
    */
   destroy() {
     setTimeout(() => {

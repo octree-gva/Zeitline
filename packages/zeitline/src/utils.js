@@ -2,6 +2,7 @@
  * Returns a new function that, when invoked, invokes `func` at most once per `wait` milliseconds.
  * Adapted from https://github.com/component/throttle/blob/master/index.js
  *
+ * @private
  * @param {Function} func Function to wrap.
  * @param {Number} wait Number of milliseconds that must elapse between `func` invocations.
  * @return {Function} A new function that wraps the `func` function passed in.
@@ -24,6 +25,9 @@ export function throttle(func, wait) {
     return rtn;
   };
 
+  /**
+   * @private
+   */
   function call() {
     timeoutID = 0;
     last = +new Date();
