@@ -2,7 +2,11 @@
 
 Zeitline is a flexible timeline implemented in D3.
 
-[![license](https://img.shields.io/github/license/octree-gva/d3-timeline.svg?style=flat-square)]()
+[![license](https://img.shields.io/github/license/octree-gva/zeitline.svg?style=flat-square)]()
+[![GitHub release](https://img.shields.io/github/tag/octree-gva/zeitline.svg?style=flat-square)]()
+
+
+Please don't forget to check **[the Zeitline documentation](https://octree-gva.github.io/Zeitline/)** for more information.
 
 ## Installing
 
@@ -35,12 +39,7 @@ let t = new Timeline(conf);
 t.render();
 ```
 
-## API Reference
-
-* [Getting started](#getting-started)
-* [Configuration](#configuration)
-
-### Getting started
+## Getting started
 
 To instantiate the timeline, simple import `Timeline` from `Zeitline`.
 An optional configuration can be passed in the constructor `Timeline(configuration: object)`.
@@ -48,50 +47,31 @@ An optional configuration can be passed in the constructor `Timeline(configurati
 ```js
 import {Timeline} from 'Zeitline';
 
-let t = new Timeline({/* config */}); // instantiate the timeline with an optional configuration
+// instantiate the timeline with an optional configuration
+let t = new Timeline({/* config */});
 ```
 
 To render the timeline, use the `render()` function.
 
 ```js
-t.render(); // render the timeline
+// render the timeline
+t.render();
 ```
 
 To update the timeline with a new configuration, use the `update(configuration: object)` function
 and pass the new configuration.
 
 ```js
-t.update({/* config */}); // update the timeline with a new configuration
+// update the timeline with a new configuration
+t.update({/* config */});
 ```
 
-### Configuration
-
-- **`dateRange`** (`array<Date>`): Range of the timeline, from date A to date B.
-- **`data`** (`array<{date: Date, label: string}>`): Array of data to represent each dots on the timeline.
-  - Example: `data: [{date: new Date(), label: 'First task'}, ...]`
-- **`selector`** (`string | HtmlElement`): Mount the timeline to the given Html node
-- **`intervals`** (`array<array>>`): To create intervals in the timeline. Add an array of Date A, Date B and then size in pixels.
-  - Example: `intervals: [[new Date(2017, 1, 1'), new Date(2017, 3, 1), 200], ...]`
-- **`timeFormat`** (`string`): String to format the labels, check the [d3-time-format documentation](https://github.com/d3/d3-time-format#locale_format) for more information about the available formats.
-- **`ticksIntervals`** (`string`): Intervals of period for each tick, can be `Day`, `Week`, `Month` or `Year`.
-- **`eventListeners`** (`object<{typenames: callback}>`): Add a callback for the specified typenames for events (example: click)
-- **`pivotListeners`** (`object<{typenames: callback}>`): Add a callback for the specified typenames for pivots (example: drag)
-- **`margin`** (`{top: number, right: number, bottom: number, left: number}`)
-- **`animation`** (`{time: number, ease: string}`): The ease propriety specifies the transition easing function for elements in the timeline, check [d3-ease documentation](https://github.com/d3/d3-ease#api-reference) for more information.
-- **`clustering`**
-  - `maxSize: number`: Max size of cluster in pixels
-  - `epsilon: number`: Gravity between events when cluster
-  - `maxLabelNumber: number`: Maximum number possible on clusters labels
-- **`events`**
-  - `size: number`: Size of events circles
-- **`dragAndDrop`**
-  - `throttle: number`: Margin to drag and drop the pivot more easily
-  - `zoneWidth: number`: Width of the drag zone
+For more information about the configuration, please **[check the documentation](https://octree-gva.github.io/Zeitline/docs/documentation/api-ref.html)**.
 
 
 ## Dev
 
-Install the dependencies
+Firstly you need to install all the dependencies
 
 ```
 npm install
@@ -101,7 +81,11 @@ yarn install
 
 ### Running the dev server
 
+Simply run the `dev` script with
+
 ```
+npm run dev
+or
 yarn dev
 ```
 
@@ -109,16 +93,20 @@ The project is then served on http://localhost:8080/
 
 ### Build the project
 
+To build Zeitline, run the `build` script
+
 ```
+npm run build
+or
 yarn build
 ```
 
-The project will be build in `./dist/d3-timeline.bundle.js`
+It will will build two files; `./dist/zeitline.bundle.js` and the minified version `./dist/zeitline.bundle.min.js`.
 
 
 ## Tests
 
-To run the tests, use npm or yarn
+Test can be run with the `test` script.
 
 ```
 npm run test
