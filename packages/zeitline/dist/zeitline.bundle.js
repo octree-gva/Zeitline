@@ -4359,13 +4359,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _partialD = __webpack_require__(84);
 
-var _partialD2 = _interopRequireDefault(_partialD);
-
-var _d3Selection = __webpack_require__(1);
+var d3 = _interopRequireWildcard(_partialD);
 
 var _utils = __webpack_require__(236);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -4380,7 +4378,7 @@ var defaults = {
   data: [],
   intervals: [],
   margin: { top: 20, right: 20, bottom: 20, left: 20 },
-  animation: { time: 300, ease: _partialD2.default.easePoly },
+  animation: { time: 300, ease: d3.easePoly },
   clustering: { maxSize: 15, epsilon: 20, maxLabelNumber: 99 },
   events: { size: 2 },
   dragAndDrop: { throttle: 25, zoneWidth: 15 }
@@ -4419,7 +4417,7 @@ var Timeline = function () {
     value: function init() {
       var _this = this;
 
-      this.svg = _partialD2.default.select(this.selector);
+      this.svg = d3.select(this.selector);
       var margin = this.margin,
           animation = this.animation;
 
@@ -4430,10 +4428,10 @@ var Timeline = function () {
       this.axisLabels = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')');
       this.axisTicks = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')').on('click', function () {
         if (_this.onTimelineClick) {
-          _this.onTimelineClick(_partialD2.default.mouse(_d3Selection.event.currentTarget)[0], _this.x.invert(_partialD2.default.mouse(_d3Selection.event.currentTarget)[0]));
+          _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
         }
       });
-      this.transition = _partialD2.default.transition().duration(animation.time).ease(animation.ease instanceof String ? _partialD2.default[animation.ease] : animation.ease);
+      this.transition = d3.transition().duration(animation.time).ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
     }
 
     /**
@@ -4528,15 +4526,15 @@ var Timeline = function () {
 
       // Create polylinear scale time (from range A to range B with intervals in between)
       var getScaleTime = function getScaleTime() {
-        return _partialD2.default.scaleTime().domain([_partialD2.default.extent(_this2.dateRange)[0]].concat(_toConsumableArray(domain), [_partialD2.default.extent(_this2.dateRange)[1]])).range([0].concat(_toConsumableArray(pivots), [_this2.width]));
+        return d3.scaleTime().domain([d3.extent(_this2.dateRange)[0]].concat(_toConsumableArray(domain), [d3.extent(_this2.dateRange)[1]])).range([0].concat(_toConsumableArray(pivots), [_this2.width]));
       }; // all pivots
 
       this.x = getScaleTime();
 
       // Create axis with the given tick interval
-      var xAxisLabel = _partialD2.default.axisBottom(this.x).tickFormat(_partialD2.default.timeFormat(this.timeFormat)).tickValues([new Date()].concat(_toConsumableArray(domain))).tickPadding(-50).tickSize(0).tickSizeOuter(.5);
+      var xAxisLabel = d3.axisBottom(this.x).tickFormat(d3.timeFormat(this.timeFormat)).tickValues([new Date()].concat(_toConsumableArray(domain))).tickPadding(-50).tickSize(0).tickSizeOuter(.5);
 
-      var xAxisTicks = _partialD2.default.axisBottom(this.x).ticks(_partialD2.default['time' + this.ticksIntervals]) // timeDay, timeWeek, timeMonth, timeYear
+      var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
 
       // Draw axis
@@ -4570,19 +4568,19 @@ var Timeline = function () {
         return pivot > 0 && pivot < _this2.width;
       }).append('g').attr('class', 'pivot-group').attr('transform', function (pivot) {
         return 'translate(' + (pivot + .5) + ', ' + (_this2.positionY - 30) + ')';
-      }).call(_partialD2.default.drag().on('start', function (x) {
+      }).call(d3.drag().on('start', function (x) {
         lastPivotIndex = pivots.indexOf(x);
         if (_this2.pivotListeners && _this2.pivotListeners.start) {
-          _this2.pivotListeners.start(_d3Selection.event);
+          _this2.pivotListeners.start(d3.event);
         }
       }).on('drag', function (x) {
-        if (!isOverlapping(pivots, lastPivotIndex, _d3Selection.event.x, 10)) {
-          lastPivotX = _d3Selection.event.x;
+        if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
+          lastPivotX = d3.event.x;
 
-          _partialD2.default.select(this).classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
+          d3.select(this).classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
 
           if (that.pivotListeners && that.pivotListeners.drag) {
-            that.pivotListeners.drag(_d3Selection.event);
+            that.pivotListeners.drag(d3.event);
           }
 
           // Render events with the new pivot position after throttle
@@ -4595,7 +4593,7 @@ var Timeline = function () {
           _this2.renderData(_this2.data);
 
           if (_this2.pivotListeners && _this2.pivotListeners.end) {
-            _this2.pivotListeners.end(_d3Selection.event);
+            _this2.pivotListeners.end(d3.event);
           }
         }
       }));
@@ -4608,7 +4606,7 @@ var Timeline = function () {
         var _loop = function _loop(key) {
           if (_this2.pivotListeners.hasOwnProperty(key)) {
             pivotsGroupEnter.on(key, function () {
-              return _this2.pivotListeners[key](_d3Selection.event);
+              return _this2.pivotListeners[key](d3.event);
             });
           }
         };
@@ -4670,9 +4668,9 @@ var Timeline = function () {
       }, 0);
 
       // Create the main scale without intervals
-      var xMain = _partialD2.default.scaleTime()
+      var xMain = d3.scaleTime()
       // Domain will be reduce from (date A to date Z) to (date A to (date Z - intervals time))
-      .domain(_partialD2.default.extent([dateRange[0], dateRange[1] - intervalsDateSum]))
+      .domain(d3.extent([dateRange[0], dateRange[1] - intervalsDateSum]))
       // Range (size of the axis) will be reduce from full width to full width minus intervals size
       .range([0, this.width - intervalsSum]);
 
@@ -4800,8 +4798,7 @@ var Timeline = function () {
           if (_this3.eventListeners.hasOwnProperty(key)) {
             eventsEnter.on(key, function (event) {
               // Override d3 event with custom fields
-              // const customEvent = omg; // currentEvent;
-              var customEvent = (0, _d3Selection.event)();
+              var customEvent = d3.event;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
               customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
@@ -4835,7 +4832,7 @@ var Timeline = function () {
 
       // Range
       if (newConf.dateRange) {
-        this.x.domain(_partialD2.default.extent(newConf.dateRange));
+        this.x.domain(d3.extent(newConf.dateRange));
 
         // TODO
         // if (newConf.intervals) {
@@ -4910,34 +4907,111 @@ Object.defineProperty(exports, "__esModule", {
 
 var _d3Array = __webpack_require__(4);
 
+Object.keys(_d3Array).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Array[key];
+    }
+  });
+});
+
 var _d3Axis = __webpack_require__(101);
+
+Object.keys(_d3Axis).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Axis[key];
+    }
+  });
+});
 
 var _d3Drag = __webpack_require__(105);
 
+Object.keys(_d3Drag).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Drag[key];
+    }
+  });
+});
+
 var _d3Ease = __webpack_require__(60);
+
+Object.keys(_d3Ease).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Ease[key];
+    }
+  });
+});
 
 var _d3Format = __webpack_require__(28);
 
+Object.keys(_d3Format).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Format[key];
+    }
+  });
+});
+
 var _d3Scale = __webpack_require__(162);
+
+Object.keys(_d3Scale).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Scale[key];
+    }
+  });
+});
 
 var _d3Selection = __webpack_require__(1);
 
+Object.keys(_d3Selection).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Selection[key];
+    }
+  });
+});
+
 var _d3Transition = __webpack_require__(213);
+
+Object.keys(_d3Transition).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3Transition[key];
+    }
+  });
+});
 
 var _d3TimeFormat = __webpack_require__(37);
 
-exports.default = {
-  extent: _d3Array.extent,
-  axisBottom: _d3Axis.axisBottom,
-  drag: _d3Drag.drag,
-  easePoly: _d3Ease.easePoly,
-  format: _d3Format.format,
-  scaleTime: _d3Scale.scaleTime,
-  select: _d3Selection.select,
-  mouse: _d3Selection.mouse,
-  transition: _d3Transition.transition,
-  timeFormat: _d3TimeFormat.timeFormat
-};
+Object.keys(_d3TimeFormat).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _d3TimeFormat[key];
+    }
+  });
+});
 
 /***/ }),
 /* 85 */
