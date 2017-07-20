@@ -25,16 +25,19 @@ describe('Timeline base', () => {
   });
 
   describe('Rendering', () => {
-    it('should have ticks', () => {
+    const renderTimeline = () => {
       let t = new window.Zeitline.Timeline();
       t.render();
+    };
+
+    it('should have ticks', () => {
+      renderTimeline();
 
       return window.document.querySelector('svg .timeline .axis .tick');
     });
 
     it('should have a domain', () => {
-      let t = new window.Zeitline.Timeline();
-      t.render();
+      renderTimeline();
 
       return window.document.querySelector('svg .timeline .axis .domain');
     });
