@@ -56,12 +56,11 @@ export default class Timeline {
     this.timeline = this.svg.append('g')
         .attr('class', 'timeline')
         .attr('transform', `translate(${margin.left}, ${margin.top})`);
-    this.axisLabels = this.timeline.append('g')
+    const axisBase = () => this.timeline.append('g')
         .attr('class', 'axis axis--x')
         .attr('transform', `translate(0, ${this.positionY})`);
-    this.axisTicks = this.timeline.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', `translate(0, ${this.positionY})`)
+    this.axisLabels = axisBase();
+    this.axisTicks = axisBase()
         .on('click', () => {
           if (this.onTimelineClick) {
             this.onTimelineClick(
@@ -439,18 +438,22 @@ export default class Timeline {
     //     .transition(this.transition)
     //     .attr('height', eventsSize * 2);
 
+
     if (this.eventListeners) {
       // Add events listeners to events
       for (const key in this.eventListeners) {
         if (this.eventListeners.hasOwnProperty(key)) {
           eventsEnter
             .on(key, (event) => {
+              const getEventRange = (index) =>
+                [event[2][index], event[3] ? event[3][index] : null];
+
               // Override d3 event with custom fields
               const customEvent = d3.event;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
-              customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
-              customEvent.dates = [event[2][2], event[3] ? event[3][2] : null];
+              customEvent.labels = getEventRange(1);
+              customEvent.dates = getEventRange(2);
 
               this.eventListeners[key](customEvent);
             });
