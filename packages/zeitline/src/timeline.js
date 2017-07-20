@@ -213,23 +213,26 @@ export default class Timeline {
     const that = this;
     let lastPivotX;
     let lastPivotIndex;
+    let lastPivotEl;
     const pivotsGroupEnter = pivotsGroup.enter()
       .filter((pivot) => pivot > 0 && pivot < this.width)
       .append('g')
         .attr('class', 'pivot-group')
         .attr('transform', (pivot) => `translate(${pivot + .5}, ${this.positionY - 30})`)
       .call(d3.drag()
-        .on('start', (x) => {
+        .on('start', (x, i, ps) => {
           lastPivotIndex = pivots.indexOf(x);
+          lastPivotEl = d3.select(ps[i]);
+
           if (this.pivotListeners && this.pivotListeners.start) {
             this.pivotListeners.start(d3.event);
           }
         })
-        .on('drag', function(x) {
+        .on('drag', () => {
           if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
             lastPivotX = d3.event.x;
 
-            d3.select(this)
+            lastPivotEl
               .classed('draggable', true)
               .attr('transform', `translate(${lastPivotX}, ${that.positionY - 30})`);
 
