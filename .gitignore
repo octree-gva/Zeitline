@@ -5,6 +5,7 @@ node_modules
 !.gitignore
 !.travis.yml
 !.babelrc
+!.codeclimate.yml
 *.log
 __*
 _site
