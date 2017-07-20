@@ -4388,7 +4388,9 @@ var defaults = {
  * Timeline class
  *
  * @export
+ * @public
  * @class Timeline
+ * @author Fabien Sa
  */
 
 var Timeline = function () {
@@ -4396,6 +4398,7 @@ var Timeline = function () {
    * Creates an instance of Timeline
    *
    * @constructor
+   * @public
    * @param {object} conf Configuration
    */
   function Timeline(conf) {
@@ -4409,6 +4412,8 @@ var Timeline = function () {
    * Initialize timeline
    *
    * Create the svg node, the axis and calculate the margins & positions
+   *
+   * @protected
    */
 
 
@@ -4425,8 +4430,11 @@ var Timeline = function () {
       this.height = +this.svg.attr('height') - margin.top - margin.bottom;
       this.positionY = this.height / 1.4;
       this.timeline = this.svg.append('g').attr('class', 'timeline').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
-      this.axisLabels = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')');
-      this.axisTicks = this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + this.positionY + ')').on('click', function () {
+      var axisBase = function axisBase() {
+        return _this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + _this.positionY + ')');
+      };
+      this.axisLabels = axisBase();
+      this.axisTicks = axisBase().on('click', function () {
         if (_this.onTimelineClick) {
           _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
         }
@@ -4437,6 +4445,7 @@ var Timeline = function () {
     /**
      * Set timeline configuration
      *
+     * @protected
      * @param {object} conf Configuration
      */
 
@@ -4454,7 +4463,11 @@ var Timeline = function () {
     /**
      * Check if the configuration is valid, reorder or remove empty elements if needed
      *
+     * @protected
      * @param {object} conf Configuration to check and normalize
+     * @throws {TypeError} If dateRange, data or intervals are not arrays
+     * @throws {Error} If intervals overlaps
+     * @throws {Error} If dateRange does not have 2 dates
      * @return {object} Normalized conf
      */
 
@@ -4496,7 +4509,7 @@ var Timeline = function () {
       }
 
       if (conf.dateRange.length < 2) {
-        throw new TypeError('Date range should have two dates (start and end)');
+        throw new Error('Date range should have two dates (start and end)');
       }
 
       return conf;
@@ -4504,8 +4517,9 @@ var Timeline = function () {
 
     /**
      * Render x axis
-     * Render the polylinear x axis with ticks and pivots and registered callbacks
+     * Render the polylinear x axis with ticks and pivots and registered events callbacks
      *
+     * @protected
      * @param {array} pivots (optional) List of pivots, if empty, pivots will be calculated
      * from the `intervals` option
      */
@@ -4564,20 +4578,23 @@ var Timeline = function () {
       var that = this;
       var lastPivotX = void 0;
       var lastPivotIndex = void 0;
+      var lastPivotEl = void 0;
       var pivotsGroupEnter = pivotsGroup.enter().filter(function (pivot) {
         return pivot > 0 && pivot < _this2.width;
       }).append('g').attr('class', 'pivot-group').attr('transform', function (pivot) {
         return 'translate(' + (pivot + .5) + ', ' + (_this2.positionY - 30) + ')';
-      }).call(d3.drag().on('start', function (x) {
+      }).call(d3.drag().on('start', function (x, i, ps) {
         lastPivotIndex = pivots.indexOf(x);
+        lastPivotEl = d3.select(ps[i]);
+
         if (_this2.pivotListeners && _this2.pivotListeners.start) {
           _this2.pivotListeners.start(d3.event);
         }
-      }).on('drag', function (x) {
+      }).on('drag', function () {
         if (!isOverlapping(pivots, lastPivotIndex, d3.event.x, 10)) {
           lastPivotX = d3.event.x;
 
-          d3.select(this).classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
+          lastPivotEl.classed('draggable', true).attr('transform', 'translate(' + lastPivotX + ', ' + (that.positionY - 30) + ')');
 
           if (that.pivotListeners && that.pivotListeners.drag) {
             that.pivotListeners.drag(d3.event);
@@ -4635,20 +4652,9 @@ var Timeline = function () {
     }
 
     /**
-     * Register a callback on timeline click
-     *
-     * @param {any} callback
-     */
-
-  }, {
-    key: 'onTimelineClick',
-    value: function onTimelineClick(callback) {
-      this.onTimelineClick = callback;
-    }
-
-    /**
      * Compute pivots for intervals from date A to B based on `dateRange`
      *
+     * @protected
      * @param {array} dateRange List of date A and date B
      * @param {array} intervals List of [date A, date B, width (in pixel)]
      * @return {array} List of pivots on the x axis (in pixel)
@@ -4701,8 +4707,9 @@ var Timeline = function () {
     }
 
     /**
-     * Render data events as circles or clusters on the timeline and register callbacks
+     * Render data events as circles or clusters on the timeline and register events callbacks
      *
+     * @public
      * @param {array} data Array of data events objects (`{date: ..., label: ...}`)
      */
 
@@ -4793,16 +4800,21 @@ var Timeline = function () {
       //     .transition(this.transition)
       //     .attr('height', eventsSize * 2);
 
+
       if (this.eventListeners) {
         var _loop2 = function _loop2(key) {
           if (_this3.eventListeners.hasOwnProperty(key)) {
             eventsEnter.on(key, function (event) {
+              var getEventRange = function getEventRange(index) {
+                return [event[2][index], event[3] ? event[3][index] : null];
+              };
+
               // Override d3 event with custom fields
               var customEvent = d3.event;
               customEvent.axisX = event[0];
               customEvent.clusterSize = event[1];
-              customEvent.labels = [event[2][1], event[3] ? event[3][1] : null];
-              customEvent.dates = [event[2][2], event[3] ? event[3][2] : null];
+              customEvent.labels = getEventRange(1);
+              customEvent.dates = getEventRange(2);
 
               _this3.eventListeners[key](customEvent);
             });
@@ -4822,6 +4834,7 @@ var Timeline = function () {
     /**
      * Update the timeline with the new configuration
      *
+     * @public
      * @param {object} newConf New configuration with new data or options
      */
 
@@ -4865,6 +4878,8 @@ var Timeline = function () {
 
     /**
      * Render the entire timeline
+     *
+     * @public
      */
 
   }, {
@@ -4876,6 +4891,8 @@ var Timeline = function () {
 
     /**
      * Destroy the timeline, remove the svg node
+     *
+     * @public
      */
 
   }, {
@@ -10083,6 +10100,7 @@ exports.throttle = throttle;
  * Returns a new function that, when invoked, invokes `func` at most once per `wait` milliseconds.
  * Adapted from https://github.com/component/throttle/blob/master/index.js
  *
+ * @private
  * @param {Function} func Function to wrap.
  * @param {Number} wait Number of milliseconds that must elapse between `func` invocations.
  * @return {Function} A new function that wraps the `func` function passed in.
@@ -10104,6 +10122,9 @@ function throttle(func, wait) {
     return rtn;
   };
 
+  /**
+   * @private
+   */
   function call() {
     timeoutID = 0;
     last = +new Date();
