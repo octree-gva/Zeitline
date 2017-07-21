@@ -441,7 +441,6 @@ export default class Timeline {
     //     .transition(this.transition)
     //     .attr('height', eventsSize * 2);
 
-
     if (this.eventListeners) {
       // Add events listeners to events
       for (const key in this.eventListeners) {
@@ -479,36 +478,11 @@ export default class Timeline {
   update(newConf) {
     this.setConf(newConf);
 
-    // Range
-    if (newConf.dateRange) {
-      this.x.domain(d3.extent(newConf.dateRange));
-
-      // TODO
-      // if (newConf.intervals) {
-      //   const pivots = this.getPivots(newConf.dateRange, newConf.intervals);
-      //   const range = [0, ...pivots, this.width];
-      //   this.x.range(range);
-      // }
-    }
-
-    // Intervals
-    // if (newConf.ticksIntervals) {
-    //   this.xAxis.ticks(d3[`time${newConf.ticksIntervals}`]);
-    // }
-
-    // if (newConf.timeFormat && newConf.timeFormat !== '') {
-    //   // this.xAxis.tickFormat((d) => d3.timeFormat(newConf.timeFormat)(d));
-    // } else {
-    //   // Reset default format
-    //   // this.xAxis.tickFormat(null);
-    // }
-
-    // if (newConf.ticksIntervals || newConf.dateRange) {
-    this.renderAxis();
-    // }
-
-    if (newConf.data) {
-      this.renderData(newConf.data);
+    if (newConf.length === 1 && newConf.data) {
+      this.renderData(this.data);
+    } else {
+      this.renderAxis();
+      this.renderData(this.data);
     }
   }
 
