@@ -11,3 +11,6 @@
 
  - [Zeitline javascript (ES6)](packages/zeitline)
  - [Zeitline react](packages/zeitline-react)
+
+
+**Please check [the Zeitline documentation](https://octree-gva.github.io/Zeitline/) for more information**
