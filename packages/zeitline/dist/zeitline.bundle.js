@@ -4434,11 +4434,23 @@ var Timeline = function () {
         return _this.timeline.append('g').attr('class', 'axis axis--x').attr('transform', 'translate(0, ' + _this.positionY + ')');
       };
       this.axisLabels = axisBase();
-      this.axisTicks = axisBase().on('click', function () {
-        if (_this.onTimelineClick) {
-          _this.onTimelineClick(d3.mouse(d3.event.currentTarget)[0], _this.x.invert(d3.mouse(d3.event.currentTarget)[0]));
+      this.axisTicks = axisBase();
+
+      if (this.timelineAxisListeners) {
+        var _loop = function _loop(key) {
+          if (_this.timelineAxisListeners.hasOwnProperty(key)) {
+            _this.axisTicks.on(key, function () {
+              return _this.timelineAxisListeners[key](d3.event);
+            });
+          }
+        };
+
+        // Add events listeners to pivots
+        for (var key in this.timelineAxisListeners) {
+          _loop(key);
         }
-      });
+      }
+
       this.transition = d3.transition().duration(animation.time).ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
     }
 
@@ -4620,7 +4632,7 @@ var Timeline = function () {
       pivotsGroupEnter.append('line').attr('class', 'linear reference-line reference-interval').attr('stroke', '#000').attr('stroke-width', 2).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 60);
 
       if (this.pivotListeners) {
-        var _loop = function _loop(key) {
+        var _loop2 = function _loop2(key) {
           if (_this2.pivotListeners.hasOwnProperty(key)) {
             pivotsGroupEnter.on(key, function () {
               return _this2.pivotListeners[key](d3.event);
@@ -4630,7 +4642,7 @@ var Timeline = function () {
 
         // Add events listeners to pivots
         for (var key in this.pivotListeners) {
-          _loop(key);
+          _loop2(key);
         }
       }
 
@@ -4801,7 +4813,7 @@ var Timeline = function () {
       //     .attr('height', eventsSize * 2);
 
       if (this.eventListeners) {
-        var _loop2 = function _loop2(key) {
+        var _loop3 = function _loop3(key) {
           if (_this3.eventListeners.hasOwnProperty(key)) {
             eventsEnter.on(key, function (event) {
               var getEventRange = function getEventRange(index) {
@@ -4822,7 +4834,7 @@ var Timeline = function () {
 
         // Add events listeners to events
         for (var key in this.eventListeners) {
-          _loop2(key);
+          _loop3(key);
         }
       }
 
