@@ -60,15 +60,18 @@ export default class Timeline {
         .attr('class', 'axis axis--x')
         .attr('transform', `translate(0, ${this.positionY})`);
     this.axisLabels = axisBase();
-    this.axisTicks = axisBase()
-        .on('click', () => {
-          if (this.onTimelineClick) {
-            this.onTimelineClick(
-              d3.mouse(d3.event.currentTarget)[0],
-              this.x.invert(d3.mouse(d3.event.currentTarget)[0])
-            );
-          }
-        });
+    this.axisTicks = axisBase();
+
+    if (this.timelineAxisListeners) {
+      // Add events listeners to pivots
+      for (const key in this.timelineAxisListeners) {
+        if (this.timelineAxisListeners.hasOwnProperty(key)) {
+          this.axisTicks
+            .on(key, () => this.timelineAxisListeners[key](d3.event));
+        }
+      }
+    }
+
     this.transition = d3.transition()
       .duration(animation.time)
       .ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
