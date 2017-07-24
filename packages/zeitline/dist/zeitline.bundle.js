@@ -4379,7 +4379,7 @@ var defaults = {
   intervals: [],
   margin: { top: 20, right: 20, bottom: 20, left: 20 },
   animation: { time: 300, ease: d3.easePoly },
-  clustering: { maxSize: 15, epsilon: 20, maxLabelNumber: 99 },
+  clustering: { maxSize: 20, epsilon: 20, maxLabelNumber: 99 },
   events: { size: 2 },
   dragAndDrop: { throttle: 25, zoneWidth: 15 }
 };
@@ -4658,7 +4658,7 @@ var Timeline = function () {
         return pivot + .5;
       }).attr('x2', function (pivot) {
         return pivot + .5;
-      }).attr('y1', this.positionY - 30).attr('y2', this.positionY);
+      }).attr('y1', this.positionY - 30).attr('y2', this.positionY - this.events.size);
 
       todayLine.exit().remove();
     }
@@ -4744,15 +4744,18 @@ var Timeline = function () {
         if (firstInCluster === null) {
           firstInCluster = x;
         } else {
-          var prec = xs[i - 1][0] || 0;
+          var prec = xs[i - 1][0] || 0; // xi-1
 
           // Squared interval between xi-1 and xi
           var intAB = Math.pow(x[0] - prec, 2);
 
-          // Difference between x0 and xi+1
+          // Difference between x0 and xi-1
           var intAZ = prec - firstInCluster[0];
 
-          if (intAB > _this3.clustering.epsilon || intAZ > _this3.clustering.maxSize) {
+          // Difference between x0 and xi
+          var intAZ2 = x[0] - firstInCluster[0];
+
+          if (intAB > _this3.clustering.epsilon || intAZ2 > _this3.clustering.maxSize) {
             // We end the current cluster
             // [firstEvent date (number), interval first-last events, first event, last event]
             acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i - 1], eaten]);
@@ -4761,9 +4764,9 @@ var Timeline = function () {
           }
         }
 
-        // Cluster of one element
+        // Cluster size of one event
         if (i + 1 === xs.length) {
-          acc.push([firstInCluster[0], 0, firstInCluster, null, 0]);
+          acc.push([firstInCluster[0], 0, firstInCluster, null, eaten + 1]);
         }
 
         return {
