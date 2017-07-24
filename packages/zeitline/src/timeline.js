@@ -303,7 +303,7 @@ export default class Timeline {
         .attr('x1', (pivot) => pivot + .5)
         .attr('x2', (pivot) => pivot + .5)
         .attr('y1', this.positionY - 30)
-        .attr('y2', this.positionY);
+        .attr('y2', this.positionY - this.events.size);
 
     todayLine.exit()
       .remove();
