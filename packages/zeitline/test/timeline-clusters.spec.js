@@ -2,7 +2,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const util = require('./util');
 
-describe('Timeline intervals', () => {
+describe('Timeline clustering', () => {
   let conf;
 
   before(() => {
@@ -59,18 +59,34 @@ describe('Timeline intervals', () => {
       .querySelector('svg').querySelectorAll('.event-group');
   });
 
-  it('should not have a label for one event', () => {
-    assert.equal(groups[0].querySelector('text'), undefined);
-    assert.equal(groups[5].querySelector('text'), undefined);
+  describe('Labels', () => {
+    it('should not have a label for one event', () => {
+      assert.equal(groups[0].querySelector('text'), undefined);
+      assert.equal(groups[1].querySelector('text'), undefined);
+    });
+
+    it('should have labels for more than one event', () => {
+      assert.equal(groups[2].querySelector('text').innerHTML, '4');
+      assert.equal(groups[3].querySelector('text').innerHTML, '4');
+      assert.equal(groups[4].querySelector('text').innerHTML, '4');
+      assert.equal(groups[5].querySelector('text').innerHTML, '3');
+    });
+
+    it('should be never be more than 9 (maxLabelNumber = 9)', () => {
+      assert.equal(groups[groups.length - 1].querySelector('text').innerHTML, '9+');
+    });
   });
 
-  it('should have labels for more than one event', () => {
-    assert.equal(groups[2].querySelector('text').innerHTML, '4');
-    assert.equal(groups[3].querySelector('text').innerHTML, '5');
-    assert.equal(groups[4].querySelector('text').innerHTML, '5');
-  });
+  describe('Cluster shape', () => {
+    it('should have a size bigger than an event', () => {
+      assert.isAbove(+groups[3].querySelector('rect').getAttribute('width'), 10);
+      assert.isAbove(+groups[4].querySelector('rect').getAttribute('width'), 10);
+    });
 
-  it('should be never be more than 9 (maxLabelNumber = 9)', () => {
-    assert.equal(groups[6].querySelector('text').innerHTML, '9+');
+    it('should have a max size under 15 pixels', () => {
+      assert.isBelow(+groups[2].querySelector('rect').getAttribute('width'), 15);
+      assert.isBelow(+groups[3].querySelector('rect').getAttribute('width'), 15);
+      assert.isBelow(+groups[4].querySelector('rect').getAttribute('width'), 15);
+    });
   });
 });
