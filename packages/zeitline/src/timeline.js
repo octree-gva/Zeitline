@@ -388,9 +388,9 @@ export default class Timeline {
         }
       }
 
-      // Cluster of one element
+      // Cluster size of one event
       if (i + 1 === xs.length) {
-        acc.push([firstInCluster[0], 0, firstInCluster, null, 0]);
+        acc.push([firstInCluster[0], 0, firstInCluster, null, eaten + 1]);
       }
 
       return {
