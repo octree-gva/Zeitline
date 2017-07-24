@@ -75,6 +75,9 @@ eventListeners: {
 **`pivotListeners`** (`{typenames: callback}`)\\
 Add a callback for the specified typenames for pivots (like eventListeners).
 
+**`timelineAxisListeners`** (`{typenames: callback}`)\\
+Add a callback for the specified typenames for axis (like eventListeners).
+
 **`margin`** (`{top: number, right: number, bottom: number, left: number}`)
 > Default values: `margin: {top: 20, right: 20, bottom: 20, left: 20}`
 

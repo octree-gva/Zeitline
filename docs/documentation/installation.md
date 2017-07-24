@@ -6,7 +6,7 @@ index: 0
 section: documentation
 ---
 
-If you use NPM or Yarn, you can simply install Zeitline like that:
+If you use NPM or Yarn, you can simply install Zeitline with:
 
 ```
 npm install zeitline
@@ -25,7 +25,7 @@ let t = new Timeline(conf);
 t.render();
 ```
 
-Otherwise, you can download the UMD release to use it in with vanilla javascript (in the `dist` folder).
+Otherwise, you can download the UMD release and use it with vanilla javascript (in the `dist` folder).
 
 Example to use Zeitline in vanilla javascript:
 
@@ -37,4 +37,6 @@ t.render();
 </script>
 ```
 
-A CDN is also available with the [Unpkg](http://unpkg.co) service. For example, the version 0.0.4 is available here `https://unpkg.co/zeitline@0.0.4/dist/zeitline.bundle.min.js`.
+A CDN is also available with the [Unpkg](http://unpkg.com) service. For example, the version 0.1.0 is available here `https://unpkg.com/zeitline@0.1.0/dist/zeitline.bundle.min.js`.
+
+You can also use the latest version automatically by replacing the number by "x". For example if you want the last patch of the version 0.1 you can use the 0.1.x version like `https://unpkg.com/zeitline@0.1.x/dist/zeitline.bundle.min.js`.
