@@ -14,7 +14,7 @@ const defaults = {
   intervals: [],
   margin: {top: 20, right: 20, bottom: 20, left: 20},
   animation: {time: 300, ease: d3.easePoly},
-  clustering: {maxSize: 15, epsilon: 20, maxLabelNumber: 99},
+  clustering: {maxSize: 20, epsilon: 20, maxLabelNumber: 99},
   events: {size: 2},
   dragAndDrop: {throttle: 25, zoneWidth: 15},
 };
@@ -371,15 +371,18 @@ export default class Timeline {
       if (firstInCluster === null) {
         firstInCluster = x;
       } else {
-        const prec = xs[i-1][0] || 0;
+        const prec = xs[i-1][0] || 0; // xi-1
 
         // Squared interval between xi-1 and xi
         const intAB = Math.pow(x[0] - prec, 2);
 
-        // Difference between x0 and xi+1
+        // Difference between x0 and xi-1
         const intAZ = prec - firstInCluster[0];
 
-        if (intAB > this.clustering.epsilon || intAZ > this.clustering.maxSize) {
+        // Difference between x0 and xi
+        const intAZ2 = x[0] - firstInCluster[0];
+
+        if (intAB > this.clustering.epsilon || intAZ2 > this.clustering.maxSize) {
           // We end the current cluster
           // [firstEvent date (number), interval first-last events, first event, last event]
           acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i-1], eaten]);
