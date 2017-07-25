@@ -72,7 +72,8 @@ export default class Timeline {
       }
     }
 
-    this.transition = d3.transition()
+    this.transition = d3
+      .transition()
       .duration(animation.time)
       .ease(animation.ease instanceof String ? d3[animation.ease] : animation.ease);
   }
@@ -187,6 +188,12 @@ export default class Timeline {
       .tickSize(20)
       .tickSizeOuter(.5);
 
+    // Interrupts the active transition on the given element
+    const interruptElement = (el) => el.interrupt().selectAll('*').interrupt();
+
+    interruptElement(this.axisLabels);
+    interruptElement(this.axisTicks);
+
     // Draw axis
     this.axisLabels
       .transition(this.transition)
@@ -292,7 +299,7 @@ export default class Timeline {
       .remove();
 
     // Add special reference line for today
-    const todayLine = this.timeline.selectAll('.reference-line-today.reference-line')
+    const todayLine = this.timeline.interrupt().selectAll('.reference-line-today.reference-line').interrupt()
       .data([this.x(new Date())], (d) => d);
 
     todayLine.enter()
@@ -440,12 +447,6 @@ export default class Timeline {
         .attr('ry', eventsSize)
         .attr('width', (d) => Math.max(d[1], eventsSize * 2))
         .attr('height', eventsSize * 2);
-
-    // eventsEnter
-    //   .merge(events)
-    //     .attr('height', 0)
-    //     .transition(this.transition)
-    //     .attr('height', eventsSize * 2);
 
     if (this.eventListeners) {
       // Add events listeners to events
