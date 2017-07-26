@@ -88,61 +88,6 @@ let conf = {
   },
 };
 
-
 var t = new Zeitline.Timeline(conf); // eslint-disable-line
 t.render();
 
-
-// conf = {
-//   dateRange: [
-//     new Date('2000-01-01'),
-//     new Date('2010-01-01'),
-//   ],
-//   intervals: [
-//     [
-//       new Date('2002-01-01'),
-//       new Date('2008-01-01'),
-//       200,
-//     ],
-//   ],
-//   margin: {top: 0, left: 0, right: 0, bottom: 0},
-//   dragAndDrop: {throttle: 5, zoneWidth: 5},
-// };
-
-
-// t.destroy();
-// t.update(conf);
-
-/*
-document.querySelectorAll('.interval').forEach((e) => {
-  e.addEventListener('click', (e) => {
-    const typeInt = e.target.getAttribute('data-interval');
-    const ticksInterval = e.target.getAttribute('data-ticks-interval');
-    const timeFormat = e.target.getAttribute('data-time-format');
-    conf.timeFormat = timeFormat;
-    conf.ticksIntervals = ticksInterval;
-
-    conf.dateRange = [
-      moment(),
-      moment().add(1, typeInt),
-    ];
-    t.update(conf);
-  }, false);
-});
-
-document.querySelector('.move-left').addEventListener('click', (e) => {
-  const diff = conf.dateRange[1] - conf.dateRange[0];
-
-  conf.dateRange[0] -= diff;
-  conf.dateRange[1] -= diff;
-  t.update(conf);
-}, false);
-
-document.querySelector('.move-right').addEventListener('click', (e) => {
-  const diff = conf.dateRange[1] - conf.dateRange[0];
-
-  conf.dateRange[0] += diff;
-  conf.dateRange[1] += diff;
-  t.update(conf);
-}, false);
-*/
