@@ -4563,6 +4563,14 @@ var Timeline = function () {
       var xAxisTicks = d3.axisBottom(this.x).ticks(d3['time' + this.ticksIntervals]) // timeDay, timeWeek, timeMonth, timeYear
       .tickFormat('').tickPadding(-70).tickSize(20).tickSizeOuter(.5);
 
+      // Interrupts the active transition on the given element
+      var interruptElement = function interruptElement(el) {
+        return el.interrupt().selectAll('*').interrupt();
+      };
+
+      interruptElement(this.axisLabels);
+      interruptElement(this.axisTicks);
+
       // Draw axis
       this.axisLabels.transition(this.transition).call(xAxisLabel);
 
@@ -4650,7 +4658,7 @@ var Timeline = function () {
       pivotsGroup.exit().remove();
 
       // Add special reference line for today
-      var todayLine = this.timeline.selectAll('.reference-line-today.reference-line').data([this.x(new Date())], function (d) {
+      var todayLine = this.timeline.interrupt().selectAll('.reference-line-today.reference-line').interrupt().data([this.x(new Date())], function (d) {
         return d;
       });
 
@@ -4808,12 +4816,6 @@ var Timeline = function () {
       }).attr('rx', eventsSize).attr('ry', eventsSize).attr('width', function (d) {
         return Math.max(d[1], eventsSize * 2);
       }).attr('height', eventsSize * 2);
-
-      // eventsEnter
-      //   .merge(events)
-      //     .attr('height', 0)
-      //     .transition(this.transition)
-      //     .attr('height', eventsSize * 2);
 
       if (this.eventListeners) {
         var _loop3 = function _loop3(key) {
