@@ -24,7 +24,7 @@
     "eslint-config-google": "^0.9.1",
     "jsdom": "^11.1.0",
     "mocha": "^3.4.2",
-    "webpack": "^3.3.0",
+    "webpack": "^3.4.1",
     "webpack-dev-server": "^2.6.1"
   },
   "scripts": {
