@@ -1,7 +1,7 @@
 {
   "name": "zeitline",
   "description": "Zeitline",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "main": "dist/zeitline.bundle.js",
   "module": "src/index.js",
   "directories": {
