@@ -43,7 +43,7 @@ var conf = {
     new Date('2018-01-01'),
   ],
   intervals: [
-    [new Date('09 May 2017'), new Date('12 May 2017'), 250]
+    [new Date('07 May 2017'), new Date('20 May 2017'), 250]
   ],
   data: [
     {date: new Date('12 Jan 2017'), label: 'Last day of this month'},
@@ -67,7 +67,6 @@ var conf = {
   ],
   eventListeners: {
     click: function(event) {
-      alert(event.labels[0]);
     },
   },
   pivotListeners: {
