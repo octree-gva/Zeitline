@@ -16,7 +16,8 @@
 title: Zeitline documentation
 # email: your-email@example.com
 description: > # this means to ignore newlines until "baseurl:"
-  Zeitline is a flexible timeline implemented in D3.
+    Zeitline is an open-source timeline built with React + D3.js for interactivity.
+
 baseurl: "/Zeitline" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb

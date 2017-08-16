@@ -4,7 +4,10 @@ layout: home
 
 <div class="jumbotron mt-2">
   <h1 class="display-3">Zeitline</h1>
-  <p class="lead">Zeitline is an open-source timeline build with React + D3.js for interactivity.</p>
+  <p class="lead">
+    Zeitline is an open-source timeline built with<br /> 
+    React + D3.js for interactivity.
+  </p>
   <hr class="my-4">
   <p class="lead">
     Please check the documentation to get started !
