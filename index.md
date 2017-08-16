@@ -23,14 +23,14 @@ layout: home
   </p>
 </div>
 
-<script src="https://unpkg.com/zeitline@0.x.x/dist/zeitline.bundle.min.js"></script>
 
 <div class="card mb-3 timeline-example">
     <div class="card-block mx-auto">
-        <svg id="timeline" class="mx-auto" width="640" height="100"></svg>
+        <svg id="timeline" class="mx-auto" width="800" height="100"></svg>
     </div>
 </div>
 
+<script src="https://unpkg.com/zeitline@0.x.x/dist/zeitline.bundle.min.js"></script>
 <script>
 var timelineEl = document.querySelector('.timeline-example');
 var conf = {
