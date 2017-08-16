@@ -8,7 +8,7 @@ layout: home
   <hr class="my-4">
   <p class="lead">
     Please check the documentation to get started !
-  </p>  
+  </p>
   <p style="margin-top: 40px">
     <a class="btn btn-primary btn-lg"
        href="documentation" 
@@ -23,6 +23,8 @@ layout: home
   </p>
 </div>
 
+<script src="https://unpkg.com/zeitline@0.x.x/dist/zeitline.bundle.min.js"></script>
+
 <div class="card mb-3 timeline-example">
     <div class="card-block mx-auto">
         <svg id="timeline" class="mx-auto" width="640" height="100"></svg>
@@ -31,7 +33,6 @@ layout: home
 
 <script>
 var timelineEl = document.querySelector('.timeline-example');
-
 var conf = {
   selector: '#timeline',
   dateRange: [
@@ -79,5 +80,3 @@ var conf = {
 var t = new Zeitline.Timeline(conf);
 t.render();
 </script>
-
-
