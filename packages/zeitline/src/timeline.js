@@ -161,17 +161,23 @@ export default class Timeline {
    * from the `intervals` option
    */
   renderAxis(pivots = null) {
+    // Filter intervals and remove out of date range values
+    const intervalsInRange = this.intervals
+      .filter((int) => int[0] > this.dateRange[0] && int[1] < this.dateRange[1]);
+
     if (pivots === null) {
-      pivots = this.getPivots(this.dateRange, this.intervals);
+      pivots = this.getPivots(this.dateRange, intervalsInRange);
     }
-    const domain = this.intervals.reduce((all, int) => all.concat([int[0], int[1]]), []);
+
+    // Create a domain with the dates from intervals
+    let domain = intervalsInRange.reduce((all, int) => all.concat([int[0], int[1]]), []);
 
     // Create polylinear scale time (from range A to range B with intervals in between)
     const getScaleTime = () => d3.scaleTime()
       .domain([
-        d3.extent(this.dateRange)[0],
+        this.dateRange[0],
         ...domain,
-        d3.extent(this.dateRange)[1],
+        this.dateRange[1],
       ])
       .range([0, ...pivots, this.width]); // all pivots
 
