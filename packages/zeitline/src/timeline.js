@@ -141,8 +141,12 @@ export default class Timeline {
       throw new Error('Intervals are not valid because an overlap exist');
     }
 
-    if (conf.dateRange.length < 2) {
+    if (conf.dateRange.length !== 2) {
       throw new Error('Date range should have two dates (start and end)');
+    }
+
+    if (conf.dateRange[0] > conf.dateRange[1]) {
+      throw new Error('The starting date should be smaller than the ending date');
     }
 
     return conf;
