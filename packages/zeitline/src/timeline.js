@@ -163,7 +163,7 @@ export default class Timeline {
   renderAxis(pivots = null) {
     // Filter intervals and remove out of date range values
     const intervalsInRange = this.intervals
-      .filter((int) => int[0] > this.dateRange[0] && int[1] < this.dateRange[1]);
+      .filter((int) => int[1] > this.dateRange[0] && int[0] < this.dateRange[1]);
 
     if (pivots === null) {
       pivots = this.getPivots(this.dateRange, intervalsInRange);
@@ -309,7 +309,8 @@ export default class Timeline {
       .remove();
 
     // Add special reference line for today
-    const todayLine = this.timeline.interrupt().selectAll('.reference-line-today.reference-line').interrupt()
+    const todayLine = this.timeline
+      .interrupt().selectAll('.reference-line-today.reference-line').interrupt()
       .data([this.x(new Date())], (d) => d);
 
     todayLine.enter()
