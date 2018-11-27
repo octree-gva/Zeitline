@@ -24,7 +24,7 @@
 You can simply install Zeitline like that:
 
 ```
-npm install zeitline-react --save
+npm install react-zeitline --save
 or
 yarn add react-zeitline
 ```
