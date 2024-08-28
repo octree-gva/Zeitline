@@ -375,21 +375,22 @@ export default class Timeline {
   }
 
   /**
-   * Render data events as circles or clusters on the timeline and register events callbacks
-   *
-   * @public
-   * @param {array} data Array of data events objects (`{date: ..., label: ...}`)
+   * @private
+   * @param {Object[]} data
+   * @param {Date} data[].date
+   * @param {string=} data[].label
+   * @return {[number, number, [number, string?, Date], [number, string?, Date], number][]}
    */
-  renderData(data) {
-    let dataTime = data
+  dateTimeFromData(data) {
+    const dataTime = data
       .map((d) => [this.x(d.date), d.label, d.date])
       .sort((a, b) => a[0] - b[0]);
 
-    dataTime = dataTime.reduce(({firstInCluster, eaten, acc}, x, i, xs) => {
+    return dataTime.reduce(({firstInCluster, eaten, acc}, x, i, xs) => {
       if (firstInCluster === null) {
         firstInCluster = x;
       } else {
-        const prec = xs[i-1][0] || 0; // xi-1
+        const prec = xs[i - 1][0] || 0; // xi-1
 
         // Squared interval between xi-1 and xi
         const intAB = Math.pow(x[0] - prec, 2);
@@ -403,7 +404,7 @@ export default class Timeline {
         if (intAB > this.clustering.epsilon || intAZ2 > this.clustering.maxSize) {
           // We end the current cluster
           // [firstEvent date (number), interval first-last events, first event, last event]
-          acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i-1], eaten]);
+          acc.push([firstInCluster[0], intAZ, firstInCluster, xs[i - 1], eaten]);
           firstInCluster = x;
           eaten = 0;
         }
@@ -424,6 +425,18 @@ export default class Timeline {
       eaten: 0,
       acc: [],
     }).acc;
+  }
+
+  /**
+   * Render data events as circles or clusters on the timeline and register events callbacks
+   *
+   * @public
+   * @param {Object[]} data Array of data events objects (`{date: ..., label?: ...}`)
+   * @param {Date} data[].date
+   * @param {string=} data[].label
+   */
+  renderData(data) {
+    const dataTime = this.dateTimeFromData(data);
 
     const events = this.timeline.selectAll('.event-group')
       .data(dataTime, (d) => d);
@@ -434,6 +447,9 @@ export default class Timeline {
       .enter()
       .append('g')
         .attr('class', 'event-group')
+        // Use the "label" key in defined data
+        .attr('data-label-start', (d) => d[2][1] || '')
+        .attr('data-label-end', (d) => (d[3] || [])[1] || '')
         .attr('transform', (d) =>
           `translate(${d[0] - eventsSize + .5}, ${this.positionY - eventsSize + .5})`)
         .style('font-size', '10px')
@@ -525,4 +541,3 @@ export default class Timeline {
     }, 0);
   }
 }
-

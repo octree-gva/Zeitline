@@ -46,11 +46,11 @@ let conf = {
     {date: new Date('23 Jul 2017')},
     {date: new Date('24 Jul 2017')},
     {date: new Date('25 Jul 2017')},
-    {date: new Date('26 Jul 2017')},
-    {date: new Date('27 Jul 2017')},
-    {date: new Date('31 Jul 2017')},
-    {date: new Date('10 Aug 2017'), label: 'test5'},
-    {date: new Date('01 Sep 2017'), label: 'test6'},
+    {date: new Date('26 Jul 2017'), label: 'test1'},
+    {date: new Date('27 Jul 2017'), label: 'test2'},
+    {date: new Date('31 Jul 2017'), label: 'test3'},
+    {date: new Date('10 Aug 2017'), label: 'test4'},
+    {date: new Date('01 Sep 2017'), label: 'test5'},
     {date: new Date('10 Oct 2017'), label: 'test6'},
     {date: new Date('24 Dec 2017'), label: 'test7'},
     {date: new Date('31 Dec 2017'), label: 'test8'},
@@ -90,4 +90,3 @@ let conf = {
 
 var t = new Zeitline.Timeline(conf); // eslint-disable-line
 t.render();
-
