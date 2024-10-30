@@ -1,5 +1,4 @@
-import Timeline from './timeline';
+import Timeline from "./timeline.js";
+import "./style.css";
 
-export {
-  Timeline,
-};
+export { Timeline };

@@ -10,3 +10,5 @@ node_modules
 __*
 _site
 out
+dist/
+package-lock.json

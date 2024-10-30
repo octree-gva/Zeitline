@@ -14,18 +14,9 @@
     "build": "nwb build-react-component",
     "clean": "nwb clean-module && nwb clean-demo",
     "start": "nwb serve-react-demo",
-    "test": "nwb test-react",
+    "test": "jest",
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server"
-  },
-  "peerDependencies": {
-    "react": "15.x"
-  },
-  "devDependencies": {
-    "nwb": "0.18.x",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
-    "zeitline": "^0.1.1"
   },
   "author": "",
   "homepage": "",
@@ -37,5 +28,19 @@
   "keywords": [
     "zeitline",
     "react-component"
-  ]
+  ],
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zeitline": "file:../zeitline"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/react": "^16.0.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
 }

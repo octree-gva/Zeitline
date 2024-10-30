@@ -1,0 +1,44 @@
+g[data-label-start="test6"] rect {
+    fill: #ff0000;
+}
+
+.event {
+  fill: #4249ae;
+  /*transition: fill .2s ease-out;*/
+}
+
+.event:hover {
+  fill: #5d8;
+}
+
+.pivot-group.draggable {
+  opacity: 0.6;
+}
+
+.pivot-group:hover {
+  cursor: col-resize;
+}
+
+.reference-line {
+  stroke: #ee7d79;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 6.7;
+  stroke-linecap: round;
+}
+
+.axis--x .domain {
+  stroke: #e4e4e4;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.axis--x .tick text, .event-group text {
+  opacity: .6;
+}
+
+.axis--x .tick line {
+  transform: translateY(-10px);
+  stroke: rgba(180, 180, 180, .5);
+  stroke-width: 1;
+  stroke-linecap: round;
+}

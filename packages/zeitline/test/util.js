@@ -1,29 +1,29 @@
-const fs = require('fs');
-const {JSDOM} = require('jsdom');
+import fs from "fs";
+import { JSDOM } from "jsdom";
 
 /**
  * Construct the window with a virtual dom
  *
  * @return {JSDOM}
  */
-function getWindow() {
+export function getWindow() {
   const dom = `<html>
   <body>
     <svg width="1000" height="100"></svg>
   </body>
   </html>`;
 
-  return new JSDOM(dom, {runScripts: 'dangerously'}).window;
+  return new JSDOM(dom, { runScripts: "dangerously" }).window;
 }
 
-exports.getWindow = getWindow;
-
-exports.getWindowWithZeitline = (conf) => {
-  const Zeitline = fs.readFileSync('./dist/zeitline.bundle.js', {encoding: 'utf-8'});
+export function getWindowWithZeitline(conf) {
+  const Zeitline = fs.readFileSync("./dist/zeitline.bundle.js", {
+    encoding: "utf-8",
+  });
 
   const window = getWindow();
 
-  const scriptEl = window.document.createElement('script');
+  const scriptEl = window.document.createElement("script");
   scriptEl.textContent = Zeitline;
   window.document.body.appendChild(scriptEl);
 
@@ -31,4 +31,4 @@ exports.getWindowWithZeitline = (conf) => {
   timeline.render();
 
   return window;
-};
+}

@@ -1,20 +1,19 @@
-import React, {Component} from 'react'
-import { Timeline } from 'zeitline';
+import React, { Component } from "react";
+import { Timeline } from "zeitline";
 
 // Zeitline component
 export default class extends Component {
-
   constructor(props) {
     super(props);
 
-    this.state = {conf: {}};
+    this.state = { conf: {} };
   }
 
   componentDidMount() {
     this.t = new Timeline({
       selector: this.timelineSvg,
       ...this.props,
-      ...this.state.conf
+      ...this.state.conf,
     });
 
     this.t.render();
@@ -36,7 +35,9 @@ export default class extends Component {
         className="Zeitline"
         width={width || 500}
         height={height || 100}
-        ref={(svg) => {this.timelineSvg = svg;}}
+        ref={(svg) => {
+          this.timelineSvg = svg;
+        }}
       ></svg>
     );
   }
